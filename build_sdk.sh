@@ -21,8 +21,8 @@ wasm-opt -o dist/$LIBNAME.wasm -Oz $BINARY
 ## View Function & Bytecode
 # wasm-objdump -d dist/$LIBNAME.wasm
 
+## Park sdk to js & zip
+# ./park_sdk.sh
+
 ## View final size
 ls -lh dist/$LIBNAME.wasm
-
-
-
