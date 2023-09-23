@@ -4,7 +4,8 @@ TARGET=wasm32-unknown-unknown
 BINARY=target/$TARGET/release/$LIBNAME.wasm
 
 ## Build WASM
-cargo build --target $TARGET --release
+RUSTFLAGS="$RUSTFLAGS -A dead_code -A unused_imports -A unused_variables" \
+cargo build --target $TARGET --release --lib
 
 ## Reduce size (remove panic exception handling, etc.)
 wasm-snip --snip-rust-fmt-code \
