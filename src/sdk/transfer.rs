@@ -25,7 +25,10 @@ pub extern fn trs_test(x: i32) -> usize {
     let vals = bt.serialize();
     res += 1;
     res = res + vals[x as usize] as usize;
-    res + x as usize
+    res += x as usize;
+    let vvs = bt.to_hex().into_bytes();
+    res += vvs[2] as usize;
+    res
 
     // x as usize + data[0] as usize
     // x as usize + 1
