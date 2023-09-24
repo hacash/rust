@@ -1,36 +1,6 @@
 pub const FLOAT4_SIZE: usize = 4;
 pub const FLOAT8_SIZE: usize = 8;
 
-// macro 
-
-// impl Add, Sub, Mul, Div for BytesFixed1
-macro_rules! impl_operation_for_common{
-    ($name:ident, $operate_name:ident, $operate_fn:ident) => (
-        impl $operate_name for $name {
-            type Output = Self;
-            fn $operate_fn(self, other: Self) -> Self {
-                let rv = self.to_u64().$operate_fn(other.to_u64());
-                <$name>::from_uint(rv)
-            }
-        }
-    )
-}
-
-
-// impl Add<u32,i32,i8...>, Sub<...>, Mul, Div for BytesFixed1
-macro_rules! impl_operation_for_int{
-    ($name:ident, $tarty:ident, $operate_name:ident, $operate_fn:ident) => (
-        impl $operate_name<$tarty> for $name {
-            type Output = Self;
-            fn $operate_fn(self, other: $tarty) -> Self {
-                let rv = self.to_u64().$operate_fn(other as u64);
-                <$name>::from_uint(rv)
-            }
-        }
-    )
-}
-
-
 
 // common fn
 
@@ -96,6 +66,32 @@ fn bytesfixed_from_hex(tip: &str, s: &String, len: usize) -> Result<Vec<u8>, Err
         Ok(b) => Ok(b),
         Err(e) => Err(e.to_string()),
     }
+}
+
+
+macro_rules! bytesfixed_from_to_float_fn{
+    ($tip:expr, $tarty:ident, $f1: ident,  $f2: ident, $tsz:expr, $size:expr) => (
+
+fn $f1(&self) -> $tarty {
+    let sz = $size;
+    let tz = $tsz;
+    if sz != tz {
+        panic!("{} size error must be {}", $tip, tz)
+    }
+    <$tarty>::from_be_bytes(self.bytes[0..tz].try_into().unwrap())
+}
+
+fn $f2(&mut self, fv: $tarty) {
+    let sz = $size;
+    let tz = $tsz;
+    if sz != tz {
+        panic!("{} size error must be {}", $tip, tz)
+    }
+    let bts = fv.to_be_bytes();
+    self.bytes = bts[0..tz].try_into().unwrap()
+}
+
+    )
 }
 
 /******************************/
@@ -183,7 +179,14 @@ impl_operation_for_int!($name, u16, Div, div);
 impl_operation_for_int!($name, u32, Div, div);
 impl_operation_for_int!($name, u64, Div, div);
 
-
+impl_operation_for_float!($name, f32, Add, add);
+impl_operation_for_float!($name, f64, Add, add);
+impl_operation_for_float!($name, f32, Sub, sub);
+impl_operation_for_float!($name, f64, Sub, sub);
+impl_operation_for_float!($name, f32, Mul, mul);
+impl_operation_for_float!($name, f64, Mul, mul);
+impl_operation_for_float!($name, f32, Div, div);
+impl_operation_for_float!($name, f64, Div, div);
 
 /*
 impl Add<i32> for $name {
@@ -262,19 +265,29 @@ impl Field for $name {
         obj
     }
 
+    fn from_float<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<f64, Output = f64> {
+        let mut obj = <$name>::new();
+        let sz = $size;
+        if sz != 4 && sz != 8 {
+            panic!("{} from_float size error must be 4 or 8 but got {}", $tip, sz)
+        }
+        let num: f64 = nt + 0f64;
+        if sz == 4 {
+            obj.from_f32(num as f32)
+        }else{
+            obj.from_f64(num as f64)
+        }
+        obj
+    }
+
     fn from(buf: impl AsRef<[u8]>) -> Self where Self: Sized {
         let v = buf.as_ref().clone();
         if v.len() != $size {
             panic!("size error")
         }
-        // let bts = v.to_vec();
         // obj
         let mut obj = <$name>::new();
         obj.bytes = v.try_into().unwrap();
-        // let err = obj.from_vec_u8(&bts);
-        // if let Some(e) = err {
-        //     panic!(e)
-        // }
         // ok
         obj
     }
@@ -352,22 +365,8 @@ impl FieldNumber for $name {
         self.bytes = bts.try_into().unwrap();
     }
 
-    fn to_f32(&self) -> f32 {
-        0.0
-    }
-
-    fn from_f32(&mut self, fv: f32) { 
-        panic!("") 
-    }
-
-    fn to_f64(&self) -> f64 {
-        0.0
-    }
-
-    fn from_f64(&mut self, fv: f64) { 
-        panic!("") 
-    }
-
+    bytesfixed_from_to_float_fn!($tip, f32, to_f32,  from_f32, 4, $size);
+    bytesfixed_from_to_float_fn!($tip, f64, to_f64,  from_f64, 8, $size);
 
 }
 

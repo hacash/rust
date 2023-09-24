@@ -8,6 +8,11 @@ pub type NumUInt4 = BytesFixed4;
 pub type NumUInt5 = BytesFixed5;
 pub type NumUInt8 = BytesFixed8;
 
+// NumFloat
+
+pub type UnsafeNumFloat4 = BytesFixed4;
+pub type UnsafeNumFloat8 = BytesFixed8;
+
 // Bool ***********************
 
 pub type Bool = BytesFixed1;
