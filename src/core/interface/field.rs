@@ -17,7 +17,7 @@ pub trait Field : Serialize + Describe {
     fn length() -> usize { panic!("") }
     fn new() -> Self where Self: Sized { panic!("") }
     fn from_uint<T>(_: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { panic!("") }
-    fn from_string(_: &String) -> Self where Self: Sized { panic!("") }
+    fn from(_: impl AsRef<[u8]>) -> Self where Self: Sized { panic!("") }
 }
 
 pub trait FieldHex : Field {

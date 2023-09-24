@@ -171,17 +171,19 @@ impl Field for $name {
         obj
     }
 
-    fn from_string(buf: &String) -> Self where Self: Sized {
-        if buf.len() != $size {
+    fn from(buf: impl AsRef<[u8]>) -> Self where Self: Sized {
+        let v = buf.as_ref().clone();
+        if v.len() != $size {
             panic!("size error")
         }
-        let bts = buf.clone().into_bytes().to_vec();
+        // let bts = v.to_vec();
         // obj
         let mut obj = <$name>::new();
-        let err = obj.from_vec_u8(&bts);
-        if let Some(e) = err {
-            panic!(e)
-        }
+        obj.bytes = v.try_into().unwrap();
+        // let err = obj.from_vec_u8(&bts);
+        // if let Some(e) = err {
+        //     panic!(e)
+        // }
         // ok
         obj
     }
