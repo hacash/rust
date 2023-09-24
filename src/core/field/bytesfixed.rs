@@ -1,9 +1,43 @@
+pub const FLOAT4_SIZE: usize = 4;
+pub const FLOAT8_SIZE: usize = 8;
+
+// macro 
+
+// impl Add, Sub, Mul, Div for BytesFixed1
+macro_rules! impl_operation_for_common{
+    ($name:ident, $operate_name:ident, $operate_fn:ident) => (
+        impl $operate_name for $name {
+            type Output = Self;
+            fn $operate_fn(self, other: Self) -> Self {
+                let rv = self.to_u64().$operate_fn(other.to_u64());
+                <$name>::from_uint(rv)
+            }
+        }
+    )
+}
+
+
+// impl Add<u32,i32,i8...>, Sub<...>, Mul, Div for BytesFixed1
+macro_rules! impl_operation_for_int{
+    ($name:ident, $tarty:ident, $operate_name:ident, $operate_fn:ident) => (
+        impl $operate_name<$tarty> for $name {
+            type Output = Self;
+            fn $operate_fn(self, other: $tarty) -> Self {
+                let rv = self.to_u64().$operate_fn(other as u64);
+                <$name>::from_uint(rv)
+            }
+        }
+    )
+}
+
+
+
 // common fn
 
 fn bytesfixed_to_uint(tip: &str, bts: &[u8], tsz: usize, len: usize) -> u64 {
     let sz = len;
     if sz > tsz || sz > 8 {
-        panic!(tip.to_owned()+" size cannot over "+&tsz.to_string())
+        panic!("{} size cannot over {}", tip, &tsz.to_string())
     }
     let mut vbts = [0u8; 8];
     let left = tsz - sz;
@@ -18,7 +52,7 @@ fn bytesfixed_to_uint(tip: &str, bts: &[u8], tsz: usize, len: usize) -> u64 {
 fn bytesfixed_from_uint(tip: &str, val: u64, tsz: usize, len: usize) -> Vec<u8> {
     let sz = len;
     if sz > tsz {
-        panic!(tip.to_owned()+" size cannot over "+&tsz.to_string())
+        panic!("{} size cannot over {}", tip, &tsz.to_string())
     }
     let rlbt = val.to_be_bytes();
     let mut vbts = [0u8; 8];
@@ -104,6 +138,63 @@ impl Deref for $name {
     }
 }
 
+impl_operation_for_common!($name, Add, add);
+impl_operation_for_common!($name, Sub, sub);
+impl_operation_for_common!($name, Mul, mul);
+impl_operation_for_common!($name, Div, div);
+
+impl_operation_for_int!($name, i8 , Add, add);
+impl_operation_for_int!($name, i16, Add, add);
+impl_operation_for_int!($name, i32, Add, add);
+impl_operation_for_int!($name, i64, Add, add);
+
+impl_operation_for_int!($name, u8 , Add, add);
+impl_operation_for_int!($name, u16, Add, add);
+impl_operation_for_int!($name, u32, Add, add);
+impl_operation_for_int!($name, u64, Add, add);
+
+impl_operation_for_int!($name, i8 , Sub, sub);
+impl_operation_for_int!($name, i16, Sub, sub);
+impl_operation_for_int!($name, i32, Sub, sub);
+impl_operation_for_int!($name, i64, Sub, sub);
+
+impl_operation_for_int!($name, u8 , Sub, sub);
+impl_operation_for_int!($name, u16, Sub, sub);
+impl_operation_for_int!($name, u32, Sub, sub);
+impl_operation_for_int!($name, u64, Sub, sub);
+
+impl_operation_for_int!($name, i8 , Mul, mul);
+impl_operation_for_int!($name, i16, Mul, mul);
+impl_operation_for_int!($name, i32, Mul, mul);
+impl_operation_for_int!($name, i64, Mul, mul);
+
+impl_operation_for_int!($name, u8 , Mul, mul);
+impl_operation_for_int!($name, u16, Mul, mul);
+impl_operation_for_int!($name, u32, Mul, mul);
+impl_operation_for_int!($name, u64, Mul, mul);
+
+impl_operation_for_int!($name, i8 , Div, div);
+impl_operation_for_int!($name, i16, Div, div);
+impl_operation_for_int!($name, i32, Div, div);
+impl_operation_for_int!($name, i64, Div, div);
+
+impl_operation_for_int!($name, u8 , Div, div);
+impl_operation_for_int!($name, u16, Div, div);
+impl_operation_for_int!($name, u32, Div, div);
+impl_operation_for_int!($name, u64, Div, div);
+
+
+
+/*
+impl Add<i32> for $name {
+    type Output = Self;
+    #[inline]
+    fn add(self, other: i32) -> Self {
+        let rv = self.to_u64() + other as u64;
+        <$name>::from_uint(rv)
+    }
+}
+ */
 
 impl Serialize for $name {
 
@@ -116,7 +207,7 @@ impl Serialize for $name {
 
      fn serialize(&self) -> Vec<u8> {
         if $size != self.bytes.len() {
-            panic!($tip.to_owned()+" serialize size not match.")
+            panic!("serialize size not match for {} ", $tip)
         }
         self.bytes.to_vec()
     }
@@ -260,6 +351,23 @@ impl FieldNumber for $name {
         let bts = bytesfixed_from_uint($tip, val, 8, $size);
         self.bytes = bts.try_into().unwrap();
     }
+
+    fn to_f32(&self) -> f32 {
+        0.0
+    }
+
+    fn from_f32(&mut self, fv: f32) { 
+        panic!("") 
+    }
+
+    fn to_f64(&self) -> f64 {
+        0.0
+    }
+
+    fn from_f64(&mut self, fv: f64) { 
+        panic!("") 
+    }
+
 
 }
 

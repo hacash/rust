@@ -39,6 +39,11 @@ pub trait FieldNumber : Field {
     fn from_u32(&mut self, _: u32) { panic!("") }
     fn to_u64(&self) -> u64 {0}
     fn from_u64(&mut self, _: u64) { panic!("") }
+
+    fn to_f32(&self) -> f32 {0.0}
+    fn from_f32(&mut self, _: f32) { panic!("") }
+    fn to_f64(&self) -> f64 {0.0}
+    fn from_f64(&mut self, _: f64) { panic!("") }
 }
 
 pub trait FieldReadableString : Field {

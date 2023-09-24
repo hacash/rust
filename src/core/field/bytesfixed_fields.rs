@@ -35,6 +35,68 @@ impl Bool {
 pub type ChannelId = BytesFixed16;
 pub const CHANNEL_ID_SIZE: usize = ChannelId::length();
 
+// Lockbls
+
+pub type LockblsId = BytesFixed18;
+pub const LOCKBLS_ID_SIZE: usize = LockblsId::length();
+
+// Satoshi
+
+pub type Satoshi = NumUInt8;
+impl Satoshi {}
+
+// lending
+
+pub type DiamondSyslendId = BytesFixed14;
+pub type BitcoinSyslendId = BytesFixed15;
+pub type UserLendingId = BytesFixed17;
+
+pub const DIAMOND_SYSLEND_ID_SIZE: usize = DiamondSyslendId::length();
+pub const BITCOIN_SYSLEND_ID_SIZE: usize = BitcoinSyslendId::length();
+pub const USER_LENDING_ID_SIZE: usize = UserLendingId::length();
+
+// BlockHeight Timestamp ***********
+
+pub type BlockHeight = NumUInt5;
+pub type Timestamp = NumUInt5;
+pub const BLOCK_HEIGHT_SIZE: usize = BlockHeight::length();
+pub const TIMESTAMP_SIZE: usize = Timestamp::length();
+impl BlockHeight {}
+impl Timestamp {}
+
+// Hash ***********************
+
+pub type Hash = BytesFixed32;
+pub type HashHalf = BytesFixed16;
+pub type HashNonce = BytesFixed8;
+const HASH_SIZE: usize = Hash::length();
+const HASH_HALF_SIZE: usize = HashHalf::length();
+const HASH_NONCE_SIZE: usize = HashNonce::length();
+impl Hash {
+
+    pub fn from(v: impl AsRef<[u8]>) -> Hash {
+        let v = v.as_ref();
+        if v.len() != HASH_SIZE {
+            panic!("Hash.from() size error.")
+        }
+        let v: [u8; HASH_SIZE] = v.try_into().unwrap();
+        Hash{
+            bytes: v,
+        }
+    }
+
+    pub fn get_half(&self) -> HashHalf {
+        let pt: [u8; HASH_HALF_SIZE] = self.bytes[0..HASH_HALF_SIZE].try_into().unwrap();
+        <BytesFixed16 as Field>::from(pt)
+    }
+
+    pub fn get_nonce(&self) -> HashNonce {
+        let pt: [u8; HASH_NONCE_SIZE] = self.bytes[0..HASH_NONCE_SIZE].try_into().unwrap();
+        <BytesFixed8 as Field>::from(pt)
+    }
+
+}
+
 // Diamond ***********************
 
 pub const DIAMOND_NAME_VALID_CHARS: &[u8; 16]  = b"WTYUIAHXVMEKBSZN";
@@ -46,7 +108,7 @@ impl DiamondName {
     pub fn name(&self) -> String {
         self.to_string()
     }
-    pub fn is_diamond_name(stuff: impl AsRef<[u8]>) -> bool {
+    pub fn is_valid(stuff: impl AsRef<[u8]>) -> bool {
         let v = stuff.as_ref();
         if v.len() != 6 {
             return false

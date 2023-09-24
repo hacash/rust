@@ -8,7 +8,10 @@
 
 #[allow(unused_macros)]
 macro_rules! panic {
-    ($name:expr) => {
+    ($s:expr) => {
+        loop {}
+    };
+    ($fmt:expr, $($s:expr),+) => {
         loop {}
     };
 }
