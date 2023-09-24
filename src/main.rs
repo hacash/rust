@@ -1,11 +1,12 @@
-mod core;
+// mod core;
+
 
 use crate::core::field;
 use crate::core::interface::field::*;
 
 fn main() {
 
-    let mut bt = field::Fixedbytes4::new();
+    let mut bt = field::BytesFixed4::new();
 
     let data = vec![1u8,1,1,1];
 

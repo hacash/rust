@@ -1,3 +1,4 @@
+
 use super::Error;
 
 pub trait Serialize {
@@ -7,13 +8,16 @@ pub trait Serialize {
 }
 
 pub trait Describe {
-    fn describe(&self) -> String; // readable format
-    fn to_json(&self) -> String; // to json format string
-    fn from_json(&mut self, _: &String) -> Option<Error>; // from json
+    fn describe(&self) -> String { "*".to_string() } // readable format
+    fn to_json(&self) -> String { "*".to_string() } // to json format string
+    fn from_json(&mut self, _: &String) -> Option<Error> { panic!("") } // from json
 }
 
 pub trait Field : Serialize + Describe {
-    fn new() -> Self where Self: Sized;
+    fn length() -> usize { panic!("") }
+    fn new() -> Self where Self: Sized { panic!("") }
+    fn from_uint<T>(_: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { panic!("") }
+    fn from_string(_: &String) -> Self where Self: Sized { panic!("") }
 }
 
 pub trait FieldHex : Field {
@@ -27,12 +31,18 @@ pub trait FieldBytes : Field {
 }
 
 pub trait FieldNumber : Field {
-    fn to_u64(&self) -> u64;
-    fn from_u64(&mut self, _: &u64);
+    fn to_u8(&self) -> u8 {0}
+    fn from_u8(&mut self, _: u8) { panic!("") }
+    fn to_u16(&self) -> u16 {0}
+    fn from_u16(&mut self, _: u16) { panic!("") }
+    fn to_u32(&self) -> u32 {0}
+    fn from_u32(&mut self, _: u32) { panic!("") }
+    fn to_u64(&self) -> u64 {0}
+    fn from_u64(&mut self, _: u64) { panic!("") }
 }
 
 pub trait FieldReadableString : Field {
-    fn to_string(&self) -> String;
-    fn from_string(&mut self, _: &String) -> Option<Error>;
+    fn to_readable_string(&self) -> String;
+    fn from_readable_string(&mut self, _: &String) -> Option<Error>;
 }
 
