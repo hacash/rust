@@ -7,6 +7,8 @@ use std::ops::{Deref, Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAs
 // use num_bigint::Sign::{Minus, Plus};
 // use num_traits::{FromPrimitive, ToPrimitive, Num};
 
+use concat_idents::concat_idents;
+
 use std::convert::TryInto;
 
 use super::interface::Error;

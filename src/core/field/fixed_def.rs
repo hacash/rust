@@ -70,26 +70,29 @@ fn bytesfixed_from_hex(tip: &str, s: &String, len: usize) -> Result<Vec<u8>, Err
 
 
 macro_rules! bytesfixed_from_to_float_fn{
-    ($tip:expr, $tarty:ident, $f1: ident,  $f2: ident, $tsz:expr, $size:expr) => (
+    ($tip:expr, $tarty:ident, $tsz:expr, $size:expr) => (
 
-fn $f1(&self) -> $tarty {
-    let sz = $size;
-    let tz = $tsz;
-    if sz != tz {
-        panic!("{} size error must be {}", $tip, tz)
-    }
-    <$tarty>::from_be_bytes(self.bytes[0..tz].try_into().unwrap())
-}
-
-fn $f2(&mut self, fv: $tarty) {
-    let sz = $size;
-    let tz = $tsz;
-    if sz != tz {
-        panic!("{} size error must be {}", $tip, tz)
-    }
-    let bts = fv.to_be_bytes();
-    self.bytes = bts[0..tz].try_into().unwrap()
-}
+        concat_idents!(fn_to_1 = to_, $tarty {
+        fn fn_to_1(&self) -> $tarty {
+            let sz = $size;
+            let tz = $tsz;
+            if sz != tz {
+                panic!("{} size error must be {}", $tip, tz)
+            }
+            <$tarty>::from_be_bytes(self.bytes[0..tz].try_into().unwrap())
+        }
+        });
+        concat_idents!(fn_from_1 = from_, $tarty {
+        fn fn_from_1(&mut self, fv: $tarty) {
+            let sz = $size;
+            let tz = $tsz;
+            if sz != tz {
+                panic!("{} size error must be {}", $tip, tz)
+            }
+            let bts = fv.to_be_bytes();
+            self.bytes = bts[0..tz].try_into().unwrap()
+        }
+        });
 
     )
 }
@@ -371,8 +374,8 @@ impl FieldNumber for $class {
         self.bytes = bts.try_into().unwrap();
     }
 
-    bytesfixed_from_to_float_fn!($tip, f32, to_f32,  from_f32, 4, $size);
-    bytesfixed_from_to_float_fn!($tip, f64, to_f64,  from_f64, 8, $size);
+    bytesfixed_from_to_float_fn!($tip, f32, 4, $size);
+    bytesfixed_from_to_float_fn!($tip, f64, 8, $size);
 
 }
 

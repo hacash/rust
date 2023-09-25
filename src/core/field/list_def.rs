@@ -76,9 +76,6 @@ impl Field for $class {
 }
 
 
-
-
-
 impl $class {
 
 	fn count(&self) -> u64 {
