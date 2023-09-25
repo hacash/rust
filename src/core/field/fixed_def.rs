@@ -97,8 +97,8 @@ fn $f2(&mut self, fv: $tarty) {
 /******************************/
 
 
-// create BytesFixed macro
-macro_rules! create_bytesfixed_struct_and_impl{
+// create Fixed macro
+macro_rules! create_fixed_struct_and_impl{
     ($tip:expr, $name:ident, $size:expr) => (
 
 
@@ -201,21 +201,21 @@ impl Add<i32> for $name {
 
 impl Serialize for $name {
 
-     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, Error> {
+    fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, Error> {
         let seek2 = parse_move_seek_or_buf_too_short_error!($tip, seek, $size, buf);
         let sv = &buf[seek..seek2];
         self.bytes = sv.try_into().unwrap();
         Ok(seek2)
     }
 
-     fn serialize(&self) -> Vec<u8> {
+    fn serialize(&self) -> Vec<u8> {
         if $size != self.bytes.len() {
             panic!("serialize size not match for {} ", $tip)
         }
         self.bytes.to_vec()
     }
 
-     fn size(&self) -> usize {
+    fn size(&self) -> usize {
         $size
     }
 
@@ -238,6 +238,9 @@ impl Describe for $name {
 }
 
 impl Field for $name {
+
+    // parse function
+    pub_fn_field_create_by_new_wrap_return!($name);
 
     fn new() -> $name {
         $name{
@@ -388,6 +391,7 @@ impl $name {
     const fn length() -> usize {
         $size
     }
+
 }
 
 
@@ -399,26 +403,26 @@ impl $name {
 
 
 
-// create_bytesfixed_struct_and_impl!("BytesFixed4 ", BytesFixed4 ,  4usize);
+// create_fixed_struct_and_impl!("Fixed4 ", Fixed4 ,  4usize);
 
 
 // create 
-create_bytesfixed_struct_and_impl!("BytesFixed1 ", BytesFixed1 ,  1usize);
-create_bytesfixed_struct_and_impl!("BytesFixed2 ", BytesFixed2 ,  2usize);
-create_bytesfixed_struct_and_impl!("BytesFixed3 ", BytesFixed3 ,  3usize);
-create_bytesfixed_struct_and_impl!("BytesFixed4 ", BytesFixed4 ,  4usize);
-create_bytesfixed_struct_and_impl!("BytesFixed5 ", BytesFixed5 ,  5usize);
-create_bytesfixed_struct_and_impl!("BytesFixed6 ", BytesFixed6 ,  6usize);
-create_bytesfixed_struct_and_impl!("BytesFixed8 ", BytesFixed8 ,  8usize);
-create_bytesfixed_struct_and_impl!("BytesFixed10", BytesFixed10, 10usize);
-create_bytesfixed_struct_and_impl!("BytesFixed12", BytesFixed12, 12usize);
-create_bytesfixed_struct_and_impl!("BytesFixed14", BytesFixed14, 14usize);
-create_bytesfixed_struct_and_impl!("BytesFixed15", BytesFixed15, 15usize);
-create_bytesfixed_struct_and_impl!("BytesFixed16", BytesFixed16, 16usize);
-create_bytesfixed_struct_and_impl!("BytesFixed17", BytesFixed17, 17usize);
-create_bytesfixed_struct_and_impl!("BytesFixed18", BytesFixed18, 18usize);
-create_bytesfixed_struct_and_impl!("BytesFixed21", BytesFixed21, 21usize);
-create_bytesfixed_struct_and_impl!("BytesFixed24", BytesFixed24, 24usize);
-create_bytesfixed_struct_and_impl!("BytesFixed32", BytesFixed32, 32usize);
-create_bytesfixed_struct_and_impl!("BytesFixed33", BytesFixed33, 33usize);
-create_bytesfixed_struct_and_impl!("BytesFixed64", BytesFixed64, 64usize);
+create_fixed_struct_and_impl!("Fixed1 ", Fixed1 ,  1usize);
+create_fixed_struct_and_impl!("Fixed2 ", Fixed2 ,  2usize);
+create_fixed_struct_and_impl!("Fixed3 ", Fixed3 ,  3usize);
+create_fixed_struct_and_impl!("Fixed4 ", Fixed4 ,  4usize);
+create_fixed_struct_and_impl!("Fixed5 ", Fixed5 ,  5usize);
+create_fixed_struct_and_impl!("Fixed6 ", Fixed6 ,  6usize);
+create_fixed_struct_and_impl!("Fixed8 ", Fixed8 ,  8usize);
+create_fixed_struct_and_impl!("Fixed10", Fixed10, 10usize);
+create_fixed_struct_and_impl!("Fixed12", Fixed12, 12usize);
+create_fixed_struct_and_impl!("Fixed14", Fixed14, 14usize);
+create_fixed_struct_and_impl!("Fixed15", Fixed15, 15usize);
+create_fixed_struct_and_impl!("Fixed16", Fixed16, 16usize);
+create_fixed_struct_and_impl!("Fixed17", Fixed17, 17usize);
+create_fixed_struct_and_impl!("Fixed18", Fixed18, 18usize);
+create_fixed_struct_and_impl!("Fixed21", Fixed21, 21usize);
+create_fixed_struct_and_impl!("Fixed24", Fixed24, 24usize);
+create_fixed_struct_and_impl!("Fixed32", Fixed32, 32usize);
+create_fixed_struct_and_impl!("Fixed33", Fixed33, 33usize);
+create_fixed_struct_and_impl!("Fixed64", Fixed64, 64usize);

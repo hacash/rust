@@ -15,6 +15,7 @@ pub trait Describe {
 
 pub trait Field : Serialize + Describe {
     fn length() -> usize { panic!("") }
+    fn create(_: &Vec<u8>, _: usize) -> Result<(Self, usize), Error> where Self: Sized { panic!("") }
     fn new() -> Self where Self: Sized { panic!("") }
     fn from_uint<T>(_: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { panic!("") }
     fn from_float<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<f64, Output = f64> { panic!("") }

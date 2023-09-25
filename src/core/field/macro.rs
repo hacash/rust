@@ -16,9 +16,19 @@ macro_rules! parse_move_seek_or_buf_too_short_error{
 }
 
 
+macro_rules! parse_field_or_return_err{
+    ($tip:expr, $type:ty, $buf:expr, $seek:expr) => ({
+        let res = <$type>::create($buf, $seek);
+        match res {
+            Err(e) => return Err(format!("{}.prase error: {}", $tip, e)),
+            Ok(r) => r,
+        }
+    })
+}
+
 // macro 
 
-// impl Add, Sub, Mul, Div for BytesFixed1
+// impl Add, Sub, Mul, Div for Fixed1
 macro_rules! impl_operation_for_common{
     ($name:ident, $operate_name:ident, $operate_fn:ident) => (
         impl $operate_name for $name {
@@ -32,7 +42,7 @@ macro_rules! impl_operation_for_common{
 }
 
 
-// impl Add<u32,i32,i8...>, Sub<...>, Mul, Div for BytesFixed1
+// impl Add<u32,i32,i8...>, Sub<...>, Mul, Div for Fixed1
 macro_rules! impl_operation_for_int{
     ($name:ident, $tarty:ident, $operate_name:ident, $operate_fn:ident) => (
         impl $operate_name<$tarty> for $name {
@@ -46,7 +56,7 @@ macro_rules! impl_operation_for_int{
 }
 
 
-// impl Add<f32,f64...>, Sub<...>, Mul, Div for BytesFixed4 or BytesFixed8
+// impl Add<f32,f64...>, Sub<...>, Mul, Div for Fixed4 or Fixed8
 macro_rules! impl_operation_for_float{
     ($name:ident, $tarty:ident, $operate_name:ident, $operate_fn:ident) => (
         impl $operate_name<$tarty> for $name {

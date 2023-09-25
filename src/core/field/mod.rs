@@ -15,7 +15,15 @@ use super::interface::field::*;
 
 include!{"macro.rs"}
 
-include!{"bytesfixed.rs"}
-include!{"bytesfixed_fields.rs"}
+include!{"fixed_def.rs"}
+include!{"fixed.rs"}
+include!{"bytes_def.rs"}
+include!{"bytes.rs"}
+include!{"optional_def.rs"}
+include!{"optional.rs"}
+include!{"list_def.rs"}
+include!{"list.rs"}
+include!{"combine_def.rs"}
+include!{"combine.rs"}
 
 

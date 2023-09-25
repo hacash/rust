@@ -1,21 +1,21 @@
 
 // NumUInt
 
-pub type NumUInt1 = BytesFixed1;
-pub type NumUInt2 = BytesFixed2;
-pub type NumUInt3 = BytesFixed3;
-pub type NumUInt4 = BytesFixed4;
-pub type NumUInt5 = BytesFixed5;
-pub type NumUInt8 = BytesFixed8;
+pub type NumUInt1 = Fixed1;
+pub type NumUInt2 = Fixed2;
+pub type NumUInt3 = Fixed3;
+pub type NumUInt4 = Fixed4;
+pub type NumUInt5 = Fixed5;
+pub type NumUInt8 = Fixed8;
 
 // NumFloat
 
-pub type UnsafeNumFloat4 = BytesFixed4;
-pub type UnsafeNumFloat8 = BytesFixed8;
+pub type UnsafeNumFloat4 = Fixed4;
+pub type UnsafeNumFloat8 = Fixed8;
 
 // Bool ***********************
 
-pub type Bool = BytesFixed1;
+pub type Bool = Fixed1;
 
 impl Bool {
 
@@ -37,12 +37,12 @@ impl Bool {
 
 // ChannelId ***********************
 
-pub type ChannelId = BytesFixed16;
+pub type ChannelId = Fixed16;
 pub const CHANNEL_ID_SIZE: usize = ChannelId::length();
 
 // Lockbls
 
-pub type LockblsId = BytesFixed18;
+pub type LockblsId = Fixed18;
 pub const LOCKBLS_ID_SIZE: usize = LockblsId::length();
 
 // Satoshi
@@ -52,9 +52,9 @@ impl Satoshi {}
 
 // lending
 
-pub type DiamondSyslendId = BytesFixed14;
-pub type BitcoinSyslendId = BytesFixed15;
-pub type UserLendingId = BytesFixed17;
+pub type DiamondSyslendId = Fixed14;
+pub type BitcoinSyslendId = Fixed15;
+pub type UserLendingId = Fixed17;
 
 pub const DIAMOND_SYSLEND_ID_SIZE: usize = DiamondSyslendId::length();
 pub const BITCOIN_SYSLEND_ID_SIZE: usize = BitcoinSyslendId::length();
@@ -71,9 +71,9 @@ impl Timestamp {}
 
 // Hash ***********************
 
-pub type Hash = BytesFixed32;
-pub type HashHalf = BytesFixed16;
-pub type HashNonce = BytesFixed8;
+pub type Hash = Fixed32;
+pub type HashHalf = Fixed16;
+pub type HashNonce = Fixed8;
 const HASH_SIZE: usize = Hash::length();
 const HASH_HALF_SIZE: usize = HashHalf::length();
 const HASH_NONCE_SIZE: usize = HashNonce::length();
@@ -92,12 +92,12 @@ impl Hash {
 
     pub fn get_half(&self) -> HashHalf {
         let pt: [u8; HASH_HALF_SIZE] = self.bytes[0..HASH_HALF_SIZE].try_into().unwrap();
-        <BytesFixed16 as Field>::from(pt)
+        <Fixed16 as Field>::from(pt)
     }
 
     pub fn get_nonce(&self) -> HashNonce {
         let pt: [u8; HASH_NONCE_SIZE] = self.bytes[0..HASH_NONCE_SIZE].try_into().unwrap();
-        <BytesFixed8 as Field>::from(pt)
+        <Fixed8 as Field>::from(pt)
     }
 
 }
@@ -105,9 +105,9 @@ impl Hash {
 // Diamond ***********************
 
 pub const DIAMOND_NAME_VALID_CHARS: &[u8; 16]  = b"WTYUIAHXVMEKBSZN";
-pub type DiamondName = BytesFixed6;
+pub type DiamondName = Fixed6;
 pub type DiamondNumber = NumUInt3;
-pub type DiamondVisualGene = BytesFixed10;
+pub type DiamondVisualGene = Fixed10;
 
 impl DiamondName {
     pub fn name(&self) -> String {
@@ -139,7 +139,7 @@ impl DiamondName {
 
 use base58check::*;
 
-pub type Address = BytesFixed21;
+pub type Address = Fixed21;
 pub const ADDRESS_SIZE: usize = Address::length();
 // format
 impl Address {
