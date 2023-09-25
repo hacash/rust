@@ -16,7 +16,6 @@ pub type UnsafeNumFloat8 = Fixed8;
 // Bool ***********************
 
 pub type Bool = Fixed1;
-
 impl Bool {
 
     pub fn from(v: bool) -> Bool {

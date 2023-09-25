@@ -2,16 +2,16 @@
 
 // create Bytes macro
 macro_rules! create_bytes_struct_and_impl{
-    ($tip:expr, $name:ident, $lenty:ty, $size_max:expr) => (
+    ($tip:expr, $class:ident, $lenty:ty, $size_max:expr) => (
 
 #[derive(Clone)]
-pub struct $name {
+pub struct $class {
     len: $lenty,
     bytes: Vec<u8>,
 }
 
 
-impl Serialize for $name {
+impl Serialize for $class {
 
     fn serialize(&self) -> Vec<u8> {
         let lv = self.size();
@@ -41,7 +41,7 @@ impl Serialize for $name {
 }
 
 
-impl Describe for $name {
+impl Describe for $class {
 
     fn describe(&self) -> String {
         "".to_string()
@@ -57,17 +57,17 @@ impl Describe for $name {
 
 }
 
-impl Field for $name {
+impl Field for $class {
 
 
     // parse function
-    pub_fn_field_create_by_new_wrap_return!($name);
+    pub_fn_field_create_by_new_wrap_return!($class);
 
-    fn new() -> $name {
+    fn new() -> $class {
         let sz = <$lenty>::from_uint(0);
-        $name{
+        $class{
             len: sz,
-            bytes: vec![],
+            bytes: Vec::new(),
         }
     }
 
@@ -77,7 +77,7 @@ impl Field for $name {
             panic!("size overflow max {}", $size_max)
         }
         // obj
-        let mut obj = <$name>::new();
+        let mut obj = <$class>::new();
         obj.len = <$lenty>::from_uint(v.len() as u64);
         obj.bytes = v.try_into().unwrap();
         // ok
@@ -87,7 +87,7 @@ impl Field for $name {
 }
 
 
-impl $name {
+impl $class {
 
 
 

@@ -99,107 +99,110 @@ fn $f2(&mut self, fv: $tarty) {
 
 // create Fixed macro
 macro_rules! create_fixed_struct_and_impl{
-    ($tip:expr, $name:ident, $size:expr) => (
+    ($tip:expr, $class:ident, $size:expr) => (
 
 
 #[derive(Debug, Hash, Clone, PartialEq, Eq)]
-pub struct $name {
+pub struct $class {
     bytes: [u8; $size],
 }
 
 
-impl fmt::Display for $name{
+impl fmt::Display for $class{
     fn fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
         write!(f,"{}",self.to_hex())
     }
 }
 
-impl Index<usize> for $name {
+impl Index<usize> for $class {
     type Output = u8;
     fn index(&self, idx: usize) -> &Self::Output {
         &self.bytes[idx]
     }
 }
 
-impl IndexMut<usize> for $name {
+impl IndexMut<usize> for $class {
     fn index_mut(&mut self, idx: usize) -> &mut Self::Output{
         &mut self.bytes[idx]
     }
 }
 
-impl Deref for $name {
+impl Deref for $class {
     type Target = [u8; $size];
     fn deref(&self) -> &[u8; $size] {
         &self.bytes
     }
 }
 
-impl_operation_for_common!($name, Add, add);
-impl_operation_for_common!($name, Sub, sub);
-impl_operation_for_common!($name, Mul, mul);
-impl_operation_for_common!($name, Div, div);
+impl_operation_for_common!($class, Add, add);
+impl_operation_for_common!($class, Sub, sub);
+impl_operation_for_common!($class, Mul, mul);
+impl_operation_for_common!($class, Div, div);
 
-impl_operation_for_int!($name, i8 , Add, add);
-impl_operation_for_int!($name, i16, Add, add);
-impl_operation_for_int!($name, i32, Add, add);
-impl_operation_for_int!($name, i64, Add, add);
+impl_operation_for_int!($class, u8 , Add, add);
+impl_operation_for_int!($class, u16, Add, add);
+impl_operation_for_int!($class, u32, Add, add);
+impl_operation_for_int!($class, u64, Add, add);
 
-impl_operation_for_int!($name, u8 , Add, add);
-impl_operation_for_int!($name, u16, Add, add);
-impl_operation_for_int!($name, u32, Add, add);
-impl_operation_for_int!($name, u64, Add, add);
+impl_operation_for_int!($class, u8 , Sub, sub);
+impl_operation_for_int!($class, u16, Sub, sub);
+impl_operation_for_int!($class, u32, Sub, sub);
+impl_operation_for_int!($class, u64, Sub, sub);
 
-impl_operation_for_int!($name, i8 , Sub, sub);
-impl_operation_for_int!($name, i16, Sub, sub);
-impl_operation_for_int!($name, i32, Sub, sub);
-impl_operation_for_int!($name, i64, Sub, sub);
+impl_operation_for_int!($class, u8 , Mul, mul);
+impl_operation_for_int!($class, u16, Mul, mul);
+impl_operation_for_int!($class, u32, Mul, mul);
+impl_operation_for_int!($class, u64, Mul, mul);
 
-impl_operation_for_int!($name, u8 , Sub, sub);
-impl_operation_for_int!($name, u16, Sub, sub);
-impl_operation_for_int!($name, u32, Sub, sub);
-impl_operation_for_int!($name, u64, Sub, sub);
+impl_operation_for_int!($class, u8 , Div, div);
+impl_operation_for_int!($class, u16, Div, div);
+impl_operation_for_int!($class, u32, Div, div);
+impl_operation_for_int!($class, u64, Div, div);
 
-impl_operation_for_int!($name, i8 , Mul, mul);
-impl_operation_for_int!($name, i16, Mul, mul);
-impl_operation_for_int!($name, i32, Mul, mul);
-impl_operation_for_int!($name, i64, Mul, mul);
+impl_operation_for_float!($class, f32, Add, add);
+impl_operation_for_float!($class, f64, Add, add);
+impl_operation_for_float!($class, f32, Sub, sub);
+impl_operation_for_float!($class, f64, Sub, sub);
+impl_operation_for_float!($class, f32, Mul, mul);
+impl_operation_for_float!($class, f64, Mul, mul);
+impl_operation_for_float!($class, f32, Div, div);
+impl_operation_for_float!($class, f64, Div, div);
 
-impl_operation_for_int!($name, u8 , Mul, mul);
-impl_operation_for_int!($name, u16, Mul, mul);
-impl_operation_for_int!($name, u32, Mul, mul);
-impl_operation_for_int!($name, u64, Mul, mul);
+impl_operation_assign_for_int!($class, u8 , AddAssign, add_assign, add);
+impl_operation_assign_for_int!($class, u16, AddAssign, add_assign, add);
+impl_operation_assign_for_int!($class, u32, AddAssign, add_assign, add);
+impl_operation_assign_for_int!($class, u64, AddAssign, add_assign, add);
 
-impl_operation_for_int!($name, i8 , Div, div);
-impl_operation_for_int!($name, i16, Div, div);
-impl_operation_for_int!($name, i32, Div, div);
-impl_operation_for_int!($name, i64, Div, div);
+impl_operation_assign_for_int!($class, u8 , SubAssign, sub_assign, sub);
+impl_operation_assign_for_int!($class, u16, SubAssign, sub_assign, sub);
+impl_operation_assign_for_int!($class, u32, SubAssign, sub_assign, sub);
+impl_operation_assign_for_int!($class, u64, SubAssign, sub_assign, sub);
 
-impl_operation_for_int!($name, u8 , Div, div);
-impl_operation_for_int!($name, u16, Div, div);
-impl_operation_for_int!($name, u32, Div, div);
-impl_operation_for_int!($name, u64, Div, div);
+impl_operation_assign_for_int!($class, u8 , MulAssign, mul_assign, mul);
+impl_operation_assign_for_int!($class, u16, MulAssign, mul_assign, mul);
+impl_operation_assign_for_int!($class, u32, MulAssign, mul_assign, mul);
+impl_operation_assign_for_int!($class, u64, MulAssign, mul_assign, mul);
 
-impl_operation_for_float!($name, f32, Add, add);
-impl_operation_for_float!($name, f64, Add, add);
-impl_operation_for_float!($name, f32, Sub, sub);
-impl_operation_for_float!($name, f64, Sub, sub);
-impl_operation_for_float!($name, f32, Mul, mul);
-impl_operation_for_float!($name, f64, Mul, mul);
-impl_operation_for_float!($name, f32, Div, div);
-impl_operation_for_float!($name, f64, Div, div);
+impl_operation_assign_for_int!($class, u8 , DivAssign, div_assign, div);
+impl_operation_assign_for_int!($class, u16, DivAssign, div_assign, div);
+impl_operation_assign_for_int!($class, u32, DivAssign, div_assign, div);
+impl_operation_assign_for_int!($class, u64, DivAssign, div_assign, div);
+
 
 /*
-impl Add<i32> for $name {
+impl Add<i32> for $class {
     type Output = Self;
     #[inline]
     fn add(self, other: i32) -> Self {
         let rv = self.to_u64() + other as u64;
-        <$name>::from_uint(rv)
+        <$class>::from_uint(rv)
     }
 }
- */
+*/
 
-impl Serialize for $name {
+
+
+impl Serialize for $class {
 
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, Error> {
         let seek2 = parse_move_seek_or_buf_too_short_error!($tip, seek, $size, buf);
@@ -221,7 +224,7 @@ impl Serialize for $name {
 
 }
 
-impl Describe for $name {
+impl Describe for $class {
 
     fn describe(&self) -> String {
         "".to_string()
@@ -237,20 +240,20 @@ impl Describe for $name {
 
 }
 
-impl Field for $name {
+impl Field for $class {
 
     // parse function
-    pub_fn_field_create_by_new_wrap_return!($name);
+    pub_fn_field_create_by_new_wrap_return!($class);
 
-    fn new() -> $name {
-        $name{
+    fn new() -> $class {
+        $class{
             bytes: [0u8; $size],
         }
     }
 
     fn from_uint<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { 
         let num: u64 = nt + 0u64;
-        let mut obj = <$name>::new();
+        let mut obj = <$class>::new();
         let sz = $size;
         if sz <= 1 && num < 256 {
             obj.from_u8(num as u8)
@@ -269,7 +272,7 @@ impl Field for $name {
     }
 
     fn from_float<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<f64, Output = f64> {
-        let mut obj = <$name>::new();
+        let mut obj = <$class>::new();
         let sz = $size;
         if sz != 4 && sz != 8 {
             panic!("{} from_float size error must be 4 or 8 but got {}", $tip, sz)
@@ -289,7 +292,7 @@ impl Field for $name {
             panic!("size error")
         }
         // obj
-        let mut obj = <$name>::new();
+        let mut obj = <$class>::new();
         obj.bytes = v.try_into().unwrap();
         // ok
         obj
@@ -297,7 +300,7 @@ impl Field for $name {
 
 }
 
-impl FieldHex for $name {
+impl FieldHex for $class {
 
     fn to_hex(&self) -> String {
         hex::encode(self.bytes)
@@ -315,7 +318,7 @@ impl FieldHex for $name {
 
 }
 
-impl FieldBytes for $name {
+impl FieldBytes for $class {
 
     fn to_vec_u8(&self) -> Vec<u8> {
         self.serialize()
@@ -327,7 +330,7 @@ impl FieldBytes for $name {
 
 }
 
-impl FieldNumber for $name {
+impl FieldNumber for $class {
 
     fn to_u8(&self) -> u8 {
         let rv = bytesfixed_to_uint($tip, &self.bytes[..], 1, $size);
@@ -373,7 +376,7 @@ impl FieldNumber for $name {
 
 }
 
-impl FieldReadableString for $name {
+impl FieldReadableString for $class {
     
     fn to_readable_string(&self) -> String {
         bytesfixed_to_readable_string(&self.bytes[..])
@@ -386,7 +389,7 @@ impl FieldReadableString for $name {
 
 }
 
-impl $name {
+impl $class {
 
     const fn length() -> usize {
         $size
