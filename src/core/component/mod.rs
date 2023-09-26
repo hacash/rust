@@ -7,3 +7,4 @@ use super::field::*;
 include!{"macro.rs"}
 
 include!{"balance.rs"}
+include!{"sign.rs"}
