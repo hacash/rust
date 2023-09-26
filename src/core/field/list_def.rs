@@ -1,5 +1,6 @@
 
 
+#[macro_export] 
 macro_rules! create_list_field_struct_and_impl{
     ($tip: expr, $class: ident, $count: ident, $count_type: ty, $value: ident, $value_type: ty) => (
 
@@ -111,3 +112,10 @@ impl $class {
 
 	)
 }
+
+
+
+// test
+
+create_list_field_struct_and_impl!("TEST", Test9375649365, count, NumUInt1, lists, Bool);
+

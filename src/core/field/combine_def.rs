@@ -1,5 +1,6 @@
 
 
+#[macro_export]
 macro_rules! create_combine_field_struct_and_impl{
     ($tip: expr, $class: ident, $( $name: ident: $type: ty, )+) => (
 
