@@ -7,3 +7,5 @@ pub mod interface;
 pub mod field;
 
 pub mod component;
+
+pub mod protocol;

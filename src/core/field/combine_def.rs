@@ -2,7 +2,7 @@
 
 #[macro_export]
 macro_rules! create_combine_field_struct_and_impl{
-    ($tip: expr, $class: ident, $( $name: ident: $type: ty, )+) => (
+    ($tip: expr, $class: ident, $( $name: ident: $type: ty )+) => (
 
 
 
@@ -89,6 +89,6 @@ impl $class {
 
 // test
 create_combine_field_struct_and_impl!("Test", Test8364835492648,
-    abc: Bool,
-    foo: NumUInt4,
+    abc: Bool
+    foo: Uint4
 );

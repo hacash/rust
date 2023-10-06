@@ -1,12 +1,12 @@
 
-// NumUInt
+// Uint
 
-pub type NumUInt1 = Fixed1;
-pub type NumUInt2 = Fixed2;
-pub type NumUInt3 = Fixed3;
-pub type NumUInt4 = Fixed4;
-pub type NumUInt5 = Fixed5;
-pub type NumUInt8 = Fixed8;
+pub type Uint1 = Fixed1;
+pub type Uint2 = Fixed2;
+pub type Uint3 = Fixed3;
+pub type Uint4 = Fixed4;
+pub type Uint5 = Fixed5;
+pub type Uint8 = Fixed8;
 
 // NumFloat
 
@@ -46,7 +46,7 @@ pub const LOCKBLS_ID_SIZE: usize = LockblsId::length();
 
 // Satoshi
 
-pub type Satoshi = NumUInt8;
+pub type Satoshi = Uint8;
 impl Satoshi {}
 
 // lending
@@ -61,8 +61,8 @@ pub const USER_LENDING_ID_SIZE: usize = UserLendingId::length();
 
 // BlockHeight Timestamp ***********
 
-pub type BlockHeight = NumUInt5;
-pub type Timestamp = NumUInt5;
+pub type BlockHeight = Uint5;
+pub type Timestamp = Uint5;
 pub const BLOCK_HEIGHT_SIZE: usize = BlockHeight::length();
 pub const TIMESTAMP_SIZE: usize = Timestamp::length();
 impl BlockHeight {}
@@ -105,7 +105,7 @@ impl Hash {
 
 pub const DIAMOND_NAME_VALID_CHARS: &[u8; 16]  = b"WTYUIAHXVMEKBSZN";
 pub type DiamondName = Fixed6;
-pub type DiamondNumber = NumUInt3;
+pub type DiamondNumber = Uint3;
 pub type DiamondVisualGene = Fixed10;
 
 impl DiamondName {

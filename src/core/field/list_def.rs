@@ -117,5 +117,5 @@ impl $class {
 
 // test
 
-create_list_field_struct_and_impl!("TEST", Test9375649365, count, NumUInt1, lists, Bool);
+create_list_field_struct_and_impl!("TEST", Test9375649365, count, Uint1, lists, Bool);
 
