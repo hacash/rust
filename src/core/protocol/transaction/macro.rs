@@ -36,12 +36,12 @@ macro_rules! create_common_transaction_struct{
 
 //  pub struct + Field + Serialize + Describe
 create_combine_class_and_impl_entire_Field_trait! { $class, 
-	ty: Uint1,
-	timestamp: Timestamp,
-	address: Address,
-	fee: Amount,
-    actions: DynListActionMax65535,
-    signs: SignListMax65535,
+	ty:             Uint1
+	timestamp:      Timestamp
+	address:        Address
+	fee:            Amount
+    actions:        DynListActionMax65535
+    signs:          SignListMax65535
 	multisign_mark: Uint2
 }
 
@@ -53,12 +53,9 @@ impl TransactionRead for $class {
         self.ty.to_u8()
     }
 
-    fn get_address(&self) -> &Address {
-        &self.address
-    }
-
-    fn get_fee(&self) -> &Amount {
-        &self.fee
+    create_get_func_for_combine_class!{
+        address: Address
+        fee:     Amount
     }
 
 }

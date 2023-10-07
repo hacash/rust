@@ -1,3 +1,6 @@
+use concat_idents::concat_idents;
+
+
 use crate::core::Error;
 use crate::core::interface::field::*;
 use crate::core::interface::action::*;

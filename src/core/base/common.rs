@@ -2,7 +2,7 @@
 
 #[macro_export]
 macro_rules! impl_entire_Field_trait_for_combine_class {
-    ($class: ident, $( $child: ident: $cty: ty ),+) => (
+    ($class: ident, $( $child: ident: $cty: ty )+) => (
 
 
 impl_Serialize_trait_for_combine_class!{ $class, $( $child ),+ }
@@ -33,7 +33,7 @@ impl Field for $class {
 
 #[macro_export]
 macro_rules! create_combine_class_and_impl_entire_Field_trait {
-    ($class: ident, $( $child: ident: $cty: ty ),+) => (
+    ($class: ident, $( $child: ident: $cty: ty )+) => (
 
 
 pub struct $class {
@@ -47,7 +47,7 @@ $(
 impl_entire_Field_trait_for_combine_class! { $class, 
 $(
     $child: $cty
-),+
+)+
 }
 
 
