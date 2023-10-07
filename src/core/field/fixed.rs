@@ -1,3 +1,6 @@
+// String
+
+pub type StringTrim16 = Fixed16;
 
 // Uint
 

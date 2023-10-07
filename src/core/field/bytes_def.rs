@@ -4,11 +4,20 @@
 macro_rules! create_bytes_struct_and_impl{
     ($tip:expr, $class:ident, $lenty:ty, $size_max:expr) => (
 
-#[derive(Clone)]
+#[derive(Debug, Clone, Eq)]
 pub struct $class {
     len: $lenty,
     bytes: Vec<u8>,
 }
+
+impl PartialEq for $class {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.bytes == other.bytes
+    }
+}
+
+
 
 
 impl Serialize for $class {

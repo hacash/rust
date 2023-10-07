@@ -6,7 +6,7 @@ macro_rules! create_optional_field_struct_and_impl{
     ($tip:expr, $class:ident, $value:ident, $value_type:ident) => (
 
 
-#[derive(Debug, Hash, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct $class {
     exist: Bool,
     $value: Option<$value_type>,

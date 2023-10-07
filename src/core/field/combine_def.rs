@@ -8,12 +8,13 @@ macro_rules! create_combine_field_struct_and_impl{
 
 
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct $class {
     $(
         pub $name: $type
     ),+
 }
+
 
 impl_Serialize_trait_for_combine_class!( $class, $( $name ),+ );
 
@@ -47,7 +48,7 @@ impl $class {
 
 
 // test
-create_combine_field_struct_and_impl!("Test", Test8364835492648,
+create_combine_field_struct_and_impl!{ "Test", Test8364835492648,
     abc: Bool
     foo: Uint4
-);
+}

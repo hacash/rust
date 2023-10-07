@@ -1,7 +1,7 @@
 
 
 #[macro_export]
-macro_rules! impl_Serialize_trait_for_combine_class{
+macro_rules! impl_Serialize_trait_for_combine_class {
 
     ($class: ident, $( $child: ident ),+) => (
 
