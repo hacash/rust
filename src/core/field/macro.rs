@@ -1,6 +1,6 @@
-
+/* 
 // parse move seek check
-macro_rules! parse_move_seek_or_buf_too_short_error{
+macro_rules! parse_move_seek_or_error{
     ($tip:expr, $seek:expr, $sk:expr, $buf:expr) => ( {
         let mvseek = $seek + $sk;
         let buflen = $buf.len();
@@ -26,7 +26,10 @@ macro_rules! parse_field_or_return_err{
     })
 }
 
+*/
+
 // macro 
+
 
 // impl Add, Sub, Mul, Div for Fixed1
 macro_rules! impl_operation_for_common{

@@ -15,6 +15,7 @@ crate-type = ["staticlib", "cdylib"]
 
 
 [dependencies]
+lazy_static = "1.4.0"
 concat-idents = "1.1.5"
 hex = "0.4.3"
 base58check = "0.1.0"
@@ -22,7 +23,6 @@ num-traits = "0.2"
 num-bigint = "0.4.3"
 
 # chrono = "0.4.19"
-# lazy_static = "1.4.0"
 # rand = "0.8.5"
 # libsecp256k1 = "0.7.0"
 # ripemd = "0.1.1"

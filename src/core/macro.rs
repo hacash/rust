@@ -1,6 +1,6 @@
 
 #[macro_export]
-macro_rules! pub_fn_field_create_by_new_wrap_return{
+macro_rules! fn_field_create_by_new_wrap_return{
     ($class:ty) => (
         fn create(buf: &Vec<u8>, seek: usize) -> Result<($class, usize), Error> {
             let mut v = <$class>::new();

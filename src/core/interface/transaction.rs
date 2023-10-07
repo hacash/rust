@@ -1,3 +1,6 @@
+use super::super::Error;
+
+use super::field::*;
 
 pub trait Transaction : Serialize + Describe {
     // fn new() -> Self where Self: Sized;

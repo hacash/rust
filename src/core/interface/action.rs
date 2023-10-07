@@ -1,7 +1,9 @@
+use super::super::Error;
 
-pub trait Action : Serialize + Describe {
-    // fn new() -> Self where Self: Sized;
-    fn create(_: &Vec<u8>, _: usize) -> Result<(Self, usize), Error> where Self: Sized { panic!("") }
+use super::field::*;
+
+pub trait Action : Field {
+    fn get_kind(&self) -> u16;
 }
 
 

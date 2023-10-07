@@ -22,7 +22,7 @@ pub struct Amount {
 
 impl Amount {
     // create function
-    pub_fn_field_create_by_new_wrap_return!(Amount);
+    fn_field_create_by_new_wrap_return!(Amount);
 
 }
 
@@ -107,11 +107,11 @@ impl Serialize for Amount {
     }
 
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, String> {
-        let seek1 = parse_move_seek_or_buf_too_short_error!("Amount", seek, 1, buf);
+        let seek1 = parse_move_seek_or_error!("Amount", seek, 1, buf);
         self.unit = buf[seek];
-        let seek2 = parse_move_seek_or_buf_too_short_error!("Amount", seek1, 1, buf);
+        let seek2 = parse_move_seek_or_error!("Amount", seek1, 1, buf);
         self.dist = buf[seek1] as i8;
-        let seek3 = parse_move_seek_or_buf_too_short_error!("Amount", seek2, self.dist.abs() as usize, buf);
+        let seek3 = parse_move_seek_or_error!("Amount", seek2, self.dist.abs() as usize, buf);
         self.byte = buf[seek2..seek3].to_vec();
         // println!("amount.parse : {} {} {} {}", seek1, seek2, seek3, self.byte[0]);
         amount_check_data_len!(self, "parse");
@@ -131,7 +131,7 @@ impl Describe for Amount {
         format!("\"{}\"", self.to_fin_string() )
     }
 
-    fn to_json(&self) -> String {
+    fn to_json(&self, cnf: &FieldJsonConfig) -> String {
         "".to_string()
     }
 

@@ -1,5 +1,5 @@
-
-use super::Error;
+use super::super::Error;
+use super::super::base::FieldJsonConfig;
 
 pub trait Serialize {
     fn parse(&mut self, _: &Vec<u8>, _: usize) -> Result<usize, Error>;
@@ -9,13 +9,13 @@ pub trait Serialize {
 
 pub trait Describe {
     fn describe(&self) -> String { "*".to_string() } // readable format
-    fn to_json(&self) -> String { "*".to_string() } // to json format string
+    fn to_json(&self, _: &FieldJsonConfig) -> String { "*".to_string() } // to json format string
     fn from_json(&mut self, _: &String) -> Option<Error> { panic!("") } // from json
 }
 
 pub trait Field : Serialize + Describe {
     fn new() -> Self where Self: Sized;
-    fn length() -> usize { panic!("") }
+    // fn length() -> usize { panic!("") }
     fn create(_: &Vec<u8>, _: usize) -> Result<(Self, usize), Error> where Self: Sized { panic!("") }
     fn from_uint<T>(_: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { panic!("") }
     fn from_float<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<f64, Output = f64> { panic!("") }

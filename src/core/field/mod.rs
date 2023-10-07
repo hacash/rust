@@ -12,8 +12,8 @@ use concat_idents::concat_idents;
 
 use std::convert::TryInto;
 
-use super::interface::Error;
-
+use super::Error;
+use super::base::FieldJsonConfig;
 use super::interface::field::*;
 
 include!{"macro.rs"}

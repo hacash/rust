@@ -50,7 +50,7 @@ impl Describe for $class {
        "".to_string()
    }
 
-   fn to_json(&self) -> String {
+   fn to_json(&self, cnf: &FieldJsonConfig) -> String {
        "".to_string()
    }
 
@@ -63,7 +63,7 @@ impl Describe for $class {
 impl Field for $class {
 
    // parse function
-   pub_fn_field_create_by_new_wrap_return!($class);
+   fn_field_create_by_new_wrap_return!($class);
 
    fn new() -> $class {
         $class {

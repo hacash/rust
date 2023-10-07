@@ -1,4 +1,6 @@
-pub type Error = String;
+
+
+include!{"macro.rs"}
 
 pub mod field;
 pub mod action;

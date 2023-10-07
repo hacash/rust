@@ -208,7 +208,7 @@ impl Add<i32> for $class {
 impl Serialize for $class {
 
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, Error> {
-        let seek2 = parse_move_seek_or_buf_too_short_error!($tip, seek, $size, buf);
+        let seek2 = parse_move_seek_or_error!($tip, seek, $size, buf);
         let sv = &buf[seek..seek2];
         self.bytes = sv.try_into().unwrap();
         Ok(seek2)
@@ -233,7 +233,7 @@ impl Describe for $class {
         "".to_string()
     }
 
-    fn to_json(&self) -> String {
+    fn to_json(&self, cnf: &FieldJsonConfig) -> String {
         "".to_string()
     }
 
@@ -246,7 +246,7 @@ impl Describe for $class {
 impl Field for $class {
 
     // parse function
-    pub_fn_field_create_by_new_wrap_return!($class);
+    fn_field_create_by_new_wrap_return!($class);
 
     fn new() -> $class {
         $class{
