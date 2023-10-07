@@ -10,7 +10,7 @@ create_combine_field_struct_and_impl!("AddrHac", AddrHac,
 // HacAndSat
 create_combine_field_struct_and_impl!("HacSat", HacSat, 
 	amount : Amount
-	satoshi: OptionalSatoshi
+	satoshi: SatoshiOptional
 );
 
 // AddrHacSat

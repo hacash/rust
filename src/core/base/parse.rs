@@ -19,6 +19,7 @@ macro_rules! parse_move_seek_or_error {
 }
 
 
+
 #[macro_export] 
 macro_rules! create_field_or_error {
     ($tip:expr, $type:ty, $buf:expr, $seek:expr) => ({
@@ -29,5 +30,4 @@ macro_rules! create_field_or_error {
         }
     })
 }
-
 

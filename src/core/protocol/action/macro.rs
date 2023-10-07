@@ -119,34 +119,6 @@ impl $class {
 }
 
 
-// include mod files
-// $(
-//     include!{"
-        
-//             concat_idents!(act_kind_class_name = Action, $kindv, $class, .rs {
-//                 act_kind_class_name
-//             });
-        
-//     "};
-// )+
-
-/*
-// parse func
-pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(Box<dyn Action>, usize), String> {
-    let (kindv, _) = parse_move_seek_or_error("actions.parse", Uint2, buf, seek);
-    let kdv = kindv.value() as u16;
-    match kdv {
-    $(
-        act_kind_name => {
-            let (act, mvsk) = <$class>::parse(buf, seek) ? ;
-            Ok((Box::new(act), mvsk))
-        },
-    )+
-        _ => Err(format!("Action kind <{}> not find.", kdv))
-    }
-}
-*/
-
 
 
     )
@@ -154,6 +126,7 @@ pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(Box<dyn Action>, usize), Str
 
 
 //
+
 macro_rules! actions_parse_func_and_include {
     ( $( $kindv: expr, )+ ) => (
 
