@@ -34,3 +34,17 @@ pub extern fn trs_test(x: i32) -> usize {
     // x as usize + 1
 }
 
+use crate::core::account::Account;
+
+#[no_mangle]
+pub extern fn create_acc_random() -> usize {
+    let acc = Account::create_by_password("123456".to_string());
+    if let Err(e) = acc {
+        return 0
+    } 
+    let accstr = acc.unwrap().readable().clone();
+    let bts = accstr.as_bytes();
+
+    bts[1] as usize
+
+}

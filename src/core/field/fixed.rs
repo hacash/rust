@@ -94,12 +94,12 @@ impl Hash {
 
     pub fn get_half(&self) -> HashHalf {
         let pt: [u8; HASH_HALF_SIZE] = self.bytes[0..HASH_HALF_SIZE].try_into().unwrap();
-        <Fixed16 as Field>::from(pt)
+        <Fixed16 as Field>::from_u8s(pt)
     }
 
     pub fn get_nonce(&self) -> HashNonce {
         let pt: [u8; HASH_NONCE_SIZE] = self.bytes[0..HASH_NONCE_SIZE].try_into().unwrap();
-        <Fixed8 as Field>::from(pt)
+        <Fixed8 as Field>::from_u8s(pt)
     }
 
 }

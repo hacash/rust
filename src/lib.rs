@@ -22,7 +22,8 @@ macro_rules! panic {
 
 /********* mod ********/
 
-mod core;
+pub mod x16rs;
+pub mod core;
 
 pub mod sdk;
 

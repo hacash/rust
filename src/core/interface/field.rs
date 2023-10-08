@@ -19,7 +19,7 @@ pub trait Field : Serialize + Describe {
     fn create(_: &Vec<u8>, _: usize) -> Result<(Self, usize), Error> where Self: Sized { panic_never_call_this!() }
     fn from_uint<T>(_: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { panic_never_call_this!() }
     fn from_float<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<f64, Output = f64> { panic_never_call_this!() }
-    fn from(_: impl AsRef<[u8]>) -> Self where Self: Sized { panic_never_call_this!() }
+    fn from_u8s(_: impl AsRef<[u8]>) -> Self where Self: Sized { panic_never_call_this!() }
 }
 
 pub trait FieldHex : Field {

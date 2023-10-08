@@ -2,6 +2,8 @@ pub type Error = String;
 
 include!{"macro.rs"}
 
+pub mod account;
+
 #[macro_use]
 pub mod base;
 

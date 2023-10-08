@@ -79,7 +79,7 @@ impl Field for $class {
         }
     }
 
-    fn from(buf: impl AsRef<[u8]>) -> Self where Self: Sized { 
+    fn from_u8s(buf: impl AsRef<[u8]>) -> Self where Self: Sized { 
         let v = buf.as_ref().clone();
         if v.len() > $size_max {
             panic!("size overflow max {}", $size_max)
