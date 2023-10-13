@@ -48,3 +48,18 @@ pub extern fn create_acc_random() -> usize {
     bts[1] as usize
 
 }
+
+
+#[wasm_bindgen]
+pub fn create_account_by_string(s: String) -> String {
+    let acc = Account::create_by_password(s);
+    if let Err(e) = acc {
+        return e.to_string()
+    } 
+    let acc = acc.unwrap();
+    let accstr = acc.readable();
+    let acckey = hex::encode(acc.secret_key().serialize());
+    let accpub = hex::encode(acc.public_key().serialize());
+    format!("{},{},{}", acckey, accpub, accstr)
+}
+

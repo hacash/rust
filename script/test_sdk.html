@@ -1,0 +1,21 @@
+<html>
+<head></head>
+<body>
+    <script src="../pkg/hacash_sdk_wasm.js"></script>
+    <script src="../pkg/hacash_sdk.js"></script>
+    <script>
+
+        const { create_account_by_string } = wasm_bindgen;
+
+        async function run() {
+            // await wasm_bindgen('../pkg/hacash_sdk.wasm');
+            await wasm_bindgen(hacash_sdk_wasm_buffer);
+            const accs = create_account_by_string("123456");
+            console.log(accs);
+        }
+
+        run();
+
+    </script>
+</body>
+</html>

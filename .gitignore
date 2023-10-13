@@ -16,4 +16,5 @@ Cargo.lock
 
 .git/
 .vscode/
+pkg/
 
