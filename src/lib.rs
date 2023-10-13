@@ -23,6 +23,8 @@ macro_rules! panic {
 /********* mod ********/
 
 pub mod x16rs;
+
+#[macro_use] 
 pub mod core;
 
 pub mod sdk;

@@ -89,9 +89,13 @@ pub fn hac_transfer(chain_id: u64, from_pass: String, to_addr: String, amount: S
     let toaddr = or_return!{ "To Address", Address::form_readable(&to_addr) };
     // tx
     let mut tx = transaction::new_type_2(acc.address(), &fee, time_set);
-    let mut act = action::new_HacTransfer();
-    act.to_address = toaddr.clone();
-    act.amount = amt.clone();
+    let mut act = action_create!{ HacTransfer,
+        to_address: toaddr.clone(),
+        amount: amt.clone()
+    };
+    // let mut act = action::new_HacTransfer();
+    // act.to_address = toaddr.clone();
+    // act.amount = amt.clone();
     tx.append_action(Box::new(act));
     // act
     if chain_id > 0 {

@@ -101,7 +101,7 @@ impl Field for $class {
 
     fn new() -> $class {
         $class{
-            kind: Uint2::new(),
+            kind: Uint2::from_uint($kindv),
             $(
                 $k: <$ty>::new(),
             )*
@@ -139,6 +139,7 @@ impl $class {
 }
 
 
+
 //
 
 macro_rules! actions_parse_func_and_include {
@@ -168,6 +169,25 @@ pub fn create(buf: &Vec<u8>, seek: usize) -> Result<(Box<dyn Action>, usize), Er
 
 
 
+    )
+}
+
+
+
+
+#[macro_export]
+macro_rules! action_create {
+    ( $class:ident, $( $k: ident: $v: expr ),+) => (
+        {
+            let mut act;
+            act = <$class>::new();
+            $(
+                act.$k = $v;
+            )*
+            // act.to_address = toaddr.clone();
+            // act.amount = amt.clone();
+            act
+        }
     )
 }
 
