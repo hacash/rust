@@ -3,6 +3,7 @@ use std::collections::HashSet;
 use super::super::Error;
 use super::field::*;
 use super::action::*;
+use super::super::account::*;
 use super::super::component::*;
 use super::super::field::*;
 use super::super::field::Address;
@@ -26,6 +27,9 @@ pub trait TransactionRead : Field {
     fn get_action_count(&self) ->&Uint2 { panic_never_call_this!() }
 	fn get_actions(&self) -> &Vec<Box<dyn Action>> { panic_never_call_this!() }
 
+    fn hash(&self) -> Hash { panic_never_call_this!() }
+    fn hash_with_fee(&self) -> Hash { panic_never_call_this!() }
+    
 }
 
 
@@ -33,9 +37,9 @@ pub trait Transaction : TransactionRead {
 
     fn verify_all_signs(&self) -> Option<Error> { panic_never_call_this!() }
     fn verify_target_signs(&self, _: &HashSet<Address>) -> Option<Error> { panic_never_call_this!() }
+    fn fill_sign(&mut self,_: &Account) -> Option<Error> { panic_never_call_this!() }
 
     fn append_action(&mut self, _: Box<dyn Action>) -> Option<Error> { panic_never_call_this!() }
-
 
 }
 

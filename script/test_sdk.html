@@ -5,13 +5,22 @@
     <script src="../pkg/hacash_sdk.js"></script>
     <script>
 
-        const { create_account_by_string } = wasm_bindgen;
+        const { create_account_by, hac_transfer } = wasm_bindgen;
 
         async function run() {
             // await wasm_bindgen('../pkg/hacash_sdk.wasm');
             await wasm_bindgen(hacash_sdk_wasm_buffer);
-            const accs = create_account_by_string("123456");
+            // can use
+            const accs = create_account_by("123456");
             console.log(accs);
+            const tx1 = hac_transfer("0", "123456789", "1MzNY1oA3kfgYi75zquj3SRUPYztzXHzK9", "ㄜ1:248", "ㄜ1:244", "1697200000")
+            document.write(`
+            <h1>Hacash SDK</h1>
+            <h3>create_account_by("123456"):</h3>
+            <p>${accs.split(',').join('<br/>')}</p>
+            <h3>hac_transfer(...):</h3>
+            <p>${tx1}</p>
+            `)
         }
 
         run();

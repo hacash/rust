@@ -1,6 +1,18 @@
 
 
 #[macro_export]
+macro_rules! field_serialize_items_concat {
+    ($( $child: expr ),+) => (
+        vec![
+        $(
+            $child.serialize(),
+        )*
+        ].concat()
+    )
+}
+
+
+#[macro_export]
 macro_rules! impl_Serialize_trait_for_combine_class {
 
     ($class: ident, $( $child: ident ),+) => (
@@ -8,11 +20,7 @@ macro_rules! impl_Serialize_trait_for_combine_class {
         impl Serialize for $class {
 
             fn serialize(&self) -> Vec<u8> {
-                vec![
-                $(
-                    self.$child.serialize(),
-                )*
-                ].concat()
+                field_serialize_items_concat!{ $( self.$child ),+ }
             }
 
             fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, Error> {

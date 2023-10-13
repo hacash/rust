@@ -23,7 +23,10 @@ wasm-opt -o dist/$LIBNAME.wasm -Oz $BINARY
 # wasm-objdump -d dist/$LIBNAME.wasm
 
 ## Park sdk to js & zip
-# ./park_sdk.sh
+rm -f dist/hacash_sdk.zip && zip -j -9 ./dist/hacash_sdk.zip ./dist/hacash_sdk.wasm
+
+## if can npm i wasm2js -g
+node ./park_sdk.js
 
 ## View final size
 ls -lh dist/$LIBNAME.wasm

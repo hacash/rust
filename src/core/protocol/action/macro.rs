@@ -22,12 +22,25 @@ fn act_parse_func(buf: &Vec<u8>, sk: usize) -> Result<(Box<dyn Action>, usize), 
 });
 
 
+// func
+concat_idents!(new_act_func = new_, $class {
+pub fn new_act_func() -> $class {
+    $class {
+        kind: Uint2::from_uint($kindv),
+        $(
+            $k: <$ty>::new(),
+        )*
+    }
+}
+});
+    
+
 
 pub struct $class {
-    kind: Uint2,
+    pub kind: Uint2,
     $(
-        $k: $ty
-    ),*
+        pub $k: $ty,
+    )*
 }
 
 impl_Serialize_trait_for_combine_class!($class, kind, $( $k ),+);
@@ -111,12 +124,13 @@ impl Action for $class {
 
 impl $class {
     
-
     const fn kind() -> u16 {
         $kindv
     }
 
 }
+
+
 
 
 

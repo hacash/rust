@@ -25,6 +25,9 @@ fn bytesfixed_from_uint(tip: &str, val: u64, tsz: usize, len: usize) -> Vec<u8> 
         panic!("{} size cannot over {}", tip, &tsz.to_string())
     }
     let rlbt = val.to_be_bytes();
+    let left = 8 - sz;
+    rlbt[left..8].to_vec()
+    /*
     let mut vbts = [0u8; 8];
     let left = tsz - sz;
     let mut i = 0;
@@ -33,6 +36,7 @@ fn bytesfixed_from_uint(tip: &str, val: u64, tsz: usize, len: usize) -> Vec<u8> 
         i += 1;
     }
     vbts[0..sz].to_vec()
+    */
 }
 
 fn bytesfixed_to_readable_string(bts: &[u8]) -> String {
@@ -134,6 +138,12 @@ impl Deref for $class {
     type Target = [u8; $size];
     fn deref(&self) -> &[u8; $size] {
         &self.bytes
+    }
+}
+
+impl AsRef<[u8]> for $class {
+    fn as_ref(&self) -> &[u8] {
+        self.bytes.as_slice()
     }
 }
 

@@ -79,20 +79,20 @@ impl Field for $class {
 
 impl $class {
 
-	fn count(&self) -> u64 {
+	pub fn count(&self) -> u64 {
 		self.$count.to_u64()
 	}
 
-	fn value(&self) -> &Vec<$value_type> {
+	pub fn value(&self) -> &Vec<$value_type> {
 		&self.$value
 	}
 
-	fn append(&mut self, v: $value_type) {
+	pub fn append(&mut self, v: $value_type) {
 		self.$count += 1u32;
         self.$value.push(v);
 	}
 
-	fn pop(&mut self) -> Option<$value_type> {
+	pub fn pop(&mut self) -> Option<$value_type> {
         let n = self.$count.to_u64();
         match n {
             0 => None,

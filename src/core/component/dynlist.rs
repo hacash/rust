@@ -76,6 +76,25 @@ impl Field for $class {
 
 }
 
+impl $class {
+
+	pub fn append(&mut self, v: Box<dyn $dynty>) {
+		self.count += 1u32;
+        self.vlist.push(v);
+	}
+
+	pub fn pop(&mut self) -> Option<Box<dyn $dynty>> {
+        let n = self.count.to_u64();
+        match n {
+            0 => None,
+            _ => {
+                self.count -= 1u32;
+                self.vlist.pop()
+            }
+        }
+	}
+}
+
 
 
     )

@@ -212,6 +212,14 @@ impl Amount {
         return Amount::from_i64(mei, 248);
     }
 
+    pub fn from_string_unsafe(v: &String) -> Result<Amount, String> {
+        if let Some(t) = v.find(":") {
+            Amount::from_fin_string(v)
+        }else{
+            Amount::from_mei_string_unsafe(v)
+        }
+    }
+
     pub fn from_mei_string_unsafe(v: &String) -> Result<Amount, String> {
         let mayerr = ||{
             Err(format!("Amount.from_mei_string_unsafe `{}` format error.", v))

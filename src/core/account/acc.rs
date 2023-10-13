@@ -3,7 +3,7 @@ impl Account {
         
     // create
     
-    pub fn create_by_randomly() -> Result<Account, String> {
+    pub fn create_randomly() -> Result<Account, String> {
         loop {
             let mut data = [0u8; 32];
             rand::thread_rng().fill_bytes(&mut data);
@@ -14,7 +14,18 @@ impl Account {
         }
     }
 
-    pub fn create_by_password(pass: String) -> Result<Account, String> {
+    pub fn create_by(pass: &String) -> Result<Account, String> {
+        // is private key
+        if pass.len() == 64{
+            if let Ok(bts) = hex::decode(pass.clone()) {
+                return Account::create_by_secret_key_value(bts.try_into().unwrap())
+            }
+        }
+        // is passward
+        return Account::create_by_password(pass)
+    }
+
+    pub fn create_by_password(pass: &String) -> Result<Account, String> {
         let dt = sha2(pass);
         Account::create_by_secret_key_value(dt)
     }

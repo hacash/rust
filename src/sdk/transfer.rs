@@ -38,7 +38,7 @@ use crate::core::account::Account;
 
 #[no_mangle]
 pub extern fn create_acc_random() -> usize {
-    let acc = Account::create_by_password("123456".to_string());
+    let acc = Account::create_by_password(&"123456".to_string());
     if let Err(e) = acc {
         return 0
     } 
@@ -51,15 +51,58 @@ pub extern fn create_acc_random() -> usize {
 
 
 #[wasm_bindgen]
-pub fn create_account_by_string(s: String) -> String {
-    let acc = Account::create_by_password(s);
+pub fn create_account_by(s: String) -> String {
+    let acc = Account::create_by(&s);
     if let Err(e) = acc {
         return e.to_string()
     } 
     let acc = acc.unwrap();
     let accstr = acc.readable();
     let acckey = hex::encode(acc.secret_key().serialize());
-    let accpub = hex::encode(acc.public_key().serialize());
+    let accpub = hex::encode(acc.public_key().serialize_compressed());
     format!("{},{},{}", acckey, accpub, accstr)
 }
 
+
+macro_rules! or_return {
+    ($tip:expr, $gain:expr) => (
+        match $gain {
+            Ok(obj) => obj,
+            Err(e) => {
+                return format!("[ERROR] {}: {}", $tip, e)
+            }
+        }
+
+    )
+}
+
+#[wasm_bindgen]
+pub fn hac_transfer(chain_id: u64, from_pass: String, to_addr: String, amount: String, fee: String, timestamp: i64) -> String {
+    let mut time_set = timestamp;
+    if time_set <= 0 {
+        time_set = Utc::now().timestamp();
+    }
+    // amount
+    let amt = or_return!{ "Amount parse", Amount::from_string_unsafe(&amount) };
+    let fee = or_return!{ "Fee parse", Amount::from_string_unsafe(&fee) };
+    let acc = or_return!{ "From Account", Account::create_by(&from_pass) };
+    let toaddr = or_return!{ "To Address", Address::form_readable(&to_addr) };
+    // tx
+    let mut tx = transaction::new_type_2(acc.address(), &fee, time_set);
+    let mut act = action::new_HacTransfer();
+    act.to_address = toaddr.clone();
+    act.amount = amt.clone();
+    tx.append_action(Box::new(act));
+    // act
+    if chain_id > 0 {
+        let mut act = action::new_CheckChainID();
+        act.chain_id = Uint8::from_uint(chain_id);
+        tx.append_action(Box::new(act));
+    }
+    tx.fill_sign(&acc);
+
+    // ok
+    // format!("{},{},{},{}", hex::encode(2u64.to_be_bytes()), hex::encode(Uint1::from_uint(2)), tx.hash().to_hex(), hex::encode(tx.serialize()))
+    // format!("{},{},{},{},{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), chain_id, acc.readable(), toaddr.to_readable(), amt.to_fin_string(), fee.to_fin_string(), time_set)
+    format!("{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), acc.readable(), time_set)
+}

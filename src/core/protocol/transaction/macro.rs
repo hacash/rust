@@ -58,15 +58,79 @@ impl TransactionRead for $class {
         fee:     Amount
     }
 
+
+    fn hash(&self) -> Hash {
+        // calculate hash no fee
+        let stuff = self.serialize_for_sign_no_fee();
+        let hx = x16rs::calculate_hash(stuff);
+        let hx = Hash::from(hx);
+        hx
+    }
+    fn hash_with_fee(&self) -> Hash {
+        // calculate hash with fee
+        let stuff = self.serialize_for_sign();
+        let hx = x16rs::calculate_hash(stuff);
+        let hx = Hash::from(hx);
+        hx
+    }
+    
+
 }
 
 
 impl Transaction for $class {
 
     fn verify_all_signs(&self) -> Option<Error> { 
+        Some("not yet".to_string())
+    }
+
+    fn append_action(&mut self, act: Box<dyn Action>) -> Option<Error> { 
+        self.actions.append(act);
         None
     }
 
+    fn fill_sign(&mut self, acc: &Account) -> Option<Error> { 
+        let hx: Hash;
+        if self.address == *acc.address() {
+            hx = self.hash_with_fee();
+        }else{
+            hx = self.hash();
+        }
+        // sign
+        let sg = acc.do_sign(&hx);
+        // add
+        self.signs.append(Sign{
+            publickey: Fixed33::from_u8s(acc.public_key().serialize_compressed()),
+            signature: Fixed64::from_u8s(sg),
+        });
+        // ok
+        None
+
+    }
+
+
+}
+
+impl $class {
+
+    fn serialize_for_sign(&self) -> Vec<u8> {
+        field_serialize_items_concat!(
+            self.ty,
+            self.timestamp,
+            self.address, 
+            self.fee,
+            self.actions
+        )
+    }
+
+    fn serialize_for_sign_no_fee(&self) -> Vec<u8> {
+        field_serialize_items_concat!(
+            self.ty,
+            self.timestamp,
+            self.address, 
+            self.actions
+        )
+    }
 }
 
 
