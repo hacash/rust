@@ -109,7 +109,7 @@ macro_rules! create_fixed_struct_and_impl{
     ($tip:expr, $class:ident, $size:expr) => (
 
 
-#[derive(Debug, Hash, Clone, PartialEq, Eq)]
+#[derive(Debug, Hash, Copy, Clone, PartialEq, Eq)]
 pub struct $class {
     bytes: [u8; $size],
 }

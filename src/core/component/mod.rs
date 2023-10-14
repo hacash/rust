@@ -1,3 +1,4 @@
+use core::ops::{Index, IndexMut};
 
 use super::Error;
 use super::base::FieldJsonConfig;

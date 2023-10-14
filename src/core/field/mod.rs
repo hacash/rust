@@ -11,6 +11,7 @@ use num_traits::{FromPrimitive, ToPrimitive, Num};
 use concat_idents::concat_idents;
 
 use std::convert::TryInto;
+use regex::{Regex, Captures};
 
 use super::Error;
 use super::base::FieldJsonConfig;

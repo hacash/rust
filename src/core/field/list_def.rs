@@ -11,6 +11,19 @@ pub struct $class  {
 	$value: Vec<$value_type>,
 }
 
+impl Index<usize> for $class {
+    type Output = $value_type;
+    fn index(&self, idx: usize) -> &Self::Output {
+        &self.$value[idx]
+    }
+}
+
+impl IndexMut<usize> for $class {
+    fn index_mut(&mut self, idx: usize) -> &mut Self::Output{
+        &mut self.$value[idx]
+    }
+}
+
 impl Serialize for $class {
 
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, Error> {
@@ -78,6 +91,10 @@ impl Field for $class {
 
 
 impl $class {
+
+	pub fn len(&self) -> usize {
+		self.count() as usize
+	}
 
 	pub fn count(&self) -> u64 {
 		self.$count.to_u64()
