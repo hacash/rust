@@ -1,3 +1,7 @@
+static mut API_RETURN_JSON: bool = true;
+
+
+
 
 /*
 #[no_mangle]
@@ -50,6 +54,12 @@ pub extern fn create_acc_random() -> usize {
 }
 
 
+//////////////////////////////
+#[no_mangle]
+pub extern fn set_api_return_json() {
+}
+
+
 #[wasm_bindgen]
 pub fn create_account_by(s: String) -> String {
     let acc = Account::create_by(&s);
@@ -60,7 +70,9 @@ pub fn create_account_by(s: String) -> String {
     let accstr = acc.readable();
     let acckey = hex::encode(acc.secret_key().serialize());
     let accpub = hex::encode(acc.public_key().serialize_compressed());
-    format!("{},{},{}", acckey, accpub, accstr)
+    // format!("{},{},{}", acckey, accpub, accstr)
+    let ok = format!(r##""private_key":"{}","public_key":"{}","address":"{}""##, acckey, accpub, accstr);
+    format!("{{{}}}", ok)
 }
 
 
@@ -106,6 +118,9 @@ pub fn hac_transfer(chain_id: u64, from_pass: String, to_addr: String, amount: S
     let toaddr = or_return!{ "To Address", Address::form_readable(&to_addr) };
     // tx
     let mut tx = transaction::new_type_2(acc.address(), &fee, time_set);
+    // chain id
+    if_add_chain_id(chain_id, &mut tx);
+    // actions
     let act = action_create!{ HacTransfer,
         to_address: toaddr.clone(),
         amount: amt.clone()
@@ -117,7 +132,11 @@ pub fn hac_transfer(chain_id: u64, from_pass: String, to_addr: String, amount: S
     // ok
     // format!("{},{},{},{}", hex::encode(2u64.to_be_bytes()), hex::encode(Uint1::from_uint(2)), tx.hash().to_hex(), hex::encode(tx.serialize()))
     // format!("{},{},{},{},{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), chain_id, acc.readable(), toaddr.to_readable(), amt.to_fin_string(), fee.to_fin_string(), time_set)
-    format!("{},{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), acc.readable(), acc.readable(), time_set)
+    // format!("{},{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), acc.readable(), acc.readable(), time_set)
+
+    let ok = format!(r##""tx_hash":"{}","tx_body":"{}","amount":"{}","fee":"{}","payment_address":"{}","fee_address":"{}","collection_address":"{}","timestamp":{}"##, 
+        tx.hash().to_hex(), hex::encode(tx.serialize()), amt.to_fin_string(), fee.to_fin_string(), acc.readable(), acc.readable(), toaddr.to_readable(), time_set);
+    format!("{{{}}}", ok)
 }
 
 
@@ -159,7 +178,12 @@ pub fn sat_transfer(chain_id: u64, from_pass: String, fee_pass: String, to_addr:
     // ok
     // format!("{},{},{},{}", hex::encode(2u64.to_be_bytes()), hex::encode(Uint1::from_uint(2)), tx.hash().to_hex(), hex::encode(tx.serialize()))
     // format!("{},{},{},{},{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), chain_id, acc.readable(), toaddr.to_readable(), amt.to_fin_string(), fee.to_fin_string(), time_set)
-    format!("{},{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), acc.readable(), feeacc.readable(), time_set)
+    // format!("{},{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), acc.readable(), feeacc.readable(), time_set)
+
+    let ok = format!(r##""tx_hash":"{}","tx_body":"{}","amount":"{}","fee":"{}","payment_address":"{}","fee_address":"{}","collection_address":"{}","timestamp":{}"##, 
+        tx.hash().to_hex(), hex::encode(tx.serialize()), sat.to_u64(), fee.to_fin_string(), acc.readable(), feeacc.readable(), toaddr.to_readable(), time_set);
+    format!("{{{}}}", ok)
+
 }
 
 
@@ -189,7 +213,7 @@ pub fn hacd_transfer(chain_id: u64, from_pass: String, fee_pass: String, to_addr
         let act = action_create!{ HacdTransferMultiple,
             from_address: acc.address().clone(),
             to_address: toaddr.clone(),
-            diamond_list: dlist
+            diamond_list: dlist.clone()
         };
         tx.append_action(Box::new(act));
     }
@@ -202,7 +226,12 @@ pub fn hacd_transfer(chain_id: u64, from_pass: String, fee_pass: String, to_addr
     // ok
     // format!("{},{},{},{}", hex::encode(2u64.to_be_bytes()), hex::encode(Uint1::from_uint(2)), tx.hash().to_hex(), hex::encode(tx.serialize()))
     // format!("{},{},{},{},{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), chain_id, acc.readable(), toaddr.to_readable(), amt.to_fin_string(), fee.to_fin_string(), time_set)
-    format!("{},{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), acc.readable(), feeacc.readable(), time_set)
+    // format!("{},{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), acc.readable(), feeacc.readable(), time_set)
+
+    let ok = format!(r##""tx_hash":"{}","tx_body":"{}","diamond_count":{},"diamonds":"{}","fee":"{}","payment_address":"{}","fee_address":"{}","collection_address":"{}","timestamp":{}"##, 
+        tx.hash().to_hex(), hex::encode(tx.serialize()), dlist.len(), dlist.to_string(), fee.to_fin_string(), acc.readable(), feeacc.readable(), toaddr.to_readable(), time_set);
+    format!("{{{}}}", ok)
+
 }
 
 

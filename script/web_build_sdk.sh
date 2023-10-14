@@ -30,3 +30,4 @@ ls -lh $FILNAME.wasm
 ls -lh $FILNAME.zip
 ls -lh $FILNAME"_wasm".js
 ls -lh $FILNAME"_wasm".zip
+

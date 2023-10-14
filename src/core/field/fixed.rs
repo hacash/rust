@@ -113,7 +113,7 @@ pub type DiamondVisualGene = Fixed10;
 
 impl DiamondName {
     pub fn name(&self) -> String {
-        self.to_string()
+        String::from_utf8(self.bytes.to_vec()).unwrap()
     }
     pub fn is_valid(stuff: impl AsRef<[u8]>) -> bool {
         let v = stuff.as_ref();

@@ -6,6 +6,13 @@
 create_list_field_struct_and_impl!("DiamondListMax200", DiamondListMax200, count, Uint1, diamonds, DiamondName);
 
 
+impl fmt::Display for DiamondListMax200{
+    fn fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
+        let arys: Vec<String> = self.diamonds.clone().into_iter().map(|d|d.name()).collect();
+        write!(f,"{}", arys.join(","))
+    }
+}
+
 impl DiamondListMax200 {
 
     pub fn parse_from_list(stuff: String) -> Result<DiamondListMax200, Error> {
@@ -24,7 +31,8 @@ impl DiamondListMax200 {
                 liststrlen += 1;
             }
         }
-        let strmerge: String = liststr.into_iter().collect();
+        let mut strmerge: String = liststr.into_iter().collect();
+        strmerge = strmerge.trim().to_string();
         let arys: Vec<&str> = strmerge.split(" ").collect();
         if arys.len() > 200 {
             return Err("diamond list length cannot over 200".to_string())
