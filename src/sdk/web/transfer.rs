@@ -108,6 +108,48 @@ fn get_time_set(timestamp: i64) -> i64 {
     time_set
 }
 
+
+#[wasm_bindgen]
+pub fn hac_to_mei(amount: String) -> String {
+    let res3 =  Amount::from_string_unsafe(&amount);
+    if let Ok(hac) = res3 {
+        return hac.to_mei_string_unsafe()
+    }
+    // error
+    return "[ERROR]".to_string()
+}
+
+#[wasm_bindgen]
+pub fn general_transfer(chain_id: u64, from_pass: String, to_addr: String, amountex: String, fee: String, timestamp: i64) -> String {
+    let amount = amountex.clone().to_uppercase().replace(" ","");
+    // HACD
+    let res1 = DiamondListMax200::parse_from_list(amount.clone());
+    if let Ok(diamonds) = res1 {
+        return hacd_transfer(chain_id, from_pass.clone(), from_pass.clone(), to_addr, amount, fee, timestamp);
+    }    
+    // SAT
+    let res2 = amount.find("SAT"); // SAT, SATS, SATOSHI, SATOSHIS
+    if let Some(_) = res2 {
+        let v = amount.replace("S","").replace("AT","").replace("OHI","");
+        if let Ok(sat) = v.parse::<u64>() {
+            return sat_transfer(chain_id, from_pass.clone(), from_pass.clone(), to_addr, sat, fee, timestamp);
+        }
+    }
+    // HAC
+    let res3 =  Amount::from_string_unsafe(&amount);
+    if let Ok(hac) = res3 {
+        return hac_transfer(chain_id, from_pass.clone(), to_addr, amount, fee, timestamp);
+    }
+
+    // AMOUNT ERROR
+    or_return!{"Amount format", Err(amount)};
+
+    return "[ERROR]".to_string()
+}
+
+
+
+
 #[wasm_bindgen]
 pub fn hac_transfer(chain_id: u64, from_pass: String, to_addr: String, amount: String, fee: String, timestamp: i64) -> String {
     let time_set = get_time_set(timestamp);
@@ -180,7 +222,7 @@ pub fn sat_transfer(chain_id: u64, from_pass: String, fee_pass: String, to_addr:
     // format!("{},{},{},{},{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), chain_id, acc.readable(), toaddr.to_readable(), amt.to_fin_string(), fee.to_fin_string(), time_set)
     // format!("{},{},{},{},{}", tx.hash().to_hex(), hex::encode(tx.serialize()), acc.readable(), feeacc.readable(), time_set)
 
-    let ok = format!(r##""tx_hash":"{}","tx_body":"{}","amount":"{}","fee":"{}","payment_address":"{}","fee_address":"{}","collection_address":"{}","timestamp":{}"##, 
+    let ok = format!(r##""tx_hash":"{}","tx_body":"{}","amount":"{} SAT","fee":"{}","payment_address":"{}","fee_address":"{}","collection_address":"{}","timestamp":{}"##, 
         tx.hash().to_hex(), hex::encode(tx.serialize()), sat.to_u64(), fee.to_fin_string(), acc.readable(), feeacc.readable(), toaddr.to_readable(), time_set);
     format!("{{{}}}", ok)
 
