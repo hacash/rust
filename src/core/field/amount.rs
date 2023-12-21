@@ -208,8 +208,16 @@ impl Amount {
     }
 
     pub fn from_mei_i64(mei: i64) -> Result<Amount, String> {
-        // ok
-        return Amount::from_i64(mei, 248);
+        let mut baseunit = 248;
+        let mut num = mei;
+        while(num % 10 == 0){
+            num /= 10;
+            baseunit+=1;
+            if(baseunit==255) {
+                break
+            }
+        }
+        return Amount::from_i64(num, baseunit as u8);
     }
 
     pub fn from_string_unsafe(v: &String) -> Result<Amount, String> {
@@ -242,7 +250,7 @@ impl Amount {
             // float
             let fdl = nums[1].trim_end_matches("0").len();
             if fdl > 8 + 8 {
-                return Err("amount is too big".to_string());
+                return Err("amount size is too big".to_string());
             }
             let base = 10i32.pow(fdl as u32) as f64;
             let ii = (ff * base) as i64;
