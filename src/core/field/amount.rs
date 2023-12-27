@@ -210,10 +210,10 @@ impl Amount {
     pub fn from_mei_i64(mei: i64) -> Result<Amount, String> {
         let mut baseunit = 248;
         let mut num = mei;
-        while(num % 10 == 0){
+        while num % 10 == 0 {
             num /= 10;
             baseunit+=1;
-            if(baseunit==255) {
+            if baseunit==255 {
                 break
             }
         }
@@ -306,12 +306,20 @@ impl Amount {
     }
 
     pub fn to_mei_unsafe(&self) -> f64 {
+        self.to_unit_unsafe(248)
+    }
+
+    pub fn to_zhu_unsafe(&self) -> f64 {
+        self.to_unit_unsafe(240)
+    }
+
+    pub fn to_unit_unsafe(&self, base_unit: u8) -> f64 {
 
         // let mut amt = Amount::new();
         if self.is_empty() {
             return 0f64
         }
-        let chax = (248 - (self.unit as i32)).abs() as u32;
+        let chax = (base_unit as i32 - (self.unit as i32)).abs() as u32;
         if chax > 8 + 8 {
             return 0f64
         }
@@ -319,7 +327,7 @@ impl Amount {
         let num = BigInt::from_bytes_be(Plus, &self.byte[..]).to_f64().unwrap();
         // unit
         let base = 10i32.pow(chax) as f64;
-        let mut resv = match self.unit > 248 {
+        let mut resv = match self.unit > base_unit {
             true => num * base,
             false => num / base,
         };

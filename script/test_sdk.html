@@ -17,6 +17,8 @@
             // await wasm_bindgen('../pkg/hacash_sdk.wasm');
             await wasm_bindgen(hacash_sdk_wasm_buffer);
             // can use
+            const meis = API.hac_to_mei("99999999999:235");
+            console.log(meis);
             const accs = API.create_account_by("123456");
             console.log(accs);
             const tx1 = API.hac_transfer("1", "123456789", "1MzNY1oA3kfgYi75zquj3SRUPYztzXHzK9", "ㄜ1:248", "ㄜ1:244", "1697200000")
