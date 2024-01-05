@@ -319,14 +319,11 @@ impl Amount {
         if self.is_empty() {
             return 0f64
         }
-        let chax = (base_unit as i32 - (self.unit as i32)).abs() as u32;
-        if chax > 8 + 8 {
-            return 0f64
-        }
+        let chax = (base_unit as i64 - (self.unit as i64)).abs() as u64;
         // num
         let num = BigInt::from_bytes_be(Plus, &self.byte[..]).to_f64().unwrap();
         // unit
-        let base = 10i32.pow(chax) as f64;
+        let base = 10f64.powf(chax as f64) as f64;
         let mut resv = match self.unit > base_unit {
             true => num * base,
             false => num / base,

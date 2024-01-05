@@ -1,7 +1,9 @@
 #[macro_use] 
 mod core;
+mod x16rs;
 
 
+use crate::core::field::Amount;
 use crate::core::field;
 use crate::core::interface::field::*;
 
@@ -16,6 +18,9 @@ fn main() {
     println!("{}", res.unwrap());
 
     println!("{}", bt.to_hex());
+
+    println!("{}", Amount::new_small(1, 250).to_zhu_unsafe().to_string());
+    // println!("{}", Amount::from_string_unsafe(&"100".to_string()).unwrap().to_zhu_unsafe().to_string());
 
 }
 
