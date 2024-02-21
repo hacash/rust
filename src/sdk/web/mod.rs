@@ -15,6 +15,20 @@ use crate::core::protocol::transaction;
 
 /******** sdk ********/
 
+macro_rules! or_return {
+    ($tip:expr, $gain:expr) => (
+        match $gain {
+            Ok(obj) => obj,
+            Err(e) => {
+                return format!("[ERROR] {}: {}", $tip, e)
+            }
+        }
+    )
+}
 
+
+include!{"amount.rs"}
+include!{"account.rs"}
+include!{"sign.rs"}
 include!{"transfer.rs"}
 

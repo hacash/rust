@@ -60,33 +60,6 @@ pub extern fn set_api_return_json() {
 }
 
 
-#[wasm_bindgen]
-pub fn create_account_by(s: String) -> String {
-    let acc = Account::create_by(&s);
-    if let Err(e) = acc {
-        return e.to_string()
-    } 
-    let acc = acc.unwrap();
-    let accstr = acc.readable();
-    let acckey = hex::encode(acc.secret_key().serialize());
-    let accpub = hex::encode(acc.public_key().serialize_compressed());
-    // format!("{},{},{}", acckey, accpub, accstr)
-    let ok = format!(r##""private_key":"{}","public_key":"{}","address":"{}""##, acckey, accpub, accstr);
-    format!("{{{}}}", ok)
-}
-
-
-macro_rules! or_return {
-    ($tip:expr, $gain:expr) => (
-        match $gain {
-            Ok(obj) => obj,
-            Err(e) => {
-                return format!("[ERROR] {}: {}", $tip, e)
-            }
-        }
-
-    )
-}
 
 
 
@@ -108,24 +81,6 @@ fn get_time_set(timestamp: i64) -> i64 {
     time_set
 }
 
-
-#[wasm_bindgen]
-pub fn hac_to_mei(amount: String) -> String {
-    let mins = Amount::new_small(1, 240);
-    let res3 =  Amount::from_string_unsafe(&amount);
-    if let Ok(hac) = res3 {
-        if hac.less_than(&mins) {
-            return "≈0.00000001".to_string()
-        }else{
-            let zhu = hac.to_zhu_unsafe();
-            return (zhu / 100000000.0).to_string()
-
-        }
-        return hac.to_mei_string_unsafe()
-    }
-    // error
-    return "[ERROR]".to_string()
-}
 
 #[wasm_bindgen]
 pub fn general_transfer(chain_id: u64, from_pass: String, to_addr: String, amountex: String, fee: String, timestamp: i64) -> String {

@@ -26,6 +26,8 @@
             const tx1 = API.hac_transfer("1", "123456789", "1MzNY1oA3kfgYi75zquj3SRUPYztzXHzK9", "ㄜ1:248", "ㄜ1:244", "1697200000")
             const tx2 = API.sat_transfer("1", "123456789", "abc123", "1MzNY1oA3kfgYi75zquj3SRUPYztzXHzK9", "2500", "ㄜ1:244", "1697200000")
             const tx3 = API.hacd_transfer("1", "123456789", "abc123", "1MzNY1oA3kfgYi75zquj3SRUPYztzXHzK9", " AAABBB,,, KKHEEX,   WWWTTT,, ", "ㄜ1:244", "1697200000")
+            // sign
+            const signobj = API.sign("123456", "8f3e2da46dee0bf0cf02827b9c589ea516f0a6d62b3e9b4278ace3288d995784");
             document.write(`
             <h1>Hacash SDK</h1>
             <h3>create_account_by("123456"):</h3>
@@ -36,6 +38,8 @@
             <p>${tx2}</p>
             <h3>hacd_transfer(...):</h3>
             <p>${tx3}</p>
+            <h3>sign(...):</h3>
+            <p>${signobj}</p>
             `)
         }
 
