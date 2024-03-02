@@ -240,7 +240,6 @@ impl FieldBytes for $class {
 
 impl FieldUint for $class {
 
-
     fnUintFromToParseBytes!($class, u8, 1, $size);
     fnUintFromToParseBytes!($class, u16, 2, $size);
     fnUintFromToParseBytes!($class, u32, 4, $size);
@@ -275,7 +274,18 @@ impl FieldReadable for $class {
 
 impl $class {
 
-    const fn length() -> usize {
+    pub const fn max() -> u64 { 
+        let sz = $size;
+        let ml = UINT_MAX_DEFS.len();
+        if sz + 1 > ml {
+            panic_never_call_this!();
+            return 0;
+        }
+        let idx = if sz + 1 > ml { ml - 1 }else { sz };
+        UINT_MAX_DEFS[idx] // maybe panic!
+    }
+
+    pub const fn width() -> usize {
         $size
     }
 

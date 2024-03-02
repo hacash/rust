@@ -8,6 +8,18 @@ pub const UINT_MAX_W5: u64 = 256 * 256 * 256 * 256 * 256 - 1;
 pub const UINT_MAX_W6: u64 = 256 * 256 * 256 * 256 * 256 * 256 - 1;
 pub const UINT_MAX_W7: u64 = 256 * 256 * 256 * 256 * 256 * 256 * 256 - 1;
 pub const UINT_MAX_W8: u64 = u64::MAX;
+pub const UINT_MAX_DEFS: [u64; 9] = [
+    0u64,
+    UINT_MAX_W1,
+    UINT_MAX_W2,
+    UINT_MAX_W3,
+    UINT_MAX_W4,
+    UINT_MAX_W5,
+    UINT_MAX_W6,
+    UINT_MAX_W7,
+    UINT_MAX_W8,
+];
+
 
 // bytes <=> uint common fn
 

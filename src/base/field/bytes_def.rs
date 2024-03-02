@@ -56,10 +56,10 @@ impl Serialize for $class {
 impl Parse for $class {
 
     fn parse(&mut self, buf: &[u8], seek: usize) -> Result<usize, Error> {
-        let (obj, sk) = <$lenty>::create(buf[seek..]) ?;
+        let (obj, sk) = <$lenty>::create(&buf[seek..]) ?;
         self.len = obj;
         let conlen = self.len.to_usize();
-        let bts = buf_clip_mvsk!(buf, strlen);
+        let bts = buf_clip_mvsk!(buf, conlen);
         self.bytes = bts.to_vec();
         Ok(sk + conlen)
     }
@@ -97,6 +97,28 @@ impl Field for $class {
 
 impl $class {
 
+    fn length(&self) -> usize {
+        self.len.to_usize()
+    }
+
+    fn push(&mut self, a: u8) -> Option<Error> {
+        if self.bytes.len() + 1 > $size_max {
+            return Some(s!("append size overflow"))
+        }
+        self.len += 1u8;
+        self.bytes.push(a);
+        None
+    }
+
+    fn concat(&mut self, tar: &[u8]) -> Option<Error> {
+        let apsz = tar.len();
+        if self.bytes.len() + apsz > $size_max {
+            return Some(s!("concat size overflow"))
+        }
+        self.len += apsz as u64;
+        self.bytes = [self.bytes.clone(), tar.to_vec()].concat();
+        None
+    }
 
 
 }
