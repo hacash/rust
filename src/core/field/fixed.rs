@@ -83,6 +83,8 @@ impl Hash {
 
     pub fn from(v: impl AsRef<[u8]>) -> Hash {
         let v = v.as_ref();
+        pub type ChannelId = Fixed16;
+        pub const CHANNEL_ID_SIZE: usize = ChannelId::length();
         if v.len() != HASH_SIZE {
             panic!("Hash.from() size error.")
         }
