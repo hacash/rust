@@ -69,11 +69,15 @@ impl Bool {
 pub type Hash = Fixed32;
 pub type HashHalf = Fixed16;
 pub type HashNonce = Fixed8;
-pub type HashMark = Fixed4;
+pub type HashCheck = Fixed4;
+pub type HashMark = Fixed2;
+
 const HASH_SIZE: usize = Hash::width();
 const HASH_HALF_SIZE: usize = HashHalf::width();
 const HASH_NONCE_SIZE: usize = HashNonce::width();
+const HASH_CHECK_SIZE: usize = HashCheck::width();
 const HASH_MARK_SIZE: usize = HashMark::width();
+
 impl Hash {
 
     pub fn get_half(&self) -> HashHalf {
@@ -84,6 +88,11 @@ impl Hash {
     pub fn get_nonce(&self) -> HashNonce {
         let pt: [u8; HASH_NONCE_SIZE] = self.bytes[0..HASH_NONCE_SIZE].try_into().unwrap();
         <HashNonce as Field>::from(&pt)
+    }
+
+    pub fn get_check(&self) -> HashCheck {
+        let pt: [u8; HASH_CHECK_SIZE] = self.bytes[0..HASH_CHECK_SIZE].try_into().unwrap();
+        <HashCheck as Field>::from(&pt)
     }
 
     pub fn get_mark(&self) -> HashMark {

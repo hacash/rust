@@ -1,3 +1,4 @@
+mod x16rs;
 
 #[macro_use]
 mod sys;

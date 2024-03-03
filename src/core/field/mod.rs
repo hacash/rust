@@ -18,6 +18,7 @@ use crate::base::field::*;
 #[macro_use]
 use crate::base::combo::*;
 
+include!("block.rs");
 include!("address.rs");
 include!("amount.rs");
 include!("balance.rs");

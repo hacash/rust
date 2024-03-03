@@ -1,9 +1,9 @@
 
 impl Account {
-        
+
     // create
     
-    pub fn create_randomly() -> Result<Account, String> {
+    pub fn create_randomly() -> Result<Account, Error> {
         loop {
             let mut data = [0u8; 32];
             rand::thread_rng().fill_bytes(&mut data);
@@ -14,7 +14,7 @@ impl Account {
         }
     }
 
-    pub fn create_by(pass: &String) -> Result<Account, String> {
+    pub fn create_by(pass: &str) -> Result<Account, Error> {
         // is private key
         if pass.len() == 64{
             if let Ok(bts) = hex::decode(pass.clone()) {
@@ -25,12 +25,12 @@ impl Account {
         return Account::create_by_password(pass)
     }
 
-    pub fn create_by_password(pass: &String) -> Result<Account, String> {
+    pub fn create_by_password(pass: &str) -> Result<Account, Error> {
         let dt = sha2(pass);
         Account::create_by_secret_key_value(dt)
     }
 
-    pub fn create_by_secret_key_value(key32: [u8; 32]) -> Result<Account, String> {
+    pub fn create_by_secret_key_value(key32: [u8; 32]) -> Result<Account, Error> {
         let kkk = key32.to_vec();
         // if(kkk.len()!=32) {
         //     return Err(format!("create_account_by_secret_key param key32 length must be 32 but got {}.", kkk.len()));
@@ -48,7 +48,7 @@ impl Account {
     fn create_by_secret_key(seckey: &SecretKey) -> Account {
         let pubkey = PublicKey::from_secret_key(seckey);
         let address = Account::get_address_by_public_key( pubkey.serialize_compressed() );
-        let addrshow = address.to_readable();
+        let addrshow = Account::to_readable(&address);
         Account {
             secret_key: seckey.clone(),
             public_key: pubkey,
@@ -58,14 +58,21 @@ impl Account {
     }
 
 
-    pub fn get_address_by_public_key(pubkey: [u8; 33]) -> Address {
+    pub fn get_address_by_public_key(pubkey: [u8; 33]) -> [u8; ADDRESS_SIZE] {
         // serialize_compressed
         let dt = sha2(pubkey);
         let dt = ripemd160(dt);
         let version = 0;
         let mut addr: [u8; 21] = [version; ADDRESS_SIZE];
         addr[1..].copy_from_slice(&dt[..]);
-        Address::from_u8s(addr)
+        addr
     }
+
+
+    pub fn to_readable(addr: &[u8; ADDRESS_SIZE]) -> String {
+        let version = addr[0];
+        addr[1..].to_base58check(version)
+    }
+
 
 }

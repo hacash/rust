@@ -1,8 +1,4 @@
 
-pub fn calculate_hash(stuff: impl AsRef<[u8]>) -> [u8; 32] {
-    sha3(stuff)
-}
-
 // sha3
 pub fn sha3(stuff: impl AsRef<[u8]>) -> [u8; 32] {
 
@@ -35,5 +31,10 @@ pub fn ripemd160(stuff: impl AsRef<[u8]>) -> [u8; 20] {
     let result = hasher.finalize();
     let result: [u8; 20] = result[..].try_into().unwrap();
     result
+}
+
+
+pub fn calculate_hash(stuff: impl AsRef<[u8]>) -> [u8; 32] {
+    sha3(stuff)
 }
 
