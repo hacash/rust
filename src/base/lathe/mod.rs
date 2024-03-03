@@ -1,6 +1,6 @@
 use concat_idents::concat_idents;
 
-use super::super::Error;
+use crate::sys::Error;
 
 include!("create.rs");
 include!("buffer.rs");

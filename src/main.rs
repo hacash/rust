@@ -1,7 +1,11 @@
 #[macro_use]
+mod sys;
+#[macro_use]
 mod base;
+mod interface;
 
-use base::Error;
+
+use sys::Error;
 
 
 /*

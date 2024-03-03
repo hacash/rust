@@ -126,5 +126,5 @@ impl $class {
 
 
 // test
-StructFieldList!(TestFieldList9375649365, count, Uint1, lists, Bool);
+StructFieldList!(TestFieldList9375649365, count, Uint1, lists, Uint1);
 

@@ -1,4 +1,6 @@
-use super::super::Error;
+
+#[macro_use]
+use crate::sys::*;
 
 include!{"parse.rs"}
 include!{"serialize.rs"}

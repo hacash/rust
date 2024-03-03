@@ -3,6 +3,7 @@ use std::fmt::Display;
 use std::cmp::Ordering::{Less,Greater};
 use std::cmp::{Ordering, PartialOrd, Ord};
 use std::ops::{Deref, Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign, Index, IndexMut};
+use std::convert::TryInto;
 
 // use num_bigint::BigInt;
 // use num_bigint::Sign::{Minus, Plus};
@@ -10,17 +11,14 @@ use std::ops::{Deref, Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAs
 
 use concat_idents::concat_idents;
 
-use std::convert::TryInto;
-
-use super::super::Error;
-use super::interface::field::*;
+#[macro_use]
+use crate::sys::*;
+use crate::interface::field::*;
 
 #[macro_use]
 use super::lathe::*;
-use super::sys::*;
 
-
-
+include!("util.rs");
 include!("fixed_def.rs");
 include!("fixed.rs");
 include!("bytes_def.rs");

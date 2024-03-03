@@ -5,12 +5,12 @@ pub trait Field : Serialize + Parse {
     fn create(_: &[u8]) -> Result<(Self, usize), Error> where Self: Sized { panic_never_call_this!(); }
     fn from_uint<T>(_: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { panic_never_call_this!(); }
     fn from_float<T>(_: T) -> Self where Self: Sized, T: std::ops::Add<f64, Output = f64> { panic_never_call_this!(); }
-    fn parse_uint<T>(&mut self, _: T) -> Option<Error> where T: std::ops::Add<u64, Output = u64> { panic_never_call_this!(); }
-    fn parse_float<T>(&mut self, _: T) -> Option<Error> where T: std::ops::Add<f64, Output = f64> { panic_never_call_this!(); }
+    // fn parse_uint<T>(&mut self, _: T) -> Option<Error> where T: std::ops::Add<u64, Output = u64> { panic_never_call_this!(); }
+    // fn parse_float<T>(&mut self, _: T) -> Option<Error> where T: std::ops::Add<f64, Output = f64> { panic_never_call_this!(); }
 }
 
 pub trait FieldHex : Field {
-    fn to_hex(&self) -> String { s!("") }
+    fn to_hex(&self) -> String { panic_never_call_this!(); }
     fn from_hex(_: &[u8]) -> Self where Self: Sized { panic_never_call_this!(); } // maybe panic!
     fn create_by_hex(_: &[u8]) -> Result<(Self, usize), Error> where Self: Sized { panic_never_call_this!(); }
 }

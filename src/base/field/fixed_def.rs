@@ -163,10 +163,12 @@ impl Field for $class {
 
     fn from_uint<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { 
         let mut obj = <$class>::new();
-        obj.parse_uint(nt).unwrap();
+        // obj.parse_uint(nt).unwrap();
+        field_parse_uint(&mut obj, nt, $size).unwrap();
         obj
     }
 
+    /*
     fn parse_uint<T>(&mut self, nt: T) -> Option<Error> where T: std::ops::Add<u64, Output = u64> { 
         let num: u64 = nt + 0u64;
         let sz = $size;
@@ -183,13 +185,16 @@ impl Field for $class {
             _ => err,
         }
     }
+    */
 
     fn from_float<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<f64, Output = f64> {
         let mut obj = <$class>::new();
-        obj.parse_float(nt).unwrap();
+        // obj.parse_float(nt).unwrap();
+        field_parse_float(&mut obj, nt, $size).unwrap();
         obj
     }
 
+    /*
     fn parse_float<T>(&mut self, nt: T) -> Option<Error> where T: std::ops::Add<f64, Output = f64> {
         let num: f64 = nt + 0f64;
         let sz = $size;
@@ -199,7 +204,7 @@ impl Field for $class {
             _ => Some(s!("from_float size error must be 4 or 8")),
         }
     }
-
+    */
 
 }
 
@@ -298,3 +303,8 @@ impl $class {
     )
 }
 
+
+
+// test
+// StructFieldFixedBytes!{ Fixed1 ,  1usize }
+// pub type Uint1 = Fixed1;

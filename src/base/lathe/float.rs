@@ -30,7 +30,8 @@ macro_rules! fnFloatFromToParseBytes {
         concat_idents!(fn_from_1 = from_, $tarty {
         fn fn_from_1(fv: $tarty) -> Self where Self: Sized {
             let mut obj = <$class>::new();
-            obj.parse_float(fv as f64).unwrap();
+            // obj.parse_float(fv as f64).unwrap();
+            field_parse_float(&mut obj, fv as f64, $size).unwrap();
             obj
         }
         });

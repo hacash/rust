@@ -1,6 +1,6 @@
-use concat_idents::concat_idents;
+// use concat_idents::concat_idents;
 
-use super::Error;
+pub type Error = String;
 
 include!{"panic.rs"}
 include!{"string.rs"}
