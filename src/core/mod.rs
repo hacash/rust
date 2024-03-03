@@ -1,3 +1,7 @@
+pub mod field;
+
+
+/*
 pub type Error = String;
 
 include!{"macro.rs"}
@@ -11,7 +15,7 @@ pub mod base;
 pub mod interface;
 
 #[macro_use]
-pub mod field;
+pub mod field_bnk;
 
 #[macro_use]
 pub mod component;
@@ -21,3 +25,4 @@ pub mod protocol;
 
 #[macro_use]
 pub mod store;
+*/

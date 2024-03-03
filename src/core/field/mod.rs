@@ -8,28 +8,23 @@ use num_bigint::BigInt;
 use num_bigint::Sign::{Minus, Plus};
 use num_traits::{FromPrimitive, ToPrimitive, Num};
 
-use concat_idents::concat_idents;
+use crate::sys::Error;
+#[macro_use]
+use crate::sys::*;
+use crate::interface::field::*;
+#[macro_use]
+use crate::base::lathe::*;
+use crate::base::field::*;
+#[macro_use]
+use crate::base::combo::*;
 
-use std::convert::TryInto;
-use regex::{Regex, Captures};
+include!("address.rs");
+include!("amount.rs");
+include!("balance.rs");
+include!("diamond.rs");
+include!("stokey.rs");
 
-use super::Error;
-use super::base::FieldJsonConfig;
-use super::interface::field::*;
+include!("sign.rs");
 
-include!{"macro.rs"}
-
-include!{"fixed_def.rs"}
-include!{"fixed.rs"}
-include!{"bytes_def.rs"}
-include!{"bytes.rs"}
-include!{"optional_def.rs"}
-include!{"optional.rs"}
-include!{"list_def.rs"}
-include!{"list.rs"}
-include!{"combine_def.rs"}
-include!{"combine.rs"}
-
-include!{"amount.rs"}
 
 

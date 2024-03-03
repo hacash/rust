@@ -2,7 +2,7 @@ use libsecp256k1::{ util, SecretKey, PublicKey, Signature, Message };
 use rand::{self, RngCore};
 
 use crate::core::interface::field::Field;
-use crate::core::field::{Address, ADDRESS_SIZE};
+use crate::core::field_bnk::{Address, ADDRESS_SIZE};
 use crate::x16rs::{ sha2, ripemd160 };
 
 // static max_prikey_value: [u8; 32] = b"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140";

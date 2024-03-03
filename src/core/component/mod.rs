@@ -4,7 +4,7 @@ use super::Error;
 use super::base::FieldJsonConfig;
 use super::interface::field::*;
 use super::interface::action::*;
-use super::field::*;
+use super::field_bnk::*;
 
 
 include!{"macro.rs"}

@@ -5,8 +5,8 @@ use super::field::*;
 use super::action::*;
 use super::super::account::*;
 use super::super::component::*;
-use super::super::field::*;
-use super::super::field::Address;
+use super::super::field_bnk::*;
+use super::super::field_bnk::Address;
 
 
 

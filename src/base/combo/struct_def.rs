@@ -1,7 +1,7 @@
 
 
 #[macro_export]
-macro_rules! StructFieldStruct{
+macro_rules! StructFieldStruct {
     ($class: ident, $( $item: ident: $type: ty )+) => (
 
 

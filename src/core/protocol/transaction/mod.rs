@@ -7,7 +7,7 @@ use crate::core::interface::field::*;
 use crate::core::interface::action::*;
 use crate::core::interface::transaction::*;
 use crate::core::base::*;
-use crate::core::field::*;
+use crate::core::field_bnk::*;
 use crate::core::component::*;
 use crate::core::account::*;
 use super::action::*;

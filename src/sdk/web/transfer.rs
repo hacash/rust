@@ -23,7 +23,7 @@ pub extern fn trs_test(x: i32) -> i32 {
 
 #[no_mangle]
 pub extern fn trs_test(x: i32) -> usize {
-    let mut bt = field::Fixed4::new();
+    let mut bt = field_bnk::Fixed4::new();
     let data = vec![x as u8 + 1, x as u8 + 2, x as u8 + 3, x as u8 + 4];
     let mut res = bt.parse(&data, 0).unwrap();
     let vals = bt.serialize();

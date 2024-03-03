@@ -5,8 +5,8 @@ use chrono::{TimeZone, Utc, Duration};
 
 use wasm_bindgen::prelude::*;
 
-use crate::core::field;
-use crate::core::field::*;
+use crate::core::field_bnk;
+use crate::core::field_bnk::*;
 use crate::core::interface::field::*;
 use crate::core::interface::transaction::*;
 use crate::core::protocol::action;

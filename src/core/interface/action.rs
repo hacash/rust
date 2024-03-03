@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use super::super::Error;
 use super::field::*;
-use super::super::field::Address;
+use super::super::field_bnk::Address;
 
 
 

@@ -1,11 +1,12 @@
+
 #[macro_use]
 mod sys;
 #[macro_use]
 mod base;
 mod interface;
+mod core;
 
-
-use sys::Error;
+use crate::interface::field::*;
 
 
 /*
@@ -19,7 +20,9 @@ RUSTFLAGS="$RUSTFLAGS -Awarnings" cargo run
 
 fn main() {
 
-    // panic_never_call_this!();
+    let addrhac = core::field::AddrHac::new();
 
-    println!("{} {}", "abc 123", s!("error"));
+    println!("{} {} {}", "abc 123", s!("error"), addrhac.amount);
+
+    // panic_never_call_this!();
 }

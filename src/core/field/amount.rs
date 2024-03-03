@@ -20,10 +20,10 @@ pub struct Amount {
 	byte: Vec<u8>,
 }
 
-impl Amount {
-    // create function
-    fn_field_create_by_new_wrap_return!(Amount);
-
+impl fmt::Display for Amount{
+    fn fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
+        write!(f,"{}",self.to_fin_string())
+    }
 }
 
 impl fmt::Debug for Amount {
@@ -33,7 +33,6 @@ impl fmt::Debug for Amount {
     }
 
 }
-
 
 impl PartialEq for Amount {
     #[inline]
@@ -79,12 +78,6 @@ impl Div<i32> for Amount {
 }
 
 
-impl fmt::Display for Amount{
-    fn fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
-        write!(f,"{}",self.to_fin_string())
-    }
-}
-
 // impl Copy for Amount {}
 
 impl Field for Amount {
@@ -96,26 +89,37 @@ impl Field for Amount {
             byte: Vec::new(),
         }
     }
+
+    // create function
+    fnFieldCreate!(Amount);
+}
+
+impl Parse for Amount {
+
+    fn parse(&mut self, buf: &[u8], seek: usize) -> Result<usize, Error> {
+        let mut seek = seek;
+        // get unit
+        let btv = buf_clip_mvsk!(buf[seek..], 1);
+        self.unit = btv[1];
+        seek += 1;        
+        // get dist
+        let btv = buf_clip_mvsk!(buf[seek..], 1);
+        self.dist = btv[1] as i8;
+        seek += 1;
+        // get bytes
+        let btlen = self.dist.abs() as usize;
+        let btv = buf_clip_mvsk!(buf[seek..], btlen);
+        amount_check_data_len!(self, "parse");
+        Ok(seek + btlen)
+    }
+
 }
 
 impl Serialize for Amount {
-
     fn serialize(&self) -> Vec<u8> {
         let mut resv = vec!(self.unit, self.dist as u8);
         resv.append( &mut self.byte.clone() );
         resv
-    }
-
-    fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, String> {
-        let seek1 = parse_move_seek_or_error!("Amount", seek, 1, buf);
-        self.unit = buf[seek];
-        let seek2 = parse_move_seek_or_error!("Amount", seek1, 1, buf);
-        self.dist = buf[seek1] as i8;
-        let seek3 = parse_move_seek_or_error!("Amount", seek2, self.dist.abs() as usize, buf);
-        self.byte = buf[seek2..seek3].to_vec();
-        // println!("amount.parse : {} {} {} {}", seek1, seek2, seek3, self.byte[0]);
-        amount_check_data_len!(self, "parse");
-        Ok(seek3)
     }
 
     fn size(&self) -> usize {
@@ -124,22 +128,6 @@ impl Serialize for Amount {
     }
 
 }
-
-impl Describe for Amount {
-
-    fn describe(&self) -> String {
-        format!("\"{}\"", self.to_fin_string() )
-    }
-
-    fn to_json(&self, cnf: &FieldJsonConfig) -> String {
-        "".to_string()
-    }
-
-    fn from_json(&mut self, _: &String) -> Option<Error> {
-        None
-    }
-
-} 
 
 // new or from
 impl Amount {
