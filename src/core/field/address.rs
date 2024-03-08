@@ -1,6 +1,7 @@
 
 
 use base58check::*;
+use crate::core::account::Account;
 
 // ********* Address *********
 
@@ -29,9 +30,11 @@ impl Address {
     
     pub fn to_readable(&self) -> String {
         let btcon = self.serialize();
-        let version = btcon[0];
-        btcon[1..].to_base58check(version)
+        let bts: [u8; ADDRESS_SIZE] = btcon.try_into().unwrap();
+        Account::to_readable(&bts)
     }
+    
+
     
 }
 

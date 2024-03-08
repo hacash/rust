@@ -3,17 +3,20 @@ name = "hacash"
 version = "0.1.0"
 edition = "2021"
 
+
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
 
 [lib]
 name = "hacash_sdk"
 # version = "0.1.0"
 crate-type = ["staticlib", "cdylib"]
 
+
 [build-dependencies]
-# cc = "1.0"
+cc = "1.0"
 
 
 [dependencies]
@@ -39,8 +42,9 @@ wasm-bindgen = "0.2.87"
 # ini = "1.3.0"
 # rusty-leveldb = "1.0.1"
 
+
 [profile.release]
-opt-level = 'z'     # Optimize for size.
+opt-level = 3     # Optimize for size.
 lto = true          # Enable Link Time Optimization
 codegen-units = 1   # Reduce number of codegen units to increase optimizations.
 panic = 'abort'     # Abort on panic
