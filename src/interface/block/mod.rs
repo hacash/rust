@@ -5,3 +5,4 @@ use crate::base::field::*;
 use crate::core::field::*;
 
 include!("block.rs");
+include!("pkg.rs");

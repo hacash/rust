@@ -8,7 +8,7 @@ pub trait FnCodePkg {
 
 pub trait CodeLoader {
 
-    fn load(&self, contract: Address, fnsign: Fixed4, cached: bool) -> Result<Box<dyn CodePkg>, Error>;
+    fn load(&self, contract: Address, fnsign: Fixed4, cached: bool) -> Result<Box<dyn FnCodePkg>, Error>;
 
 
 

@@ -4,8 +4,10 @@ mod x16rs;
 mod sys;
 #[macro_use]
 mod base;
+mod config;
 mod interface;
 mod core;
+mod chain;
 
 use crate::interface::field::*;
 use core::account::Account;
@@ -27,7 +29,11 @@ ldd target/x86_64-unknown-linux-musl/release/hacash
 
 
 */
+
+
+
 fn main() {
+
 
     let addrhac = core::field::AddrHac::new();
 
