@@ -26,6 +26,7 @@ mod sys;
 mod base;
 mod interface;
 mod core;
+mod chain;
 
 
 

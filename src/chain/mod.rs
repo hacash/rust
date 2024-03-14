@@ -1,6 +1,7 @@
-pub mod util;
-pub mod db;
-pub mod brick;
+mod util;
+mod db;
+mod brick;
+
 pub mod kernel;
 
 

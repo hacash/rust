@@ -2,12 +2,10 @@
 
 pub struct BlockChainKernel {
 
-    store: BlockStore,
-    state: ChainState,
+    store: Rc<BlockStore>,
+    state: Weak<ChainState>,
 
-    stree: i32,
-
-
-
+    brick: Rc<StateBrick>,
 
 }
+

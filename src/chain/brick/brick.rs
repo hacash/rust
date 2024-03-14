@@ -1,11 +1,12 @@
 
 
-struct StateBrick {
+pub struct StateBrick {
 
+    height: BlockHeight, 
     block: BlockPkg,
-    state: ChainState,
+    state: Rc<ChainState>,
 
-    childs: Vec<Box<StateBrick>>,
+    childs: Vec<Rc<StateBrick>>,
     parent: Weak<StateBrick>,
 
 }
