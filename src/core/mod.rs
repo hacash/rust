@@ -1,6 +1,7 @@
 pub mod account;
 pub mod field;
-
+pub mod protocol;
+pub mod component;
 
 
 
@@ -22,7 +23,7 @@ pub mod base;
 pub mod interface;
 
 #[macro_use]
-pub mod field_bnk;
+pub mod field;
 
 #[macro_use]
 pub mod component;

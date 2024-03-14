@@ -1,11 +1,8 @@
 
-include!{"macro.rs"}
+include!("action/action.rs");
 
+include!("transaction/transaction.rs");
 
-#[macro_use]
-pub mod action;
-
-#[macro_use]
-pub mod transaction;
+include!("block/block.rs");
 
 

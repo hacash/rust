@@ -4,7 +4,7 @@ use crate::core::field::*;
 
 
 use super::field::*;
-use super::block::*;
+use super::protocol::*;
 
 
 include!("latest.rs");

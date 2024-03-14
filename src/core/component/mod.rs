@@ -1,16 +1,10 @@
-use core::ops::{Index, IndexMut};
+use crate::sys::*;
+use crate::interface::field::*;
 
-use super::Error;
-use super::base::FieldJsonConfig;
-use super::interface::field::*;
-use super::interface::action::*;
-use super::field_bnk::*;
+#[macro_use]
+use crate::base::lathe::*;
+use crate::base::field::*;
 
+include!("block.rs");
 
-include!{"macro.rs"}
-
-include!{"balance.rs"}
-include!{"sign.rs"}
-include!{"coinbase.rs"}
-include!{"dynlist.rs"}
 

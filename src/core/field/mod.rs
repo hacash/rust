@@ -23,7 +23,7 @@ include!("address.rs");
 include!("amount.rs");
 include!("balance.rs");
 include!("diamond.rs");
-include!("stokey.rs");
+include!("key.rs");
 
 include!("sign.rs");
 
