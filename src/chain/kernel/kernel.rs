@@ -5,7 +5,11 @@ pub struct BlockChainKernel {
     store: Rc<BlockStore>,
     state: Weak<ChainState>,
 
-    brick: Rc<StateBrick>,
+    sroot: Rc<ChunkRoller>, // tree root block
+    scusp: Weak<ChunkRoller>, // current latest block
+
+    
+
 
 }
 

@@ -1,7 +1,7 @@
 use std::rc::{Rc, Weak};
 
 use super::db::*;
-use super::brick::*;
+use super::roller::*;
 
 include!("kernel.rs");
 
