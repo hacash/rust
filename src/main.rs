@@ -7,6 +7,7 @@ mod base;
 mod config;
 mod interface;
 mod core;
+mod vm;
 mod chain;
 
 use crate::interface::field::*;

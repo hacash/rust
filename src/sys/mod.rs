@@ -6,6 +6,7 @@ pub type Error = String;
 
 include!{"panic.rs"}
 include!{"string.rs"}
+include!{"error.rs"}
 include!{"number.rs"}
 include!{"hex.rs"}
 include!{"ini.rs"}

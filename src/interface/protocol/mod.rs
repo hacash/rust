@@ -9,9 +9,9 @@ use crate::core::account::*;
 
 use super::field::*;
 
+include!("vm.rs");
 include!("action.rs");
 include!("transaction.rs");
 include!("block.rs");
 
-include!("vm.rs");
 include!("pkg.rs");
