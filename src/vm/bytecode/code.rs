@@ -13,9 +13,9 @@ define_bytecode_ptrs!{
 
 
 
-    END   : 0xff
-    ABORT : 0xfe
-    NOP   : 0xfd
+    END   : 0xff // end / func return
+    ABT   : 0xfe // abort / fatal end
+    NOP   : 0xfd // do nothing
 
 
 

@@ -23,3 +23,4 @@ include!("fixed_def.rs");
 include!("fixed.rs");
 include!("bytes_def.rs");
 include!("bytes.rs");
+include!("uintautow.rs");

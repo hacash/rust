@@ -6,8 +6,11 @@ use crate::interface::protocol::*;
 use crate::interface::vm::*;
 use crate::core::protocol::*;
 
+use super::bytecode::*;
+
 
 include!("asts/extwrap.rs");
+include!("asts/leaf.rs");
 
 include!("build.rs");
 include!("list.rs");

@@ -7,6 +7,7 @@ mod base;
 mod config;
 mod interface;
 mod core;
+mod mint;
 mod vm;
 mod chain;
 
