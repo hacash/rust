@@ -7,7 +7,7 @@ pub struct ChunkRoller {
     state: Rc<ChainState>,
 
     childs: Vec<Rc<ChunkRoller>>,
-    parent: Weak<ChunkRoller>,
+    parent: Option<Weak<ChunkRoller>>,
 
 }
 

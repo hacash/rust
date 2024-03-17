@@ -1,3 +1,4 @@
+use std::any::Any;
 
 pub trait ActExecRet {
     fn gasuse(&self) -> i32;
@@ -7,7 +8,7 @@ pub trait ActExecRet {
 
 
 
-pub trait ExtActCaller {
+pub trait ExtActCaller : Any {
 
     fn cutout(&self, _: &[u8]) -> Result<Vec<u8>, Error>;
 

@@ -1,0 +1,6 @@
+
+
+impl KernelRead for BlockChainKernel {
+
+
+}

@@ -3,13 +3,13 @@
 pub struct BlockChainKernel {
 
     store: Rc<BlockStore>,
-    state: Weak<ChainState>,
+    state: RefCell<Weak<ChainState>>,
 
-    sroot: Rc<ChunkRoller>, // tree root block
-    scusp: Weak<ChunkRoller>, // current latest block
+    sroot:  RefCell<Rc<ChunkRoller>>, // tree root block
+    scusp: RefCell<Weak<ChunkRoller>>, // current latest block
 
-    
-
-
+    // insert lock
+    isrlck: Mutex<bool>,
+    updlck: RwLock<bool>,
 }
 

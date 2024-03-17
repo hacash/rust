@@ -5,6 +5,7 @@ pub trait BlockRead {
 
     fn hash(&self) -> Hash;
 
+    fn height(&self) -> &BlockHeight;
     fn timestamp(&self) -> &Timestamp;
 
     fn transaction_count(&self) -> u16;

@@ -1,10 +1,25 @@
+use std::any::Any;
 
 
+fn bbb(ext: &dyn Any) -> bool {
+
+    if ext.is::<String>() {
+        return true
+    }
+
+    false
+}
 
 fn build_ast_item(extcl: &dyn ExtActCaller, buf: &[u8]) -> Result<(Box<dyn VMAction>, usize), Error> {
     if buf.len() < 1 {
         return err_buf_short!()
     }
+
+    // let extany = extcl as &dyn Any;
+    // if extcl.is::<String>() {
+    //     return err!("not")
+    // }
+
     let opcd = buf[0];
     // if ext action
     if opcd == 0 {
