@@ -1,5 +1,6 @@
 use crate::sys::*;
 use crate::interface::field::*;
+use crate::interface::protocol::*;
 
 #[macro_use]
 use crate::base::lathe::*;

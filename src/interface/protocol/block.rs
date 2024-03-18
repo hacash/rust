@@ -7,11 +7,14 @@ pub trait BlockRead {
 
     fn height(&self) -> &BlockHeight;
     fn timestamp(&self) -> &Timestamp;
+    fn prevhash(&self) -> &Hash;
+    fn mrklroot(&self) -> &Hash;
+    
+    
 
     fn transaction_count(&self) -> u16;
-    fn transaction(&self) -> &Vec<Box<dyn Transaction>>;
-
-
+    fn transactions(&self) -> &Vec<Box<dyn Transaction>>;
+    fn transaction_hash_list(&self) -> Vec<Hash>;
 
 }
 

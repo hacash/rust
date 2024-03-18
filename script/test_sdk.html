@@ -23,8 +23,12 @@
             console.log(meis2);
             const accs = API.create_account_by("123456");
             console.log(accs);
+            // if mainnet chain_id = 0
+            // hac_transfer(chain_id: u64, from_prikey: String, to_addr: String, amount: String, fee: String, timestamp: i64) -> String
             const tx1 = API.hac_transfer("1", "123456789", "1MzNY1oA3kfgYi75zquj3SRUPYztzXHzK9", "ㄜ1:248", "ㄜ1:244", "1697200000")
+            // sat_transfer(chain_id: u64, from_prikey: String, fee_prikey: String, to_addr: String, satoshi: u64, fee: String, timestamp: i64) -> String
             const tx2 = API.sat_transfer("1", "123456789", "abc123", "1MzNY1oA3kfgYi75zquj3SRUPYztzXHzK9", "2500", "ㄜ1:244", "1697200000")
+            // hacd_transfer(chain_id: u64, from_prikey: String, fee_prikey: String, to_addr: String, diamond_name_list: String, fee: String, timestamp: i64) -> String
             const tx3 = API.hacd_transfer("1", "123456789", "abc123", "1MzNY1oA3kfgYi75zquj3SRUPYztzXHzK9", " AAABBB,,, KKHEEX,   WWWTTT,, ", "ㄜ1:244", "1697200000")
             // sign
             const signobj = API.sign("123456", "8f3e2da46dee0bf0cf02827b9c589ea516f0a6d62b3e9b4278ace3288d995784");

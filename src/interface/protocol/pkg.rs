@@ -1,16 +1,16 @@
 
-pub trait HashPkg {
-    fn hash(&self) -> &Hash;
-    fn body(&self) -> &[u8];
+pub trait HashBodyPkg {
+    fn hash(&self) -> &Hash { panic_never_call_this!() }
+    fn body(&self) -> &[u8] { panic_never_call_this!() }
 }
 
 
-pub trait BlockPkg : HashPkg {
-    fn objc(&self) -> &Box<dyn Block>;
+pub trait BlockPkg : HashBodyPkg {
+    fn objc(&self) -> &Box<dyn Block> { panic_never_call_this!() }
 }
 
 
-pub trait TxPkg : HashPkg {
-    fn objc(&self) -> &Box<dyn Transaction>;
+pub trait TxPkg : HashBodyPkg {
+    fn objc(&self) -> &Box<dyn Transaction> { panic_never_call_this!() }
 }
 

@@ -25,6 +25,7 @@ mod sys;
 #[macro_use]
 mod base;
 mod interface;
+mod config;
 mod core;
 mod mint;
 mod vm;

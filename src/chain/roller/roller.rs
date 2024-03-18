@@ -2,12 +2,13 @@
 
 pub struct ChunkRoller {
 
-    height: BlockHeight, 
-    block: BlockPkg,
-    state: Rc<ChainState>,
+    pub height: BlockHeight,
+    pub hash: Hash,
+    pub block: BlockPkgInst,
+    pub state: Arc<ChainState>,
 
-    childs: Vec<Rc<ChunkRoller>>,
-    parent: Option<Weak<ChunkRoller>>,
+    pub childs: Vec<Arc<ChunkRoller>>,
+    pub parent: Option<Weak<ChunkRoller>>,
 
 }
 

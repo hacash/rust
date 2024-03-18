@@ -11,7 +11,7 @@ pub struct ChainState {
     db: DB,
 
     base: Option<Weak<ChainState>>,
-    subs: Vec<Rc<ChainState>>,
+    // subs: Vec<Arc<ChainState>>,
 
 }
 
@@ -33,5 +33,10 @@ impl StateDB for ChainState {
         let key = splice_key(p, k);
 
     }
+
+}
+
+
+impl State for ChainState {
 
 }
