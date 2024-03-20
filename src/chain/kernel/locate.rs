@@ -1,10 +1,11 @@
 
 
 fn _locate_chunk(rtck: &Arc<ChunkRoller>, hx: &Hash) -> Option<Arc<ChunkRoller>> {
-    if rtck.hash == *hx {
+    let chk = rtck;
+    if chk.hash == *hx {
         return Some(rtck.clone())
     }
-    for a in rtck.childs.iter() {
+    for a in chk.childs.borrow().iter() {
         let res = _locate_chunk(a, hx);
         if let Some(ck) = res {
             return Some(ck.clone())

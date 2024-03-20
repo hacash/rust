@@ -19,11 +19,9 @@ struct MemoryDB(
 
 impl MemoryDB {
     // get
-    fn get(&self, k: &[u8]) -> Option<&[u8]> {
+    fn get(&self, k: &[u8]) -> Option<&MemdbItem> {
         if let Some(v) = self.0.get(k) {
-            if let MemdbItem::Value(v) = v {
-                return Some(&v)
-            }
+            return Some(&v)
         }
         // not find or delete
         None

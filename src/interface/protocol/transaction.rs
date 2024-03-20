@@ -1,23 +1,23 @@
 
-pub trait TransactionRead {    
+pub trait TransactionRead : Field {    
     
     fn hash(&self) -> Hash { panic_never_call_this!() }
     fn hash_with_fee(&self) -> Hash { panic_never_call_this!() }
 
-    fn get_type(&self) -> u8;
+    fn ty(&self) -> u8;
 
-    fn get_address(&self) -> &Address;
-    fn get_fee(&self) -> &Amount { panic_never_call_this!(); }
-    fn get_fee_miner_received(&self) -> Amount { panic_never_call_this!() }
-    fn get_timestamp(&self) -> &Timestamp { panic_never_call_this!() }
+    fn address(&self) -> &Address;
+    fn fee(&self) -> &Amount { panic_never_call_this!(); }
+    fn fee_miner_received(&self) -> Amount { panic_never_call_this!() }
+    fn timestamp(&self) -> &Timestamp { panic_never_call_this!() }
 
-    fn get_reward(&self) -> &Amount { panic_never_call_this!() }
-    fn get_message(&self) -> &StringTrim16 { panic_never_call_this!() }
+    fn reward(&self) -> &Amount { panic_never_call_this!() }
+    fn message(&self) -> &StringTrim16 { panic_never_call_this!() }
     
-    fn get_action_count(&self) -> u16 { panic_never_call_this!() }
-    fn get_actions(&self) -> &Vec<Box<dyn Action>> { panic_never_call_this!(); }
+    fn action_count(&self) -> u16 { panic_never_call_this!() }
+    fn actions(&self) -> &Vec<Box<dyn Action>> { panic_never_call_this!(); }
 
-    fn get_signs(&self) -> &Vec<Sign> { panic_never_call_this!(); }
+    fn signs(&self) -> &Vec<Sign> { panic_never_call_this!(); }
     
     fn fee_purity(&self) -> u32 { 0 }
 }

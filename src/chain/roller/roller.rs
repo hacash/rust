@@ -4,12 +4,35 @@ pub struct ChunkRoller {
 
     pub height: BlockHeight,
     pub hash: Hash,
-    pub block: BlockPkgInst,
+    pub block: Box<dyn BlockPkg>,
     pub state: Arc<ChainState>,
 
-    pub childs: Vec<Arc<ChunkRoller>>,
+    pub childs: RefCell<Vec<Arc<ChunkRoller>>>,
     pub parent: Option<Weak<ChunkRoller>>,
 
 }
 
+
+impl ChunkRoller {
+
+    pub fn create(blkpkg: Box<dyn BlockPkg>, state: Arc<ChainState>) -> ChunkRoller {
+        ChunkRoller{
+            height: blkpkg.objc().height().clone(),
+            hash: blkpkg.hash().clone(),
+            block: blkpkg,
+            state: state,
+            childs: Vec::new().into(),
+            parent: None,
+        }
+    }
+
+    pub fn push_child(&self, c: Arc<ChunkRoller>) {
+        self.childs.borrow_mut().push(c);
+    }
+
+    pub fn set_parent(&mut self, p: Weak<ChunkRoller>) {
+        self.parent = Some(p);
+    }
+
+}
 

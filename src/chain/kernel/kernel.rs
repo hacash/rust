@@ -10,6 +10,8 @@ pub struct BlockChainKernel {
     sroot: Arc<ChunkRoller>, // tree root block
     scusp: Weak<ChunkRoller>, // current latest block
 
+    mintk: Box<dyn MintChecker>,
+
     // insert lock
     isrlck: Mutex<bool>,
     // updlck: RwLock<bool>,
