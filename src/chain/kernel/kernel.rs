@@ -18,11 +18,20 @@ pub struct BlockChainKernel {
 }
 
 impl BlockChainKernel {
-
-
+    
     pub fn init(&mut self, ini: &IniObj) -> Option<Error> {
         let cnf = NewKernelConf(ini);
+        // create data dir
+        std::fs::create_dir_all(&cnf.store_data_dir);
+        std::fs::create_dir_all(&cnf.state_data_dir);
+        // ok
         self.cnf = cnf;
+        None
+    }
+
+    pub fn start(&mut self) -> Option<Error> {
+
+
         None
     }
 

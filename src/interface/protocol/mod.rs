@@ -9,6 +9,7 @@ use crate::core::account::*;
 
 use super::field::*;
 use super::chain::State;
+use super::vm::VMAction;
 
 include!("action.rs");
 include!("transaction.rs");

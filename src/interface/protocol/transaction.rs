@@ -15,7 +15,7 @@ pub trait TransactionRead : Field {
     fn message(&self) -> &StringTrim16 { panic_never_call_this!() }
     
     fn action_count(&self) -> u16 { panic_never_call_this!() }
-    fn actions(&self) -> &Vec<Box<dyn Action>> { panic_never_call_this!(); }
+    fn actions(&self) -> &Vec<Box<dyn VMAction>> { panic_never_call_this!(); }
 
     fn signs(&self) -> &Vec<Sign> { panic_never_call_this!(); }
     
