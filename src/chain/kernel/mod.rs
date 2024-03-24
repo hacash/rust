@@ -16,11 +16,13 @@ use crate::base::util::*;
 use crate::mint::checker::*;
 
 use super::db::*;
+use super::state::*;
 use super::roller::*;
 
 include!("kernel.rs");
 include!("read.rs");
 include!("insert.rs");
+include!("roll.rs");
 include!("locate.rs");
 // include!("start.rs");
 // include!("init.rs");

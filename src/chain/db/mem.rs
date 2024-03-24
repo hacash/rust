@@ -2,6 +2,7 @@
 /**
  * memory db
  */
+#[derive(Debug, Clone)]
 enum MemdbItem {
     Delete, // is delete
     Value(Vec<u8>),
@@ -13,27 +14,30 @@ impl MemdbItem {
     }
 }
 
-struct MemoryDB(
+pub struct MemoryDB(
     HashMap<Vec<u8>, MemdbItem>
 );
 
 impl MemoryDB {
+
+    pub fn new() -> MemoryDB {
+        MemoryDB(
+            HashMap::new()
+        )
+    }
+
     // get
-    fn get(&self, k: &[u8]) -> Option<&MemdbItem> {
-        if let Some(v) = self.0.get(k) {
-            return Some(&v)
-        }
-        // not find or delete
-        None
+    pub fn get(&self, k: &[u8]) -> Option<&MemdbItem> {
+        self.0.get(k) // find or not ret none
     }
 
     // set
-    fn set(&mut self, k: &[u8], v: &[u8]) {
+    pub fn set(&mut self, k: &[u8], v: &[u8]) {
         self.0.insert(k.to_vec(), MemdbItem::from(v));
     }
 
     // del
-    fn del(&mut self, k: &[u8]) {
+    pub fn del(&mut self, k: &[u8]) {
         self.0.insert(k.to_vec(), MemdbItem::Delete);
     }
 }

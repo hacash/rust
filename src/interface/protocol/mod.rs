@@ -6,6 +6,7 @@ use crate::sys::*;
 use crate::base::field::*;
 use crate::core::field::*;
 use crate::core::account::*;
+use crate::core::protocol::*;
 
 use super::field::*;
 use super::chain::State;

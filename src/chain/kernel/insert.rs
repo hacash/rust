@@ -6,59 +6,16 @@ impl Kernel for BlockChainKernel {
         // lock
         self.isrlck.lock();
         // do insert
-        let res = do_insert(self, blkpkg.as_ref());
-        if let Err(e) = res {
-            return Some(e)
-        }
+        let (bsck, state) = do_insert(self, blkpkg.as_ref()).ok() ? ;
         // insert success try do roll
-        let (bsck, state) = res.unwrap();
         do_roll(self, blkpkg, bsck, state)
     }
 
 }
 
-
-// do change chunk roller and state head
-fn do_roll(this: &mut BlockChainKernel, blkpkg: Box<dyn BlockPkg>, bsck: Arc<ChunkRoller>, state: Arc<ChainState>) -> Option<Error> {
-    let istprevhx = *blkpkg.objc().prevhash();
-    let mut chunk = ChunkRoller::create(blkpkg, state.clone());
-    chunk.set_parent(Arc::downgrade(&bsck).into()); // set base chunk be parent
-    let chunkobj = Arc::new(chunk);
-    bsck.push_child(chunkobj.clone()); // push child
-    // check move root
-    let cshx = this.scusp.upgrade()?.hash;
-    if istprevhx != cshx {
-        // insert to fork so not move
-        return None
-    }
-    let croothei = this.sroot.height.to_u64();
-    let curckhei = this.scusp.upgrade()?.height.to_u64();
-    // if croothei + this.cnf.unstable_block >= curckhei {
-    //     // insert to fork so not move
-    //     return None
-    // }
-    let mut newrootck = this.scusp.clone();
-    for i in 0..this.cnf.unstable_block - 1 {
-        if let Some(p) = &newrootck.upgrade()?.parent {
-            newrootck = p.clone();
-        }else{
-            break;
-        }
-    }
-    let nh1 = newrootck.upgrade()?.height.to_u64();
-    if croothei + 1 != nh1 {
-        return erf!("insert to move current root height error, need {} but got {}",
-            croothei + 1, nh1)
-    }
-    // change state head and root
-    this.scusp = Arc::downgrade(&chunkobj);
-    this.state = Arc::downgrade(&state);
-    this.sroot = newrootck.upgrade()?;
-    // ok
-    None
-}
-
-// do insert block crate new state
+/**
+ * do insert block crate new state
+ */
 fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Result<(Arc<ChunkRoller>, Arc<ChainState>), Error> {
 
     // check height

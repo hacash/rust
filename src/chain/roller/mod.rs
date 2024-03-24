@@ -9,5 +9,6 @@ use crate::core::component::*;
 use crate::interface::protocol::*;
 
 use super::db::*;
+use super::state::*;
 
 include!("roller.rs");

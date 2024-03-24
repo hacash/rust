@@ -9,6 +9,7 @@ use crate::interface::vm::*;
 include!("action/action.rs");
 include!("transaction/transaction.rs");
 include!("block/block.rs");
+include!("block/origin.rs");
 include!("actcaller/actcaller.rs");
 
 

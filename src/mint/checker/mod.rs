@@ -6,7 +6,7 @@ use crate::interface::mint::*;
 
 use crate::core::field::*;
 use crate::core::component::*;
-use crate::chain::db::*;
+use crate::chain::state::*;
 
 include!("check.rs");
 

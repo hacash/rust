@@ -36,9 +36,12 @@ sha2 = "0.10.2"
 regex = "1.10.0"
 wasm-bindgen = "0.2.87"
 ini = "1.3.0"
-rusty-leveldb = "3.0.0"
+leveldb-sys = "2.0.9"
 
+# rocksdb = "0.22.0"
 # easy-http-request = "0.2.13"
+# rusty-leveldb = "3.0.0"
+# leveldb = "0.8.6"
 
 
 
