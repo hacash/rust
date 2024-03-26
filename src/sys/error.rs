@@ -7,6 +7,7 @@ macro_rules! er {
     ($v:expr) => { Some(($v).to_string()) };
 }
 
+#[macro_export]
 macro_rules! erf {
     ( $($v:expr),+ ) => { er!(format!( $($v),+ )) };
 }
@@ -16,8 +17,20 @@ macro_rules! err {
     ($v:expr) => { Err(($v).to_string()) };
 }
 
+#[macro_export]
 macro_rules! errf {
     ( $($v:expr),+ ) => { err!(format!( $($v),+ )) };
+}
+
+
+#[macro_export]
+macro_rules! ifer {
+    ( $value:expr ) => { 
+// Some => Err
+if let Some(e) = $value {
+    return Err(e)
+}    
+    };
 }
 
 #[macro_export]

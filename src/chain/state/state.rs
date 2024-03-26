@@ -57,7 +57,8 @@ impl StateRead for ChainState {
 
 
 impl State for ChainState {
-
-
+    // fn fork_sub(&mut self) -> Box<dyn State> {
+    //     impl_fork_sub(&self)
+    // }
 }
 

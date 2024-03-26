@@ -22,7 +22,7 @@ fn do_roll(this: &mut BlockChainKernel, blkpkg: Box<dyn BlockPkg>, bsck: Arc<Chu
     // }
     let mut newrootck = this.scusp.clone();
     for i in 0..this.cnf.unstable_block - 1 {
-        if let Some(p) = &newrootck.upgrade()?.parent {
+        if let Some(p) = newrootck.upgrade()?.parent.borrow().as_ref() {
             newrootck = p.clone();
         }else{
             break;

@@ -8,7 +8,7 @@ pub struct ChunkRoller {
     pub state: Arc<ChainState>,
 
     pub childs: RefCell<Vec<Arc<ChunkRoller>>>,
-    pub parent: Option<Weak<ChunkRoller>>,
+    pub parent: RefCell<Option<Weak<ChunkRoller>>>,
 
 }
 
@@ -22,7 +22,7 @@ impl ChunkRoller {
             block: blkpkg,
             state: state,
             childs: Vec::new().into(),
-            parent: None,
+            parent: None.into(),
         }
     }
 
@@ -31,7 +31,7 @@ impl ChunkRoller {
     }
 
     pub fn set_parent(&mut self, p: Weak<ChunkRoller>) {
-        self.parent = Some(p);
+        *self.parent.borrow_mut() = Some(p);
     }
 
 }

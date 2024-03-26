@@ -90,33 +90,30 @@ fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Result<(Arc<
     if *mrklrt != mkroot {
         return errf!("block mrkl root need {} but got {}", mkroot, mrklrt)
     }
-    // check mint checker and genesis  
-    if let Some(e) = this.mintk.consensus(&**block) {
-        return Err(e) // consensus error
-    }
-    if let Some(e) = this.mintk.coinbase(&*alltxs[0]) { // coinbase tx id = 0
-        return Err(e) // coinbase error
-    }
+    // check mint checker and genesis , if consensus error
+    ifer!{ this.mintk.consensus(&**block) }
+    // coinbase tx id = 0, if coinbase error
+    ifer!{ this.mintk.coinbase(&*alltxs[0]) }
     // check state
     // fork new state
     let mut tempstate = fork_temp_state(this.state.upgrade().unwrap());
     // if init genesis status
     if isrhei == 1 {
-        if let Some(e) = this.mintk.genesis(&mut tempstate) {
-            return Err(e) // genesis init error
-        }
+        // genesis init error
+        ifer!{ this.mintk.genesis(&mut tempstate) }
     }
     // exec each tx
-    let txstabs = Arc::new(tempstate);
+    // let txstabs = Arc::new(tempstate);
     for tx in alltxs.iter() {
-        let mut txstate = fork_temp_state(txstabs.clone());
-        let ret = vm::call_vm_exec_tx(isrhei, tx.to_readonly(), &mut txstate) ? ;
-        // tx.
+        // let mut txstate = fork_temp_state(txstabs.clone());
+        let (substate) = vm::call_vm_exec_tx(isrhei, tx.to_readonly(), &mut tempstate) ? ;
+        // ok merge copy state
+        ifer!{ tempstate.merge_copy(substate) }
     }
-
+    // 
 
 
 
     // ok return
-    Ok((prevchunk.clone(), txstabs.clone()))
+    Ok((prevchunk.clone(), Arc::new(tempstate)))
 }
