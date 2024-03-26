@@ -15,7 +15,7 @@ pub struct $name<'a> {
 
 impl $name<'_> {
 
-    pub fn create(sta: &mut dyn State) -> $name {
+    pub fn wrap(sta: &mut dyn State) -> $name {
         $name{
             state: sta,
         }

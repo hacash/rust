@@ -6,3 +6,5 @@ mod bytecode;
 mod ast;
 
 pub mod vm;
+
+include!("exec.rs");

@@ -5,10 +5,13 @@ use crate::interface::field::*;
 use crate::base::field::*;
 use crate::core::field::*;
 
+use super::chain::*;
+use super::protocol::*;
+
 
 include!("extactcaller.rs");
 include!("codeloader.rs");
-// include!("stack.rs");
+include!("receipt.rs");
 include!("vm.rs");
 
 

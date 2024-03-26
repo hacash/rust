@@ -13,7 +13,7 @@ pub trait BlockRead {
     
 
     fn transaction_count(&self) -> u16;
-    fn transactions(&self) -> &Vec<Box<dyn Transaction>>;
+    fn transactions(&self) -> Vec<&dyn Transaction>;
     fn transaction_hash_list(&self, iswithfee: bool) -> Vec<Hash>;
 
 }

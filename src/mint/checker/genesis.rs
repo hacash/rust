@@ -8,7 +8,7 @@ fn impl_genesis(this: &BlockMintChecker, state: &mut dyn State) -> Option<Error>
 	let amt2 = Amount::new_small(12, 244);
     let bls1 = Balance::hacash(amt1);
     let bls2 = Balance::hacash(amt2);
-    let mut state = CoreState::create(state);
+    let mut state = CoreState::wrap(state);
     state.set_balance(&addr1, &bls2);
     state.set_balance(&addr2, &bls1);
     state.set_balance(&addr3, &bls1);

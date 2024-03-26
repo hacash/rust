@@ -19,6 +19,8 @@ use super::db::*;
 use super::state::*;
 use super::roller::*;
 
+use crate::vm;
+
 include!("kernel.rs");
 include!("read.rs");
 include!("insert.rs");

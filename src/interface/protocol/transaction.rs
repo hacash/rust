@@ -8,7 +8,7 @@ pub trait TransactionRead : Field {
 
     fn address(&self) -> &Address;
     fn fee(&self) -> &Amount { panic_never_call_this!(); }
-    fn fee_miner_received(&self) -> Amount { panic_never_call_this!() }
+    // fn fee_miner_received(&self) -> Amount { panic_never_call_this!() }
     fn timestamp(&self) -> &Timestamp { panic_never_call_this!() }
 
     fn reward(&self) -> &Amount { panic_never_call_this!() }
@@ -19,14 +19,16 @@ pub trait TransactionRead : Field {
 
     fn signs(&self) -> &Vec<Sign> { panic_never_call_this!(); }
     
-    fn fee_purity(&self) -> u32 { 0 }
+    // fn fee_purity(&self) -> u32 { 0 }
 }
 
 
 pub trait Transaction : TransactionRead {
 
-    fn verify_all_need_signs(&self) -> Option<Error> { panic_never_call_this!() }
-    fn verify_target_signs(&self, _: &HashSet<Address>) -> Option<Error> { panic_never_call_this!() }
+    fn to_readonly<'a>(&'a self) -> &'a dyn TransactionRead { panic_never_call_this!() }
+
+    // fn verify_all_need_signs(&self) -> Option<Error> { panic_never_call_this!() }
+    // fn verify_target_signs(&self, _: &HashSet<Address>) -> Option<Error> { panic_never_call_this!() }
     fn fill_sign(&mut self,_: &Account) -> Option<Error> { panic_never_call_this!() }
     fn push_action(&mut self, _: Box<dyn Action>) -> Option<Error> { panic_never_call_this!() }
 

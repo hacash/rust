@@ -12,16 +12,21 @@ pub trait StateRead : StateDB {
 
     // if not find return false
     fn load(&self, p: &[u8], k: &dyn Serialize, v: &mut dyn Parse) -> bool { panic_never_call_this!() }
+    // if v.len() == 0 , delete the key, is the db is disk will get panic!
+    fn memvks<'a>(&'a self) -> Vec<(&'a [u8], &'a [u8])> { panic_never_call_this!() } 
 }
 
 pub trait State : StateRead {
 
-    fn init(&self) {}
+    // fn init(&self) {}
 
-    fn save(&self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) { panic_never_call_this!() }
-    fn flush(&self){ } // write data to disk and remove mem db
+    fn save(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) { panic_never_call_this!() }
+    fn drop(&mut self, p: &[u8], k: &dyn Serialize) { panic_never_call_this!() }
+    // fn flush(&self){ } 
 
-    // fn fork_next(&self) -> Box<dyn State>;
+    fn fork_sub(&self) -> Box<dyn State> { panic_never_call_this!() }
+    // if the db is disk, merge will write/flush data to disk
+    fn merge_copy(&mut self, src: Box<dyn State>) -> Option<Error> { panic_never_call_this!() }
 }
 
 

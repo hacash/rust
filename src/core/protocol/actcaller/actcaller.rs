@@ -19,7 +19,7 @@ impl ExtActCaller for ExtActionCaller {
         impl_cutout(self, buf)
     }
 
-    fn execute(&mut self, buf: &[u8]) -> Result<Box<dyn ActExecRet>, Error> {
+    fn execute(&mut self, buf: &[u8]) -> Result<Box<dyn ExecResult>, Error> {
         impl_execute(self, buf)
     }
     

@@ -110,6 +110,7 @@ fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Result<(Arc<
     let txstabs = Arc::new(tempstate);
     for tx in alltxs.iter() {
         let mut txstate = fork_temp_state(txstabs.clone());
+        let ret = vm::call_vm_exec_tx(isrhei, tx.to_readonly(), &mut txstate) ? ;
         // tx.
     }
 

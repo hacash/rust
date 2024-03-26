@@ -13,5 +13,7 @@ pub trait BlockPkg : HashBodyPkg {
 
 pub trait TxPkg : HashBodyPkg {
     fn objc(&self) -> &Box<dyn Transaction> { panic_never_call_this!() }
+    fn burn_90(&self) -> bool { false }
+    fn fee_purity(&self) -> u32 { 0 }
 }
 
