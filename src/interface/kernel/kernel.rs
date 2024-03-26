@@ -9,7 +9,7 @@ pub trait KernelRead {
 pub trait Kernel : KernelRead {
     // fn init(&self, _: &IniObj) -> Option<Error> { panic_never_call_this!() }
     // fn start(&self) -> Option<Error> { panic_never_call_this!() }
-    fn insert(&mut self, _: Box<dyn BlockPkg>) -> Option<Error> { panic_never_call_this!() }
+    fn insert(&mut self, _: Box<dyn BlockPkg>) -> RetErr { panic_never_call_this!() }
 }
 
 

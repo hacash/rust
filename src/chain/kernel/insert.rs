@@ -2,11 +2,11 @@
 
 impl Kernel for BlockChainKernel {
 
-    fn insert(&mut self, blkpkg: Box<dyn BlockPkg>) -> Option<Error> {    
+    fn insert(&mut self, blkpkg: Box<dyn BlockPkg>) -> RetErr {    
         // lock
         self.isrlck.lock();
         // do insert
-        let (bsck, state) = do_insert(self, blkpkg.as_ref()).ok() ? ;
+        let (bsck, state) = do_insert(self, blkpkg.as_ref()) ? ;
         // insert success try do roll
         do_roll(self, blkpkg, bsck, state)
     }
@@ -16,7 +16,7 @@ impl Kernel for BlockChainKernel {
 /**
  * do insert block crate new state
  */
-fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Result<(Arc<ChunkRoller>, Arc<ChainState>), Error> {
+fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Ret<(Arc<ChunkRoller>, Arc<ChainState>)> {
 
     // check height
     let block = blkpkg.objc();
@@ -91,16 +91,16 @@ fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Result<(Arc<
         return errf!("block mrkl root need {} but got {}", mkroot, mrklrt)
     }
     // check mint checker and genesis , if consensus error
-    ifer!{ this.mintk.consensus(&**block) }
+    this.mintk.consensus(&**block) ? ;
     // coinbase tx id = 0, if coinbase error
-    ifer!{ this.mintk.coinbase(&*alltxs[0]) }
+    this.mintk.coinbase(&*alltxs[0]) ? ;
     // check state
     // fork new state
     let mut tempstate = fork_temp_state(this.state.upgrade().unwrap());
     // if init genesis status
     if isrhei == 1 {
         // genesis init error
-        ifer!{ this.mintk.genesis(&mut tempstate) }
+        this.mintk.genesis(&mut tempstate) ? ;
     }
     // exec each tx
     // let txstabs = Arc::new(tempstate);
@@ -108,7 +108,7 @@ fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Result<(Arc<
         // let mut txstate = fork_temp_state(txstabs.clone());
         let (substate) = vm::call_vm_exec_tx(isrhei, tx.to_readonly(), &mut tempstate) ? ;
         // ok merge copy state
-        ifer!{ tempstate.merge_copy(substate) }
+        tempstate.merge_copy(substate) ? ;
     }
     // 
 

@@ -1,3 +1,6 @@
+pub type Ret<T> = Result<T, Error>;
+pub type RetErr = Result<(), Error>;
+
 
 pub const _BUF_E1: &str = "buffer too short";
 

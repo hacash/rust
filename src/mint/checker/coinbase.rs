@@ -1,9 +1,10 @@
 
-fn impl_coinbase(this: &BlockMintChecker, cbtx: &dyn Transaction) -> Option<Error> {
+fn impl_coinbase(this: &BlockMintChecker, cbtx: &dyn Transaction) -> RetErr {
         
 
 
     // success
-    None
+    // ok
+    Ok(())
 }
 

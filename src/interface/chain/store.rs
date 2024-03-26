@@ -19,7 +19,7 @@ pub trait StoreRead {
 
 pub trait Store : StoreRead {
 
-    fn init(&self) -> Option<Error>;
+    fn init(&self) -> RetErr;
 
     fn save_block(&self, _: &dyn BlockPkg);
     fn set_block_point(&self, _: &BlockHeight, _: &Hash);

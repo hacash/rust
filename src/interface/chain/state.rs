@@ -27,7 +27,7 @@ pub trait State : StateRead {
     fn fork_sub(&self) -> Box<dyn State> { panic_never_call_this!() }
     // fn link(&mut self, _: Arc<dyn State>) { panic_never_call_this!() }
     // if the db is disk, merge will write/flush data to disk
-    fn merge_copy(&mut self, src: Box<dyn State>) -> Option<Error> { panic_never_call_this!() }
+    fn merge_copy(&mut self, src: Box<dyn State>) -> RetErr { panic_never_call_this!() }
 }
 
 

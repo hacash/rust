@@ -1,7 +1,8 @@
 
-fn impl_consensus(this: &BlockMintChecker, cbtx: &dyn Block) -> Option<Error> {
+fn impl_consensus(this: &BlockMintChecker, cbtx: &dyn Block) -> RetErr {
     
 
     // success
-    None
+    // ok
+    Ok(())
 }

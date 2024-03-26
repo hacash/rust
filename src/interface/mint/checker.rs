@@ -2,10 +2,10 @@
 
 pub trait MintChecker {
     // check
-    fn consensus(&self, _: &dyn Block) -> Option<Error>;
-    fn coinbase(&self, _: &dyn Transaction) -> Option<Error>;
+    fn consensus(&self, _: &dyn Block) -> RetErr;
+    fn coinbase(&self, _: &dyn Transaction) -> RetErr;
     // do
-    fn genesis(&self, _: &mut dyn State) -> Option<Error>;
+    fn genesis(&self, _: &mut dyn State) -> RetErr;
 }
 
 

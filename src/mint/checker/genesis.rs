@@ -1,5 +1,5 @@
 
-fn impl_genesis(this: &BlockMintChecker, state: &mut dyn State) -> Option<Error> {
+fn impl_genesis(this: &BlockMintChecker, state: &mut dyn State) -> RetErr {
     
 	let addr1 = Address::form_readable("12vi7DEZjh6KrK5PVmmqSgvuJPCsZMmpfi").unwrap();
 	let addr2 = Address::form_readable("1LsQLqkd8FQDh3R7ZhxC5fndNf92WfhM19").unwrap();
@@ -13,5 +13,5 @@ fn impl_genesis(this: &BlockMintChecker, state: &mut dyn State) -> Option<Error>
     state.set_balance(&addr2, &bls1);
     state.set_balance(&addr3, &bls1);
     // ok
-    None
+    Ok(())
 } 
