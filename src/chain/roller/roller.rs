@@ -30,8 +30,11 @@ impl ChunkRoller {
         self.childs.borrow_mut().push(c);
     }
 
-    pub fn set_parent(&mut self, p: Weak<ChunkRoller>) {
+    pub fn set_parent(&self, p: Weak<ChunkRoller>) {
         *self.parent.borrow_mut() = Some(p);
+    }
+    pub fn drop_parent(&self) {
+        *self.parent.borrow_mut() = None;
     }
 
 }

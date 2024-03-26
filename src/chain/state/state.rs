@@ -2,11 +2,15 @@
 pub struct ChainState {
 
     db: DB,
-    base: Option<Weak<ChainState>>,
+    base: Weak<ChainState>,
 
 }
 
 impl ChainState {
+
+    // pub fn drop_parent(&self) {
+    //     self.base = None;
+    // }
     
 }
 
@@ -23,8 +27,7 @@ impl StateDB for ChainState {
             return res // find or not find
         }
         // check base
-        if let Some(b) = &self.base {
-            let b = b.upgrade().unwrap();
+        if let Some(b) = self.base.upgrade() {
             return b.get_at(key)
         }
         // final not find

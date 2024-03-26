@@ -49,7 +49,11 @@ fn do_roll(cnf: &KernelConf, this: &KernelCtx, blkpkg: Box<dyn BlockPkg>, bsck: 
  */
 fn do_roll_chunk_state(this: &KernelCtx, base: Arc<ChunkRoller>, tar:Arc<ChunkRoller>) -> RetErr {
 
-    
+    // copy
+
+    // unset parent and drop
+    // tar.drop_parent();
+    tar.drop_parent();
 
     Ok(())
 }

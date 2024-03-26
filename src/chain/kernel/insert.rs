@@ -3,10 +3,10 @@
 impl Kernel for BlockChainKernel {
 
     fn insert(&self, blkpkg: Box<dyn BlockPkg>) -> RetErr {    
+        self.isrlck.lock();
         // lock
         let rollres;
         {
-            // self.isrlck.lock();
             let ctx = self.klctx.read().unwrap();
             // do insert
             let (bsck, state) = do_insert(&self.cnf, &ctx, self.mintk.as_ref(), blkpkg.as_ref()) ? ;
