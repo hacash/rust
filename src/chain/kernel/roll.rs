@@ -2,7 +2,7 @@
 /**
  * do change chunk roller and state head
  */
-fn do_roll(this: &mut BlockChainKernel, blkpkg: Box<dyn BlockPkg>, bsck: Arc<ChunkRoller>, state: Arc<ChainState>) -> RetErr {
+fn do_roll(cnf: &KernelConf, this: &mut KernelCtx, blkpkg: Box<dyn BlockPkg>, bsck: Arc<ChunkRoller>, state: Arc<ChainState>) -> RetErr {
     let istprevhx = *blkpkg.objc().prevhash();
     let mut chunk = ChunkRoller::create(blkpkg, state.clone());
     chunk.set_parent(Arc::downgrade(&bsck).into()); // set base chunk be parent
@@ -21,7 +21,7 @@ fn do_roll(this: &mut BlockChainKernel, blkpkg: Box<dyn BlockPkg>, bsck: Arc<Chu
     //     return None
     // }
     let mut newrootck = this.scusp.clone();
-    for i in 0..this.cnf.unstable_block - 1 {
+    for i in 0..cnf.unstable_block - 1 {
         if let Some(p) = newrootck.upgrade().unwrap().parent.borrow().as_ref() {
             newrootck = p.clone();
         }else{
@@ -49,7 +49,7 @@ fn do_roll(this: &mut BlockChainKernel, blkpkg: Box<dyn BlockPkg>, bsck: Arc<Chu
 /**
  * roll chunk state
  */
-fn do_roll_chunk_state(this: &mut BlockChainKernel, base: Arc<ChunkRoller>, tar:Arc<ChunkRoller>) -> RetErr {
+fn do_roll_chunk_state(this: &mut KernelCtx, base: Arc<ChunkRoller>, tar:Arc<ChunkRoller>) -> RetErr {
 
     
 

@@ -1,14 +1,21 @@
 
 
+struct KernelCtx {
+    
+    state: Weak<ChainState>,
+
+    sroot: Arc<ChunkRoller>, // tree root block
+    scusp: Weak<ChunkRoller>, // current latest block
+
+}
+
 pub struct BlockChainKernel {
 
     cnf: KernelConf,
 
     store: Arc<BlockStore>,
-    state: Weak<ChainState>,
 
-    sroot: Arc<ChunkRoller>, // tree root block
-    scusp: Weak<ChunkRoller>, // current latest block
+    klctx: RwLock<RefCell<KernelCtx>>,
 
     mintk: Box<dyn MintChecker>,
 
@@ -36,14 +43,16 @@ impl BlockChainKernel {
     }
 
     pub fn get_latest_state(&self) -> Arc<dyn State> {
-        if let Some(st) = self.state.upgrade() {
+        let ctx = self.klctx.read().unwrap();
+        let ctx = ctx.borrow();
+        if let Some(st) = ctx.state.upgrade() {
             return st
         }
-        if let Some(sc) = self.scusp.upgrade() {
+        if let Some(sc) = ctx.scusp.upgrade() {
             return sc.state.clone()
         }
         // base
-        self.sroot.state.clone()
+        ctx.sroot.state.clone()
     }
 }
 

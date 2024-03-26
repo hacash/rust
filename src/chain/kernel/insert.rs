@@ -2,13 +2,15 @@
 
 impl Kernel for BlockChainKernel {
 
-    fn insert(&mut self, blkpkg: Box<dyn BlockPkg>) -> RetErr {    
+    fn insert(&self, blkpkg: Box<dyn BlockPkg>) -> RetErr {    
         // lock
-        self.isrlck.lock();
+        // self.isrlck.lock();
+        let ctx = self.klctx.write().unwrap();
+        let mut ctx = ctx.borrow_mut();
         // do insert
-        let (bsck, state) = do_insert(self, blkpkg.as_ref()) ? ;
+        let (bsck, state) = do_insert(&self.cnf, &mut ctx, self.mintk.as_ref(), blkpkg.as_ref()) ? ;
         // insert success try do roll
-        do_roll(self, blkpkg, bsck, state)
+        do_roll(&self.cnf, &mut ctx, blkpkg, bsck, state)
     }
 
 }
@@ -16,7 +18,7 @@ impl Kernel for BlockChainKernel {
 /**
  * do insert block crate new state
  */
-fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Ret<(Arc<ChunkRoller>, Arc<ChainState>)> {
+fn do_insert(cnf: &KernelConf, this: &mut KernelCtx, mintk: &dyn MintChecker, blkpkg: &dyn BlockPkg) -> Ret<(Arc<ChunkRoller>, Arc<ChainState>)> {
 
     // check height
     let block = blkpkg.objc();
@@ -25,7 +27,7 @@ fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Ret<(Arc<Chu
     if isrhei <= rthei {
         return errf!("block height {} is too low to insert, need above {}", isrhei, rthei)
     }
-    let underhei = rthei + this.cnf.unstable_block + 1; // unstable block = 4
+    let underhei = rthei + cnf.unstable_block + 1; // unstable block = 4
     if isrhei > underhei {
         return errf!("block height {} is too high to insert, need equal or under {}", isrhei, underhei)
     }
@@ -51,8 +53,8 @@ fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Ret<(Arc<Chu
     }
     // check size
     let blksz = blkpkg.body().len();
-    if blksz > this.cnf.max_block_size + 90 { // may 1MB + headmeta size
-        return errf!("block size cannot over {} bytes", this.cnf.max_block_size + 90)
+    if blksz > cnf.max_block_size + 90 { // may 1MB + headmeta size
+        return errf!("block size cannot over {} bytes", cnf.max_block_size + 90)
     }
     // check tx count
     let is_hash_with_fee = true;
@@ -61,8 +63,8 @@ fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Ret<(Arc<Chu
     if txcount < 1 {
         return err!("block txs cannot empty, need coinbase tx")
     }
-    if txcount > this.cnf.max_block_txs { // may 999
-        return errf!("block txs cannot more than {}", this.cnf.max_block_txs)
+    if txcount > cnf.max_block_txs { // may 999
+        return errf!("block txs cannot more than {}", cnf.max_block_txs)
     }
     if txcount != txhxs.len() {
         return errf!("block tx count need {} but got {}", txhxs.len(), txcount)
@@ -81,8 +83,8 @@ fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Ret<(Arc<Chu
     if txttnum != txcount {
         return errf!("block tx count need {} but got {}", txcount, txttnum)        
     }
-    if txttsize > this.cnf.max_block_size { // may 1MB
-        return errf!("block txs total size cannot over {} bytes", this.cnf.max_block_size)
+    if txttsize > cnf.max_block_size { // may 1MB
+        return errf!("block txs total size cannot over {} bytes", cnf.max_block_size)
     }
     // check mrkl root
     let mkroot = merge_mrkl_root(&txhxs);
@@ -91,16 +93,16 @@ fn do_insert(this: &mut BlockChainKernel, blkpkg: &dyn BlockPkg) -> Ret<(Arc<Chu
         return errf!("block mrkl root need {} but got {}", mkroot, mrklrt)
     }
     // check mint checker and genesis , if consensus error
-    this.mintk.consensus(&**block) ? ;
+    mintk.consensus(&**block) ? ;
     // coinbase tx id = 0, if coinbase error
-    this.mintk.coinbase(&*alltxs[0]) ? ;
+    mintk.coinbase(&*alltxs[0]) ? ;
     // check state
     // fork new state
     let mut tempstate = fork_temp_state(this.state.upgrade().unwrap());
     // if init genesis status
     if isrhei == 1 {
         // genesis init error
-        this.mintk.genesis(&mut tempstate) ? ;
+        mintk.genesis(&mut tempstate) ? ;
     }
     // exec each tx
     // let txstabs = Arc::new(tempstate);

@@ -17,6 +17,6 @@ fn _locate_chunk(rtck: &Arc<ChunkRoller>, hx: &Hash) -> Option<Arc<ChunkRoller>>
 
 
 // find
-fn locate_base_chunk(this: &BlockChainKernel, hx: &Hash) -> Option<Arc<ChunkRoller>> {
+fn locate_base_chunk(this: &KernelCtx, hx: &Hash) -> Option<Arc<ChunkRoller>> {
     _locate_chunk(&this.sroot, hx)
 }
