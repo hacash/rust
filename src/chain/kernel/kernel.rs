@@ -1,11 +1,11 @@
 
 
-struct KernelCtx {
+struct StateRoller {
     
     state: Weak<ChainState>,
 
-    sroot: Arc<ChunkRoller>, // tree root block
-    scusp: Weak<ChunkRoller>, // current latest block
+    sroot: Arc<RollChunk>, // tree root block
+    scusp: Weak<RollChunk>, // current latest block
 
 }
 
@@ -15,7 +15,7 @@ pub struct BlockChainKernel {
 
     store: Arc<BlockStore>,
 
-    klctx: RwLock<KernelCtx>, // change
+    klctx: RwLock<StateRoller>, // change
 
     mintk: Box<dyn MintChecker>,
 

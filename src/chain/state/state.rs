@@ -20,13 +20,10 @@ impl StateDB for ChainState {
     fn get_at(&self, key: &[u8]) -> Option<Vec<u8>> {
         // check delete
         let (res, notbase) = self.db.get(key);
-        if let Some(v) = res {
-            return Some(v) // ok find
-        }
         if notbase {
             return res // find or not find
         }
-        // check base
+        // have base and check base
         if let Some(b) = self.base.upgrade() {
             return b.get_at(key)
         }

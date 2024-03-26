@@ -1,22 +1,22 @@
 
 
-pub struct ChunkRoller {
+pub struct RollChunk {
 
     pub height: BlockHeight,
     pub hash: Hash,
     pub block: Box<dyn BlockPkg>,
     pub state: Arc<ChainState>,
 
-    pub childs: RefCell<Vec<Arc<ChunkRoller>>>,
-    pub parent: RefCell<Option<Weak<ChunkRoller>>>,
+    pub childs: RefCell<Vec<Arc<RollChunk>>>,
+    pub parent: RefCell<Option<Weak<RollChunk>>>,
 
 }
 
 
-impl ChunkRoller {
+impl RollChunk {
 
-    pub fn create(blkpkg: Box<dyn BlockPkg>, state: Arc<ChainState>) -> ChunkRoller {
-        ChunkRoller{
+    pub fn create(blkpkg: Box<dyn BlockPkg>, state: Arc<ChainState>) -> RollChunk {
+        RollChunk{
             height: blkpkg.objc().height().clone(),
             hash: blkpkg.hash().clone(),
             block: blkpkg,
@@ -26,11 +26,11 @@ impl ChunkRoller {
         }
     }
 
-    pub fn push_child(&self, c: Arc<ChunkRoller>) {
+    pub fn push_child(&self, c: Arc<RollChunk>) {
         self.childs.borrow_mut().push(c);
     }
 
-    pub fn set_parent(&self, p: Weak<ChunkRoller>) {
+    pub fn set_parent(&self, p: Weak<RollChunk>) {
         *self.parent.borrow_mut() = Some(p);
     }
     pub fn drop_parent(&self) {

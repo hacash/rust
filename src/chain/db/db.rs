@@ -11,7 +11,7 @@ impl DB {
         if let DB::Memory(mem) = self {
             let v = mem.get(k);
             if let None = v {
-                return (None, false) // not find check base
+                return (None, false) // not find, check base
             }
             let v = v.unwrap();
             if let MemdbItem::Delete = v {
@@ -21,7 +21,7 @@ impl DB {
                 return (Some(v.to_vec()), true) // find, not check base 
             }
         }else if let DB::Disk(ldb) = self {
-            return (ldb.get(k), false) // leveldb own is base,
+            return (ldb.get(k), true) // leveldb own is base, not check base
         }
         // not find, check base
         (None, false)

@@ -2,10 +2,10 @@
 /**
  * do change chunk roller and state head
  */
-fn do_roll(cnf: &KernelConf, this: &KernelCtx, blkpkg: Box<dyn BlockPkg>, bsck: Arc<ChunkRoller>, state: Arc<ChainState>) 
-    -> Ret<Option<(Weak<ChunkRoller>, Weak<ChainState>, Arc<ChunkRoller>)>> {
+fn do_roll(cnf: &KernelConf, this: &StateRoller, blkpkg: Box<dyn BlockPkg>, bsck: Arc<RollChunk>, state: Arc<ChainState>) 
+    -> Ret<Option<(Weak<RollChunk>, Weak<ChainState>, Arc<RollChunk>)>> {
     let istprevhx = *blkpkg.objc().prevhash();
-    let mut chunk = ChunkRoller::create(blkpkg, state.clone());
+    let mut chunk = RollChunk::create(blkpkg, state.clone());
     chunk.set_parent(Arc::downgrade(&bsck).into()); // set base chunk be parent
     let chunkobj = Arc::new(chunk);
     bsck.push_child(chunkobj.clone()); // push child
@@ -47,12 +47,11 @@ fn do_roll(cnf: &KernelConf, this: &KernelCtx, blkpkg: Box<dyn BlockPkg>, bsck: 
 /**
  * roll chunk state
  */
-fn do_roll_chunk_state(this: &KernelCtx, base: Arc<ChunkRoller>, tar:Arc<ChunkRoller>) -> RetErr {
+fn do_roll_chunk_state(this: &StateRoller, base: Arc<RollChunk>, tar:Arc<RollChunk>) -> RetErr {
 
     // copy
 
     // unset parent and drop
-    // tar.drop_parent();
     tar.drop_parent();
 
     Ok(())

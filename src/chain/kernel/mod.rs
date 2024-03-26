@@ -17,7 +17,7 @@ use crate::mint::checker::*;
 
 use super::db::*;
 use super::state::*;
-use super::roller::*;
+use super::chunk::*;
 
 use crate::vm;
 

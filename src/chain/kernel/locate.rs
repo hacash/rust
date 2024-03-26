@@ -1,6 +1,6 @@
 
 
-fn _locate_chunk(rtck: &Arc<ChunkRoller>, hx: &Hash) -> Option<Arc<ChunkRoller>> {
+fn _locate_chunk(rtck: &Arc<RollChunk>, hx: &Hash) -> Option<Arc<RollChunk>> {
     let chk = rtck;
     if chk.hash == *hx {
         return Some(rtck.clone())
@@ -17,6 +17,6 @@ fn _locate_chunk(rtck: &Arc<ChunkRoller>, hx: &Hash) -> Option<Arc<ChunkRoller>>
 
 
 // find
-fn locate_base_chunk(this: &KernelCtx, hx: &Hash) -> Option<Arc<ChunkRoller>> {
+fn locate_base_chunk(this: &StateRoller, hx: &Hash) -> Option<Arc<RollChunk>> {
     _locate_chunk(&this.sroot, hx)
 }

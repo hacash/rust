@@ -29,7 +29,7 @@ impl Kernel for BlockChainKernel {
 /**
  * do insert block crate new state
  */
-fn do_insert(cnf: &KernelConf, this: &KernelCtx, mintk: &dyn MintChecker, blkpkg: &dyn BlockPkg) -> Ret<(Arc<ChunkRoller>, Arc<ChainState>)> {
+fn do_insert(cnf: &KernelConf, this: &StateRoller, mintk: &dyn MintChecker, blkpkg: &dyn BlockPkg) -> Ret<(Arc<RollChunk>, Arc<ChainState>)> {
 
     // check height
     let block = blkpkg.objc();
