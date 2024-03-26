@@ -2,7 +2,8 @@
 /**
  * do change chunk roller and state head
  */
-fn do_roll(cnf: &KernelConf, this: &mut KernelCtx, blkpkg: Box<dyn BlockPkg>, bsck: Arc<ChunkRoller>, state: Arc<ChainState>) -> RetErr {
+fn do_roll(cnf: &KernelConf, this: &KernelCtx, blkpkg: Box<dyn BlockPkg>, bsck: Arc<ChunkRoller>, state: Arc<ChainState>) 
+    -> Ret<Option<(Weak<ChunkRoller>, Weak<ChainState>, Arc<ChunkRoller>)>> {
     let istprevhx = *blkpkg.objc().prevhash();
     let mut chunk = ChunkRoller::create(blkpkg, state.clone());
     chunk.set_parent(Arc::downgrade(&bsck).into()); // set base chunk be parent
@@ -12,7 +13,7 @@ fn do_roll(cnf: &KernelConf, this: &mut KernelCtx, blkpkg: Box<dyn BlockPkg>, bs
     let cshx = this.scusp.upgrade().unwrap().hash;
     if istprevhx != cshx {
         // insert to fork so not move
-        return Ok(())
+        return Ok(None)
     }
     let croothei = this.sroot.height.to_u64();
     let curckhei = this.scusp.upgrade().unwrap().height.to_u64();
@@ -36,12 +37,9 @@ fn do_roll(cnf: &KernelConf, this: &mut KernelCtx, blkpkg: Box<dyn BlockPkg>, bs
     // roll chunk state
     let tarrt = newrootck.upgrade().unwrap();
     do_roll_chunk_state(this, this.sroot.clone(), tarrt.clone()) ? ;
-    // change state head and root
-    this.scusp = Arc::downgrade(&chunkobj);
-    this.state = Arc::downgrade(&state);
-    this.sroot = tarrt;
+    // return 
     // ok
-    Ok(())
+    Ok(Some((Arc::downgrade(&chunkobj), Arc::downgrade(&state), tarrt)))
 }
 
 
@@ -49,7 +47,7 @@ fn do_roll(cnf: &KernelConf, this: &mut KernelCtx, blkpkg: Box<dyn BlockPkg>, bs
 /**
  * roll chunk state
  */
-fn do_roll_chunk_state(this: &mut KernelCtx, base: Arc<ChunkRoller>, tar:Arc<ChunkRoller>) -> RetErr {
+fn do_roll_chunk_state(this: &KernelCtx, base: Arc<ChunkRoller>, tar:Arc<ChunkRoller>) -> RetErr {
 
     
 
