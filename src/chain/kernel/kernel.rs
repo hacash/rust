@@ -15,7 +15,7 @@ pub struct BlockChainKernel {
 
     store: Arc<BlockStore>,
 
-    klctx: RwLock<RefCell<KernelCtx>>,
+    klctx: RwLock<KernelCtx>, // change
 
     mintk: Box<dyn MintChecker>,
 
@@ -42,17 +42,20 @@ impl BlockChainKernel {
         None
     }
 
-    pub fn get_latest_state(&self) -> Arc<dyn State> {
-        let ctx = self.klctx.read().unwrap();
-        let ctx = ctx.borrow();
+    pub fn get_latest_state(&self) -> Option<Arc<dyn State>> {
+        let ctx = self.klctx.try_read();
+        if let Err(_) = ctx {
+            return None // state busy !!!
+        }
+        let ctx = ctx.unwrap();
         if let Some(st) = ctx.state.upgrade() {
-            return st
+            return Some(st)
         }
         if let Some(sc) = ctx.scusp.upgrade() {
-            return sc.state.clone()
+            return Some(sc.state.clone())
         }
         // base
-        ctx.sroot.state.clone()
+        Some(ctx.sroot.state.clone())
     }
 }
 

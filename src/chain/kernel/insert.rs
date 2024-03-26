@@ -4,13 +4,24 @@ impl Kernel for BlockChainKernel {
 
     fn insert(&self, blkpkg: Box<dyn BlockPkg>) -> RetErr {    
         // lock
-        // self.isrlck.lock();
-        let ctx = self.klctx.write().unwrap();
-        let mut ctx = ctx.borrow_mut();
-        // do insert
-        let (bsck, state) = do_insert(&self.cnf, &mut ctx, self.mintk.as_ref(), blkpkg.as_ref()) ? ;
-        // insert success try do roll
-        do_roll(&self.cnf, &mut ctx, blkpkg, bsck, state)
+        let rollres;
+        {
+            // self.isrlck.lock();
+            let ctx = self.klctx.read().unwrap();
+            // do insert
+            let (bsck, state) = do_insert(&self.cnf, &ctx, self.mintk.as_ref(), blkpkg.as_ref()) ? ;
+            // insert success try do roll
+            rollres = do_roll(&self.cnf, &ctx, blkpkg, bsck, state) ? ;
+        }
+        if let Some((scusp, state, sroot)) = rollres {
+            // change ptr
+            let mut ctx = self.klctx.write().unwrap();
+            ctx.scusp = scusp;
+            ctx.state = state;
+            ctx.sroot = sroot;
+        }
+        // ok finish 
+        Ok(())
     }
 
 }
@@ -18,7 +29,7 @@ impl Kernel for BlockChainKernel {
 /**
  * do insert block crate new state
  */
-fn do_insert(cnf: &KernelConf, this: &mut KernelCtx, mintk: &dyn MintChecker, blkpkg: &dyn BlockPkg) -> Ret<(Arc<ChunkRoller>, Arc<ChainState>)> {
+fn do_insert(cnf: &KernelConf, this: &KernelCtx, mintk: &dyn MintChecker, blkpkg: &dyn BlockPkg) -> Ret<(Arc<ChunkRoller>, Arc<ChainState>)> {
 
     // check height
     let block = blkpkg.objc();
