@@ -30,8 +30,8 @@ impl RollChunk {
         self.childs.borrow_mut().push(c);
     }
 
-    pub fn set_parent(&self, p: Weak<RollChunk>) {
-        *self.parent.borrow_mut() = Some(p);
+    pub fn set_parent(&self, p: Arc<RollChunk>) {
+        *self.parent.borrow_mut() = Some(Arc::downgrade(&p).into());
     }
     pub fn drop_parent(&self) {
         *self.parent.borrow_mut() = None;

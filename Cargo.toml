@@ -20,6 +20,7 @@ cc = "1.0"
 
 
 [dependencies]
+libc = "0.2.4"
 chrono = "0.4.31"
 lazy_static = "1.4.0"
 concat-idents = "1.1.5"

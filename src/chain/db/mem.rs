@@ -3,13 +3,13 @@
  * memory db
  */
 #[derive(Debug, Clone)]
-enum MemdbItem {
+pub enum MemdbItem {
     Delete, // is delete
     Value(Vec<u8>),
 }
 
 impl MemdbItem {
-    fn from(v: &[u8]) -> MemdbItem {
+    pub fn from(v: &[u8]) -> MemdbItem {
         MemdbItem::Value(v.to_vec())
     }
 }
@@ -24,6 +24,10 @@ impl MemoryDB {
         MemoryDB(
             HashMap::new()
         )
+    }
+
+    pub fn iter(& self) -> MapIter<'_, Vec<u8>, MemdbItem> {
+        self.0.iter()
     }
 
     // get

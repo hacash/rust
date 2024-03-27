@@ -1,5 +1,6 @@
 use std::sync::{Arc, Weak};
 use std::collections::{ HashMap };
+use std::collections::hash_map::Iter as MapIter;
 use std::cell::{ RefCell };
 use std::path::Path;
 
@@ -17,13 +18,14 @@ use crate::core::component::*;
 
 use super::util::*;
 
-pub mod leveldb;
+// pub mod leveldb;
 
-use leveldb::*;
+// use leveldb::*;
 
 // include!("macro.rs");
 // include!("disk.rs");
 include!("mem.rs");
+include!("leveldb/mod.rs");
 include!("db.rs");
 include!("store.rs");
 // include!("state.rs");

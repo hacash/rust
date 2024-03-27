@@ -16,9 +16,7 @@ impl Kernel for BlockChainKernel {
         if let Some((scusp, state, sroot)) = rollres {
             // change ptr
             let mut ctx = self.klctx.write().unwrap();
-            ctx.scusp = scusp;
-            ctx.state = state;
-            ctx.sroot = sroot;
+            do_roll_chunk_state(&mut ctx, scusp, state, sroot) ? ;
         }
         // ok finish 
         Ok(())
@@ -121,7 +119,7 @@ fn do_insert(cnf: &KernelConf, this: &StateRoller, mintk: &dyn MintChecker, blkp
         // let mut txstate = fork_temp_state(txstabs.clone());
         let (substate) = vm::call_vm_exec_tx(isrhei, tx.to_readonly(), &mut tempstate) ? ;
         // ok merge copy state
-        tempstate.merge_copy(substate) ? ;
+        tempstate.merge_copy(substate.as_ref()) ? ;
     }
     // 
 
