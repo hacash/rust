@@ -5,7 +5,6 @@ use std::cell::RefCell;
 use crate::sys::*;
 use crate::interface;
 use crate::interface::field::*;
-use crate::interface::kernel::*;
 use crate::interface::protocol::*;
 use crate::interface::chain::*;
 use crate::interface::mint::*;

@@ -6,7 +6,7 @@ use crate::interface::protocol::*;
 use crate::base::lathe::*;
 use crate::base::field::*;
 
-use super::field::*;
+use crate::core::field::*;
 
 include!("block.rs");
 include!("tx.rs");

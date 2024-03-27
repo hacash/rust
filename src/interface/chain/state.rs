@@ -22,7 +22,7 @@ pub trait State : StateRead {
 
     fn save(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) { panic_never_call_this!() }
     fn drop(&mut self, p: &[u8], k: &dyn Serialize) { panic_never_call_this!() }
-    fn flush_disk(&self) { panic_never_call_this!() }
+    // fn flush_disk(&self) { panic_never_call_this!() }
 
 
     // fn fork_sub(&self) -> Box<dyn State> { panic_never_call_this!() }
@@ -30,7 +30,7 @@ pub trait State : StateRead {
     // merge memdb data
     fn merge_copy(&mut self, src: &dyn State) -> RetErr { panic_never_call_this!() }
     // if the db is disk, merge will write/flush data to disk, or panic
-    // fn flush_disk(&self, src: &dyn State) { panic_never_call_this!() }
+    fn flush_disk(&self) { panic_never_call_this!() }
 }
 
 

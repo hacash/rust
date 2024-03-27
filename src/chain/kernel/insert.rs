@@ -122,7 +122,7 @@ fn do_insert(cnf: &KernelConf, this: &StateRoller, mintk: &dyn MintChecker, blkp
         tempstate.merge_copy(substate.as_ref()) ? ;
     }
     // 
-
+    
 
 
     // ok return

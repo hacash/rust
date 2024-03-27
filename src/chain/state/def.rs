@@ -8,7 +8,7 @@ defineChainStateOperationInstance!{
         // &[0, 3], latest_diamond     , DiamondSmelt
     )
     (
-        // &[0, 4], tx_contain , Hash    , ContainTx
+        &[0, 4], txexist    , Hash    , TxExist
         &[0, 5], balance    , Address , Balance
     )
 }
