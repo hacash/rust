@@ -15,7 +15,7 @@ pub trait ExecEnv {
 
 
 pub trait ActExec {
-    fn execute(&self, _: &dyn ExecEnv, _: &mut dyn State) -> Box<dyn ExecResult> { panic_never_call_this!() }
+    fn execute(&self, _: &dyn ExecEnv, _: &mut dyn State, _: &dyn Store) -> Box<dyn ExecResult> { panic_never_call_this!() }
 }
 
 

@@ -5,6 +5,8 @@ pub struct KernelConf {
     pub unstable_block: u64, // The number of blocks that are likely to fall back from the fork
     pub store_data_dir: Box<Path>, // block data
     pub state_data_dir: Box<Path>, // chain state
+    pub ctrkv_data_dir: Box<Path>, // contract kv storage
+
 }
 
 
@@ -26,6 +28,7 @@ pub fn NewKernelConf(ini: &IniObj) -> KernelConf {
         unstable_block: 4, // 4 block
         store_data_dir: json_path(&data_dir, "store"),
         state_data_dir: json_path(&data_dir, "state"),
+        ctrkv_data_dir: json_path(&data_dir, "ctrkv"),
     };
 
 

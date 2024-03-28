@@ -9,7 +9,7 @@ StructFieldStruct!{ Sign,
 // SignCheckData
 StructFieldStruct!{ SignCheckData, 
 	signdata: Sign
-	stuffstr: BytesMaxW2
+	stuffstr: BytesW2
 }
 
 

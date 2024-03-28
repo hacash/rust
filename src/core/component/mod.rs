@@ -10,6 +10,7 @@ use super::field::*;
 
 include!("block.rs");
 include!("tx.rs");
+include!("status.rs");
 include!("balance.rs");
 
 

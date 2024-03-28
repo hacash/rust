@@ -29,6 +29,5 @@ use super::util::*;
 include!("level/mod.rs");
 include!("mem.rs");
 include!("bytes.rs");
-include!("store.rs");
 // include!("state.rs");
 // include!("def.rs");

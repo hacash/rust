@@ -1,8 +1,8 @@
 
 pub trait Action : Field + Cutout + ActExec {
-    fn get_kind(&self) -> u16;
-    // fn is_burning_90_persent_fee(&self) -> bool { false }
-    // fn request_need_sign_addresses(&self) -> HashSet<Address> { HashSet::new() }
+    fn kind(&self) -> u16;
+    fn burn_90(&self) -> bool { false } // is_burning_90_persent_fee
+    fn sign_req(&self) -> HashSet<Address> { HashSet::new() } // request_need_sign_addresses
 }
 
 

@@ -17,7 +17,7 @@ impl MintChecker for BlockMintChecker {
         impl_coinbase(self, cbtx)
     }
 
-    fn genesis(&self, state: &mut dyn State) -> RetErr {
+    fn genesis(&self, state: &mut dyn StoreDB) -> RetErr {
         impl_genesis(self, state)
     } 
 }

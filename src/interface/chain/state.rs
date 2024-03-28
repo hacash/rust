@@ -2,7 +2,6 @@
 
 pub trait State : StoreDB {
     
-    fn load(&self,     p: &[u8], k: &dyn Serialize, v: &mut dyn Parse) -> bool { panic_never_call_this!() }
 
     // fn load(&self, data: &Bytes, v: &mut dyn Parse) -> RetErr { panic_never_call_this!() }
 
@@ -12,7 +11,11 @@ pub trait State : StoreDB {
 
     // if v.len() == 0 , delete the key, is the db is disk will get panic!
     // fn memvks<'a>(&'a self) -> Vec<(&'a [u8], &'a [u8])> { panic_never_call_this!() } 
+
+
 }
+
+
 
 /* 
 pub trait State : StateRead {

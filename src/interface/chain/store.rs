@@ -3,13 +3,34 @@
 pub trait StoreDB {
     fn get_at(&self, key: &[u8]) -> Option<Bytes>;
     fn get(&self,     p: &[u8], k: &dyn Serialize) -> Option<Bytes>;
-    fn set(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize);
-    fn del(&mut self, p: &[u8], k: &dyn Serialize);
+    fn load(&self,    p: &[u8], k: &dyn Serialize, v: &mut dyn Parse) -> bool { 
+        match self.get(p, k) {
+            None => false,
+            Some(dt) => {
+                v.parse(&dt, 0).unwrap(); // maybe panic
+                true
+            }
+        }
+    }
+    // disk
+    fn set(&self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) { panic_never_call_this!() }
+    fn del(&self, p: &[u8], k: &dyn Serialize) { panic_never_call_this!() }
+    // mem
+    fn put(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) { panic_never_call_this!() }
+    fn rm( &mut self, p: &[u8], k: &dyn Serialize) { panic_never_call_this!() }
 }
+
 
 pub trait Store : StoreDB {
 
 }
+
+
+
+
+
+
+
 
 
 /* 

@@ -8,7 +8,7 @@
 // BlockPkg
 StructFieldStruct!{ BlockPkgInst, 
 	hash: Hash
-	data: BytesMaxW4
+	data: BytesW4
     // objc: i32
 }
 
