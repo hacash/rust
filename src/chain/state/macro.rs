@@ -9,6 +9,52 @@ macro_rules! defineChainStateOperationInstance{
         ($( $kfix2:expr, $name2:ident, $keyty2:ty, $vtype2:ty )+)
     ) => (
 
+
+
+concat_idents!(struct_name_read = $name, Read {
+pub struct struct_name_read<'a> {
+    state: &'a dyn State,
+}
+impl struct_name_read<'_> {
+    pub fn wrap<'a>(sta: &'a dyn State) -> struct_name_read {
+        struct_name_read{
+            state: sta,
+        }
+    }
+
+    // get block_reward
+    $(
+        concat_idents!(fn_get_1 = $name1 {
+        pub fn fn_get_1(&self) -> $vtype1 {
+            let mut obj = <$vtype1>::new();
+            if (*self.state).load( $kfix1, &Empty::new(), &mut obj) {
+                return obj
+            }
+            $vtype1::new()
+        }
+        });
+    )+
+    // get balance
+    $(
+        concat_idents!(fn_get_2 = $name2 {
+        pub fn fn_get_2(&self, $name2: &$keyty2) -> Option<$vtype2> {
+            let mut obj = <$vtype2>::new();
+            if (*self.state).load($kfix2, $name2, &mut obj) {
+                return Some(obj)
+            }
+            None
+        }
+        });
+    )+
+
+
+}
+
+});
+
+
+///////////////
+
 pub struct $name<'a> {
     state: &'a mut dyn State,
 }
