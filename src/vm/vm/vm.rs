@@ -1,12 +1,10 @@
 
 
-pub struct VM {
+pub struct VMThread {
 
-    model: u8,
-    gaslimit: u32,
-
-    extcall: ExtActionCaller,
-
+    // model: u8,
+    // gaslimit: u32,
+    // extcall: ExtActionCaller,
 }
 
 

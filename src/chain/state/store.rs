@@ -37,6 +37,12 @@ impl StoreDB for BlockStore {
 }
 
 
+
+impl Store for BlockStore {
+
+}
+
+
 impl BlockStore {
 
 }

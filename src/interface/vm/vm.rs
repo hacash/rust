@@ -1,4 +1,13 @@
 
+
+pub trait VM {
+    fn new() -> Self where Self: Sized;
+    fn exec_tx(&self, h: u64, tx: &dyn TransactionRead, bst: &mut dyn State, sto: &dyn Store) -> Ret<(Box<dyn State>)>;
+}
+
+
+
+
 /**
  * for HVM AST Node or Bytecode
  */

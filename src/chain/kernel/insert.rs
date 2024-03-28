@@ -9,7 +9,7 @@ impl Kernel for BlockChainKernel {
         {
             let ctx = self.klctx.lock().unwrap();
             // do insert
-            let (bsck, state) = do_insert(&self.cnf, &ctx, self.mintk.as_ref(), blkpkg.as_ref()) ? ;
+            let (bsck, state) = do_insert(self, &self.cnf, &ctx, self.mintk.as_ref(), blkpkg.as_ref()) ? ;
             // insert success try do roll
             rollres = do_roll(&self.cnf, &ctx, blkpkg, bsck, state) ? ;
         }
@@ -27,7 +27,7 @@ impl Kernel for BlockChainKernel {
 /**
  * do insert block crate new state
  */
-fn do_insert(cnf: &KernelConf, this: &StateRoller, mintk: &dyn MintChecker, blkpkg: &dyn BlockPkg) -> Ret<(Arc<RollChunk>, Arc<ChainState>)> {
+fn do_insert(kernel: &BlockChainKernel, cnf: &KernelConf, this: &StateRoller, mintk: &dyn MintChecker, blkpkg: &dyn BlockPkg) -> Ret<(Arc<RollChunk>, Arc<ChainState>)> {
 
     // check height
     let block = blkpkg.objc();
@@ -117,7 +117,7 @@ fn do_insert(cnf: &KernelConf, this: &StateRoller, mintk: &dyn MintChecker, blkp
     // let txstabs = Arc::new(tempstate);
     for tx in alltxs.iter() {
         // let mut txstate = fork_temp_state(txstabs.clone());
-        let (substate) = vm::call_vm_exec_tx(isrhei, tx.to_readonly(), &mut tempstate) ? ;
+        let (substate) = kernel.vmobj.exec_tx(isrhei, tx.to_readonly(), &mut tempstate, kernel.store.as_ref()) ? ;
         // ok merge copy state
         tempstate.merge_copy(substate.as_ref()) ? ;
     }

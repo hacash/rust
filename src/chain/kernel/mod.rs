@@ -8,6 +8,7 @@ use crate::interface::field::*;
 use crate::interface::protocol::*;
 use crate::interface::chain::*;
 use crate::interface::mint::*;
+use crate::interface::vm::*;
 
 use crate::config::*;
 use crate::base::field::*;
