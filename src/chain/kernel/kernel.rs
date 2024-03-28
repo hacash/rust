@@ -18,6 +18,7 @@ pub struct BlockChainKernel {
     klctx: RwLock<StateRoller>, // change
 
     mintk: Box<dyn MintChecker>,
+    // actns: Box<dyn >,
 
     // insert lock
     isrlck: Mutex<bool>,

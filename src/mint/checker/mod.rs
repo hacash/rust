@@ -9,4 +9,8 @@ use crate::core::component::*;
 use crate::chain::state::*;
 
 include!("check.rs");
+include!("consensus.rs");
+include!("coinbase.rs");
+include!("genesis.rs");
+
 

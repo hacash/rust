@@ -46,7 +46,7 @@ impl LevelDB {
     }
 
     // get if find, bool is not check base
-    pub fn get_at(&self, k: &[u8]) -> Option<Bytes> {
+    pub fn get_at(&self, k: &[u8]) -> Option<RawBytes> {
         let mut error = ptr::null_mut();
         let mut length: size_t = 0;
         let result = unsafe {
@@ -68,7 +68,7 @@ impl LevelDB {
             return None // not find
         }
         Some(unsafe {
-            Bytes::from_raw_unchecked(result as *mut u8, length)
+            RawBytes::from_raw_unchecked(result as *mut u8, length)
         })
     }
         

@@ -7,6 +7,6 @@ pub trait Parse {
 
 pub trait Cutout {
     // ret: body or error
-    fn cutout(buf: &[u8], seek: usize) -> Result<&[u8], Error> where Self: Sized;
+    fn cutout<'a>(buf: &'a[u8], seek: usize) -> Result<&'a[u8], Error> where Self: Sized;
 }
 

@@ -1,5 +1,63 @@
 
 
+pub enum Bytes {
+    Raw(RawBytes),
+    Mem(Vec<u8>),
+}
+
+
+impl ::std::ops::Deref for Bytes {
+    type Target = [u8];
+
+    fn deref(&self) -> &Self::Target {
+        match self {
+            Bytes::Raw(d) => d.deref(),
+            Bytes::Mem(d) => d.deref(),
+        }
+    }
+}
+
+
+impl ::std::borrow::Borrow<[u8]> for Bytes {
+    fn borrow(&self) -> &[u8] {
+        match self {
+            Bytes::Raw(d) => d.borrow(),
+            Bytes::Mem(d) => d.borrow(),
+        }
+    }
+}
+
+
+impl AsRef<[u8]> for Bytes {
+    fn as_ref(&self) -> &[u8] {
+        match self {
+            Bytes::Raw(d) => d.borrow(),
+            Bytes::Mem(d) => d.borrow(),
+        }
+    }
+}
+
+impl From<Bytes> for Vec<u8> {
+    fn from(bytes: Bytes) -> Self {
+        match bytes {
+            Bytes::Raw(d) => d.as_ref().to_owned(),
+            Bytes::Mem(d) => d.clone(),
+        }
+    }
+}
+
+impl From<Bytes> for Box<[u8]> {
+    fn from(bytes: Bytes) -> Self {
+        match bytes {
+            Bytes::Raw(d) => d.as_ref().to_owned().into_boxed_slice(),
+            Bytes::Mem(d) => d.clone().into_boxed_slice(),
+        }
+    }
+}
+
+
+
+/* 
 pub enum DB {
     Disk(LevelDB),
     Memory(MemoryDB),
@@ -47,3 +105,6 @@ impl DB {
         }
     }
 }
+
+
+*/

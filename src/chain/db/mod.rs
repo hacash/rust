@@ -4,6 +4,8 @@ use std::collections::hash_map::Iter as MapIter;
 use std::cell::{ RefCell };
 use std::path::Path;
 
+use std::borrow::Borrow;
+
 use concat_idents::concat_idents;
 // use rusty_leveldb::{DB as LevelDB, Options as LevelOptions, DBIterator, LdbIterator};
 

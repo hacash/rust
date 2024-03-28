@@ -1,8 +1,8 @@
 
 
 pub trait StateDB {
-    fn get_at(&self, key: &[u8]) -> Option<Vec<u8>>;
-    fn get(&self, p: &[u8], k: &dyn Serialize) -> Option<Vec<u8>>;
+    fn get_at(&self, key: &[u8]) -> Option<Bytes>;
+    fn get(&self, p: &[u8], k: &dyn Serialize) -> Option<Bytes>;
     fn set(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize);
     fn del(&mut self, p: &[u8], k: &dyn Serialize);
 

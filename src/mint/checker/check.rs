@@ -6,9 +6,6 @@ pub struct BlockMintChecker {
 }
 
 
-include!("consensus.rs");
-include!("coinbase.rs");
-include!("genesis.rs");
 
 impl MintChecker for BlockMintChecker {
 

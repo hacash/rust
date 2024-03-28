@@ -18,13 +18,16 @@ impl ChainState {
 
 impl StateDB for ChainState {
 
-    fn get_at(&self, key: &[u8]) -> Option<Vec<u8>> {
+    fn get_at(&self, key: &[u8]) -> Option<Bytes> {
         // is have base db
         let basedb = self.base.read().unwrap();
         let basedb = basedb.as_ref();
         if let None = basedb {
-            // no base ptr, check disk db
-            return self.disk.get(key) // search disk final
+            // no base ptr, check disk db // search disk final
+            return match self.disk.get_at(key) {
+                Some(rb) => Some(Bytes::Raw(rb)),
+                _ => None, // not find
+            }
         }
         // first, check local mem
         if let Some(dt) = self.memk.get(key) {
@@ -32,14 +35,14 @@ impl StateDB for ChainState {
             if let MemdbItem::Delete = dt {
                 return None // delete mark
             }else if let MemdbItem::Value(v) = dt {
-                return Some(v.clone()) // find
+                return Some(Bytes::Mem(v.clone())) // find
             }
         }
         // must have base ptr, check base
         basedb.unwrap().upgrade().unwrap().get_at(key) // search from base ptr
     }
     
-    fn get(&self, p: &[u8], k: &dyn Serialize) -> Option<Vec<u8>> {
+    fn get(&self, p: &[u8], k: &dyn Serialize) -> Option<Bytes> {
         let key = splice_key(p, k);
         self.get_at(&key)
     }
