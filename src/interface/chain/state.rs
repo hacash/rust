@@ -1,27 +1,24 @@
 
 
-pub trait StateDB {
-    fn get_at(&self, key: &[u8]) -> Option<Bytes>;
-    fn get(&self, p: &[u8], k: &dyn Serialize) -> Option<Bytes>;
-    fn set(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize);
-    fn del(&mut self, p: &[u8], k: &dyn Serialize);
+pub trait State : StoreDB {
+    
+    fn load(&self,     p: &[u8], k: &dyn Serialize, v: &mut dyn Parse) -> bool { panic_never_call_this!() }
 
-}
-
-pub trait StateRead : StateDB {
+    // fn load(&self, data: &Bytes, v: &mut dyn Parse) -> RetErr { panic_never_call_this!() }
 
     // if not find return false
-    fn load(&self, p: &[u8], k: &dyn Serialize, v: &mut dyn Parse) -> bool { panic_never_call_this!() }
+    // fn save(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) { panic_never_call_this!() }
+    // fn drop(&mut self, p: &[u8], k: &dyn Serialize) { panic_never_call_this!() }
+
     // if v.len() == 0 , delete the key, is the db is disk will get panic!
-    fn memvks<'a>(&'a self) -> Vec<(&'a [u8], &'a [u8])> { panic_never_call_this!() } 
+    // fn memvks<'a>(&'a self) -> Vec<(&'a [u8], &'a [u8])> { panic_never_call_this!() } 
 }
 
+/* 
 pub trait State : StateRead {
 
     // fn init(&self) {}
 
-    fn save(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) { panic_never_call_this!() }
-    fn drop(&mut self, p: &[u8], k: &dyn Serialize) { panic_never_call_this!() }
     // fn flush_disk(&self) { panic_never_call_this!() }
 
 
@@ -32,6 +29,6 @@ pub trait State : StateRead {
     // if the db is disk, merge will write/flush data to disk, or panic
     fn flush_disk(&self) { panic_never_call_this!() }
 }
-
+*/
 
 

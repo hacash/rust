@@ -2,10 +2,10 @@
 
 struct StateRoller {
     
-    state: Weak<ChainState>,
+    state: Weak<ChainState>, // current latest state
+    scusp: Weak<RollChunk>, // current latest block
 
     sroot: Arc<RollChunk>, // tree root block
-    scusp: Weak<RollChunk>, // current latest block
 
 }
 
@@ -15,7 +15,7 @@ pub struct BlockChainKernel {
 
     store: Arc<BlockStore>,
 
-    klctx: RwLock<StateRoller>, // change
+    klctx: Mutex<StateRoller>, // change
 
     mintk: Box<dyn MintChecker>,
     // actns: Box<dyn >,
@@ -44,7 +44,7 @@ impl BlockChainKernel {
     }
 
     pub fn get_latest_state(&self) -> Option<Arc<dyn State>> {
-        let ctx = self.klctx.try_read();
+        let ctx = self.klctx.try_lock();
         if let Err(_) = ctx {
             return None // state busy !!!
         }

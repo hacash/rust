@@ -1,6 +1,19 @@
 
 
 pub trait StoreDB {
+    fn get_at(&self, key: &[u8]) -> Option<Bytes>;
+    fn get(&self,     p: &[u8], k: &dyn Serialize) -> Option<Bytes>;
+    fn set(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize);
+    fn del(&mut self, p: &[u8], k: &dyn Serialize);
+}
+
+pub trait Store : StoreDB {
+
+}
+
+
+/* 
+pub trait StoreDB {
     fn read(&self, p: &[u8], k: &dyn Serialize) -> Option<Vec<u8>>;
     fn write(&self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize);
     fn delete(&self, p: &[u8], k: &dyn Serialize);
@@ -26,4 +39,4 @@ pub trait Store : StoreRead {
 
 }
 
-
+*/

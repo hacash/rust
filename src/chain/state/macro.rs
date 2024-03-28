@@ -72,10 +72,8 @@ impl $name<'_> {
         concat_idents!(fn_get_1 = $name1 {
         pub fn fn_get_1(&self) -> $vtype1 {
             let mut obj = <$vtype1>::new();
-            if (*self.state).load( $kfix1, &Empty::new(), &mut obj) {
-                return obj
-            }
-            $vtype1::new()
+            (*self.state).load( $kfix1, &Empty::new(), &mut obj);
+            obj
         }
         });
     )+
@@ -95,11 +93,11 @@ impl $name<'_> {
     $(
         concat_idents!(fn_get_2 = $name2 {
         pub fn fn_get_2(&self, $name2: &$keyty2) -> Option<$vtype2> {
-            let mut obj = <$vtype2>::new();
-            if (*self.state).load($kfix2, $name2, &mut obj) {
-                return Some(obj)
+            let res = (*self.state).get($kfix2, $name2);
+            match res {
+                Some(dt) => Some(<$vtype2>::must(&dt)), // maybe panic
+                _ => None, // not find
             }
-            None
         }
         });
     )+

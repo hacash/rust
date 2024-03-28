@@ -146,20 +146,8 @@ impl Field for $class {
         }
     }
 
-    fn from(buf: &[u8]) -> Self where Self: Sized {
-        if buf.len() < $size {
-            panic!("size error must need {}", $size.to_string())
-        }
-        let v = buf[0..$size].to_vec();
-        // obj
-        let mut obj = <$class>::new();
-        obj.bytes = v.try_into().unwrap();
-        // ok
-        obj
-    }
-
-    // create function
-    fnFieldCreate!($class);
+    // must & create function
+    fnFieldMustCreate!($class);
 
     fn from_uint<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { 
         let mut obj = <$class>::new();

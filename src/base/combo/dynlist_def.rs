@@ -59,7 +59,7 @@ impl Field for $class {
    }
 
    // create function
-   fnFieldCreate!($class);
+   fnFieldMustCreate!($class);
 
 }
 

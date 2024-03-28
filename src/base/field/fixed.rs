@@ -82,22 +82,22 @@ impl Hash {
 
     pub fn get_half(&self) -> HashHalf {
         let pt: [u8; HASH_HALF_SIZE] = self.bytes[0..HASH_HALF_SIZE].try_into().unwrap();
-        <HashHalf as Field>::from(&pt)
+        HashHalf::must(&pt)
     }
 
     pub fn get_nonce(&self) -> HashNonce {
         let pt: [u8; HASH_NONCE_SIZE] = self.bytes[0..HASH_NONCE_SIZE].try_into().unwrap();
-        <HashNonce as Field>::from(&pt)
+        HashNonce::must(&pt)
     }
 
     pub fn get_check(&self) -> HashCheck {
         let pt: [u8; HASH_CHECK_SIZE] = self.bytes[0..HASH_CHECK_SIZE].try_into().unwrap();
-        <HashCheck as Field>::from(&pt)
+        HashCheck::must(&pt)
     }
 
     pub fn get_mark(&self) -> HashMark {
         let pt: [u8; HASH_MARK_SIZE] = self.bytes[0..HASH_MARK_SIZE].try_into().unwrap();
-        <HashMark as Field>::from(&pt)
+        HashMark::must(&pt)
     }
 
 }

@@ -90,8 +90,8 @@ impl Field for Amount {
         }
     }
 
-    // create function
-    fnFieldCreate!(Amount);
+    // must & create function
+    fnFieldMustCreate!(Amount);
 }
 
 impl Parse for Amount {

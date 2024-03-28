@@ -14,7 +14,7 @@ pub fn merge_mrkl_root(list: &Vec<Hash>) -> Hash {
             false => lh.clone(),
         };
         let hx = x16rs::calculate_hash(vec![lh, rh].concat());
-        res.push(<Hash as Field>::from(&hx[..]));
+        res.push(Hash::must(&hx[..]));
         x += 2;
         if x >= num {
             break

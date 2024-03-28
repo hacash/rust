@@ -22,6 +22,9 @@ impl Serialize for ASTExtWrap {
 
 impl Parse for ASTExtWrap {
     
+    fn parse(&mut self, buf: &[u8], seek: usize) -> Result<usize, Error> {
+        Ok(seek)
+    }
 }
 
 

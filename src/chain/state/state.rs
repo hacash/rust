@@ -16,7 +16,7 @@ impl ChainState {
 }
 
 
-impl StateDB for ChainState {
+impl StoreDB for ChainState {
 
     fn get_at(&self, key: &[u8]) -> Option<Bytes> {
         // is have base db
@@ -61,17 +61,18 @@ impl StateDB for ChainState {
 }
 
 
-impl StateRead for ChainState {
-
-
+impl State for ChainState {
 }
 
 
-impl State for ChainState {
+impl ChainState {
 
-    fn flush_disk(&self) {
+    pub fn flush_disk(&self) {
         impl_flush_disk(self)
     }
 
+    pub fn merge_copy(&self, src: &dyn State) -> RetErr {
+        Ok(())
+    }
 }
 

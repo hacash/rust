@@ -76,22 +76,9 @@ impl Field for $class {
             bytes: Vec::new(),
         }
     }
-
-    fn from(buf: &[u8]) -> Self where Self: Sized { 
-        if buf.len() > $size_max {
-            panic!("size overflow max {}", $size_max)
-        }
-        let v = buf.clone();
-        // obj
-        let mut obj = <$class>::new();
-        obj.len = <$lenty>::from_uint(v.len() as u64);
-        obj.bytes = v.try_into().unwrap();
-        // ok
-        obj
-    }
-
-    // create function
-    fnFieldCreate!($class);
+    
+    // must & create function
+    fnFieldMustCreate!($class);
 }
 
 
