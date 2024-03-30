@@ -1,3 +1,5 @@
+test/
+
 libx16rs.so
 libx16rs.a
 *.o

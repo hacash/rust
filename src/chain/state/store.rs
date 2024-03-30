@@ -32,7 +32,7 @@ impl StoreDB for BlockStore {
         self.ldb.del(&key); // disk
     }
 
-    
+
 
 }
 

@@ -2,6 +2,7 @@
 
 pub trait VM {
     fn new() -> Self where Self: Sized;
+    fn reg_acts(&mut self, _: Vec<Box<dyn Action>>) { panic_never_call_this!() } // maybe panic
     fn exec_tx(&self, h: u64, tx: &dyn TransactionRead, bst: &mut dyn State, sto: &dyn Store) -> Ret<(Box<dyn State>)>;
 }
 

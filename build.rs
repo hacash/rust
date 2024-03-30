@@ -1,5 +1,25 @@
 extern crate cc;
 
+/**
+
+# Step 1: create libx16rs.a
+# Step 2: build and run
+
+gcc -c src/x16rs/x16rs.c && ar rcs libx16rs.a x16rs.o && mv *.a ./src/x16rs && rm -f *.o
+
+RUSTFLAGS="$RUSTFLAGS -Awarnings -L ./src/x16rs/" cargo run
+
+# Build static release software
+cargo build --release --target=x86_64-unknown-linux-musl
+ldd target/x86_64-unknown-linux-musl/release/hacash
+
+
+
+
+*/
+
+
+
 fn main() {
     cc::Build::new()
         .file("src/x16rs/x16rs.c")

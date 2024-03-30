@@ -1,3 +1,10 @@
+use std::*;
+use std::path::*;
+
+#[macro_use]
+extern crate ini;
+
+
 mod x16rs;
 
 #[macro_use]
@@ -16,25 +23,43 @@ use core::account::Account;
 
 /**
 
-# Step 1: create libx16rs.a
-# Step 2: build and run
-
-gcc -c src/x16rs/x16rs.c && ar rcs libx16rs.a x16rs.o && mv *.a ./src/x16rs && rm -f *.o
-
-RUSTFLAGS="$RUSTFLAGS -Awarnings -L ./src/x16rs/" cargo run
-
-# Build static release software
-cargo build --release --target=x86_64-unknown-linux-musl
-ldd target/x86_64-unknown-linux-musl/release/hacash
-
-
-
+RUSTFLAGS="$RUSTFLAGS -Awarnings" cargo build / run / check
 
 */
 
 
-
 fn main() {
+    
+    let inicnf = readConfigIni();
+    startHacashNode(inicnf);
+
+}
+
+fn readConfigIni() -> sys::IniObj {
+
+    let args: Vec<String> = env::args().collect();
+    let exedir = env::current_exe().unwrap();
+    let mut inicnfpath = exedir.parent().unwrap().to_path_buf();
+    let mut inifp = "./hacash.config.ini".to_string();
+    if args.len() >= 2 {
+        inifp = args[1].clone();
+    }
+    if inifp.starts_with("./") {
+        inifp = inifp[2..].to_string();
+    }
+    inicnfpath = inicnfpath.join(PathBuf::from(inifp));
+    // println!("{:?} {:?}", args, exedir);
+    // println!("{:?}", inicnfpath.to_str().unwrap());
+    // read
+    ini!(inicnfpath.to_str().unwrap())
+}
+
+fn startHacashNode(iniobj: sys::IniObj) {
+
+}
+
+
+fn main_test134234() {
 
 
     let addrhac = core::field::AddrHac::new();
