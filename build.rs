@@ -19,6 +19,15 @@ ldd target/x86_64-unknown-linux-musl/release/hacash
 */
 
 
+/**
+
+RUST update:
+export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
+export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
+
+
+*/
+
 
 fn main() {
     cc::Build::new()

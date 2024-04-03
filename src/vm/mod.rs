@@ -18,20 +18,19 @@ pub mod vm;
 
 
 pub struct HacashVM {
-
+    store: Arc<dyn Store>,
 }
 
 impl VM for HacashVM {
 
-    fn new() -> HacashVM {
+    fn new(sto: Arc<dyn Store>) -> HacashVM {
         HacashVM{
-
+            store: sto,
         }
     }
 
-    fn exec_tx(&self, h: u64, tx: &dyn TransactionRead, bst: &mut dyn State, sto: &dyn Store) -> Ret<(Box<dyn State>)> {
-        let pedding_block_height = h;
-    
+    fn exec_tx(&self, tx: &dyn TransactionRead, _: &dyn ExecEnv, bst: &mut dyn State) -> RetErr {
         err!("")
     }
+
 }

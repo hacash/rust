@@ -17,6 +17,7 @@ use crate::mint::checker::*;
 
 use super::db::*;
 use super::state::*;
+use super::chunk;
 use super::chunk::*;
 
 use crate::vm;
@@ -25,7 +26,7 @@ include!("kernel.rs");
 include!("read.rs");
 include!("insert.rs");
 include!("roll.rs");
-include!("locate.rs");
+// include!("locate.rs");
 // include!("start.rs");
 // include!("init.rs");
 

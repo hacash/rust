@@ -17,6 +17,6 @@ fn _locate_chunk(rtck: &Arc<RollChunk>, hx: &Hash) -> Option<Arc<RollChunk>> {
 
 
 // find
-fn locate_base_chunk(this: &StateRoller, hx: &Hash) -> Option<Arc<RollChunk>> {
+pub fn locate_base_chunk(this: &StateRoller, hx: &Hash) -> Option<Arc<RollChunk>> {
     _locate_chunk(&this.sroot, hx)
 }

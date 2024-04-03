@@ -19,11 +19,15 @@ mod vm;
 mod chain;
 
 use crate::interface::field::*;
-use core::account::Account;
+use crate::core::account::Account;
+use crate::chain::kernel::*;
 
 /**
 
-RUSTFLAGS="$RUSTFLAGS -Awarnings" cargo build / run / check
+sudo apt install g++
+sudo apt install cmake
+
+RUSTFLAGS="$RUSTFLAGS -Awarnings" RUST_BACKTRACE=1 cargo check / build / run
 
 */
 
@@ -35,6 +39,7 @@ fn main() {
 
 }
 
+// load config
 fn readConfigIni() -> sys::IniObj {
 
     let args: Vec<String> = env::args().collect();
@@ -45,16 +50,24 @@ fn readConfigIni() -> sys::IniObj {
         inifp = args[1].clone();
     }
     if inifp.starts_with("./") {
-        inifp = inifp[2..].to_string();
+        // inifp = inifp[2..].to_string();
     }
     inicnfpath = inicnfpath.join(PathBuf::from(inifp));
     // println!("{:?} {:?}", args, exedir);
     // println!("{:?}", inicnfpath.to_str().unwrap());
     // read
-    ini!(inicnfpath.to_str().unwrap())
+    if inicnfpath.exists() {
+        ini!(inicnfpath.to_str().unwrap())
+    }else{
+        sys::IniObj::new()
+    }
 }
 
+// start node
 fn startHacashNode(iniobj: sys::IniObj) {
+    // println!("startHacashNode ini={:?}", iniobj);
+    let kernel = BlockChainKernel::create(&iniobj);
+
 
 }
 

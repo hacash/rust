@@ -1,14 +1,4 @@
 
-
-struct StateRoller {
-    
-    state: Weak<ChainState>, // current latest state
-    scusp: Weak<RollChunk>, // current latest block
-
-    sroot: Arc<RollChunk>, // tree root block
-
-}
-
 pub struct BlockChainKernel {
 
     cnf: KernelConf,
@@ -27,21 +17,28 @@ pub struct BlockChainKernel {
 }
 
 impl BlockChainKernel {
-    
-    pub fn init(&mut self, ini: &IniObj) -> Option<Error> {
+
+    pub fn create(ini: &IniObj) -> BlockChainKernel {
         let cnf = NewKernelConf(ini);
-        // create data dir
+        // data dir
         std::fs::create_dir_all(&cnf.store_data_dir);
         std::fs::create_dir_all(&cnf.state_data_dir);
-        // ok
-        self.cnf = cnf;
-        None
+        std::fs::create_dir_all(&cnf.ctrkv_data_dir);
+        // block store
+        let stoldb = BlockStore::create(&cnf.store_data_dir);
+        // kernel
+        let kernel = BlockChainKernel{
+            cnf: cnf,
+            store: Arc::new(stoldb),
+        };
+
+        kernel
     }
 
-    pub fn start(&mut self) -> Option<Error> {
+    pub fn start(&mut self) -> RetErr {
 
 
-        None
+        Ok(())
     }
 
     pub fn get_latest_state(&self) -> Option<Arc<dyn State>> {

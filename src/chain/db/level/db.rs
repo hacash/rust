@@ -21,7 +21,7 @@ pub struct LevelDB {
 
 impl LevelDB {
 
-    pub fn new(dir: &Path) -> LevelDB {
+    pub fn create(dir: &Path) -> LevelDB {
         // let mut opts = Options::new();
         // opts.create_if_missing = true;
         // let ldb = LevelDatabase::open(dir, opts).unwrap();

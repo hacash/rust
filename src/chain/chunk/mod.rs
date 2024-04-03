@@ -12,3 +12,5 @@ use super::db::*;
 use super::state::*;
 
 include!("chunk.rs");
+include!("find.rs");
+include!("roller.rs");
