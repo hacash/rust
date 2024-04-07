@@ -5,7 +5,7 @@ pub struct ASTExtWrap {
 
 
 impl VMAction for ASTExtWrap {
-    fn ext_body(&self) -> &[u8] { 
+    fn body(&self) -> &[u8] { 
         &self.body
     }
 }

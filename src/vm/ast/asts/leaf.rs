@@ -36,7 +36,7 @@ impl Field for ASTLeaf {
 
 
 impl VMAction for ASTLeaf {
-    fn get_code(&self) -> u8 {
+    fn code(&self) -> u8 {
         self.code
     }
 

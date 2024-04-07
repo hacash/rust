@@ -2,7 +2,7 @@
 pub struct VMConf {
     pub max_gas_limit: u32,
     pub max_gas_single_act: u32,
-    pub ext_act_scope: [u8],
+    pub ext_act_scope: [u8; 3],
 }
 
 

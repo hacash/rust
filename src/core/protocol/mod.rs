@@ -10,6 +10,8 @@ use crate::interface::vm::*;
 
 
 
+include!("action/regs.rs");
+include!("action/macro.rs");
 include!("action/action.rs");
 
 include!("transaction/transaction.rs");
