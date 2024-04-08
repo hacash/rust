@@ -1,8 +1,8 @@
 
 pub trait ExecResult {
-    fn gas_use(&self) -> u32 { 0 }
-    fn ret_val(&self) -> &[u8] { &[] }
-    fn abort(&self) -> Option<Error>{ None }
+    fn gasuse(&self) -> u32 { 0 }
+    fn retval(&self) -> &[u8] { &[] }
+    fn abort(&self) -> &Option<Error>;
 }
 /*
     fn burn_90(&self) -> bool { false } // is burning 90 persent fee

@@ -4,7 +4,7 @@
 macro_rules! ActionDefine {
     {   $actname:ident : $actid:expr, 
         ($( $item:ident : $type:ty )*), 
-        $lv:expr, $burn90:expr, 
+        $lv:expr, $burn90:expr, $gas:expr,
         ($p_self:ident, $p_env:ident, $p_state:ident, $p_store:ident ), 
         $reqsign:expr, $exec:expr 
     } => {

@@ -9,12 +9,14 @@ ActionDefine!{
     ),
     ACTLV_TOP, // level
     false, // burn 90
+    21 + 11, // gas = 32
     (self, env, state, store), // params
-    [], // req_sign
+    [], // req sign
     {
         let from = env.main_address(); 
-        operate::hac_transfer(env, state, from, &self.to, &self.amt);
-        Box::new(operate::ActExecRes::new())
+        ActExecRes::wrap(
+            hac_transfer(env, state, from, &self.to, &self.amt)
+        )
     }
 }
 
@@ -29,9 +31,15 @@ ActionDefine!{
     ),
     ACTLV_TOP, // level
     false, // burn 90
+    21 + 11, // gas = 32
     (self, env, state, store), // params
-    [self.from], // req_sign
-    { panic_never_call_this!() }
+    [self.from], // req sign
+    { 
+        let to = env.main_address(); 
+        ActExecRes::wrap(
+            hac_transfer(env, state, &self.from, to, &self.amt)
+        )
+    }
 }
 
 

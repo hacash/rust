@@ -10,7 +10,7 @@ use crate::interface::vm::*;
 use crate::sys::*;
 use crate::base::field::*;
 use crate::core::field::*;
-use crate::protocol::operate;
+use crate::protocol::operate::*;
 
 
 
