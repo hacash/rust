@@ -13,7 +13,7 @@ pub trait ExecEnv<'a> {
     fn main_address(&'a self) -> &'a Address { panic_never_call_this!() }
     fn check_signature(&self, _: &Address) -> bool { false }
     fn address_list(&'a self) -> &'a[Address] { &[] }
-    fn call_depth() -> u32 { 0 }
+    fn call_depth(&self) -> u32 { 0 }
 }
 
 

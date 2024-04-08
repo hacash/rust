@@ -27,12 +27,13 @@ impl BlockChainKernel {
         // block store
         let stoldb = BlockStore::create(&cnf.store_data_dir);
         // kernel
-        let kernel = BlockChainKernel{
-            cnf: cnf,
-            store: Arc::new(stoldb),
-        };
+        panic!("{}", "test")
+        // let kernel = BlockChainKernel{
+        //     cnf: cnf,
+        //     store: Arc::new(stoldb),
+        // };
 
-        kernel
+        // kernel
     }
 
     pub fn start(&mut self) -> RetErr {

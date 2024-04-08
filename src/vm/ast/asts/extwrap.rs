@@ -5,9 +5,9 @@ pub struct ASTExtWrap {
 
 
 impl VMAction for ASTExtWrap {
-    fn body(&self) -> &[u8] { 
-        &self.body
-    }
+    // fn body(&self) -> &[u8] { 
+    //     &self.body
+    // }
 }
 
 impl Serialize for ASTExtWrap {

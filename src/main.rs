@@ -34,8 +34,11 @@ RUSTFLAGS="$RUSTFLAGS -Awarnings" RUST_BACKTRACE=1 cargo check / build / run
 
 fn main() {
     
-    let inicnf = read_config();
-    start_hacash_node(inicnf);
+    main_test8327459283();
+
+
+    // let inicnf = read_config();
+    // start_hacash_node(inicnf);
 
 }
 
@@ -83,6 +86,20 @@ fn start_hacash_node(iniobj: sys::IniObj) {
 
 
 
+
+
+fn main_test8327459283() {
+
+    let act1 = crate::core::protocol::ACTION_KIND_1;
+    println!("{}", act1);
+
+    let mut actobj = crate::core::protocol::SatTransfer::new();
+    println!("{:?}", hex::encode(actobj.serialize()));
+
+
+
+
+}
 
 
 

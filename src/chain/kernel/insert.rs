@@ -117,9 +117,9 @@ fn do_insert(kernel: &BlockChainKernel, cnf: &KernelConf, this: &StateRoller, mi
     // let txstabs = Arc::new(tempstate);
     for tx in alltxs.iter() {
         // let mut txstate = fork_temp_state(txstabs.clone());
-        let (substate) = kernel.vmobj.exec_tx( tx.to_readonly(), &mut tempstate) ? ;
+        kernel.vmobj.exec_tx( tx.to_readonly(), &mut tempstate) ? ;
         // ok merge copy state
-        tempstate.merge_copy(substate.as_ref()) ? ;
+        // tempstate.merge_copy(substate.as_ref()) ? ;
     }
     // 
     

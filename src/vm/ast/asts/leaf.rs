@@ -40,9 +40,9 @@ impl VMAction for ASTLeaf {
         self.code
     }
 
-    fn build(&mut self, _: &dyn ExtActCaller, buf: &[u8]) -> Result<usize, Error> {
-        self.parse(buf, 0)
-    }
+    // fn build(&mut self, _: &dyn ExtActCaller, buf: &[u8]) -> Result<usize, Error> {
+    //     self.parse(buf, 0)
+    // }
 }
 
 

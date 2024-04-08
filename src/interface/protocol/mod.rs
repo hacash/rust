@@ -10,7 +10,7 @@ use crate::core::protocol::*;
 
 use super::field::*;
 use super::chain::*;
-use super::vm::VMAction;
+// use super::vm::VMAction;
 
 include!("action.rs");
 include!("transaction.rs");

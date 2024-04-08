@@ -1,9 +1,9 @@
 
 
 
-/**
- * for HVM AST Node or Bytecode
- */
+/*
+for HVM AST Node or Bytecode
+
 pub trait VMAction : Field {
     fn code(&self) -> u8 { 0 } // bytecode
     fn operands(&self) -> u8 { 0 } // stack number of operate 
@@ -12,7 +12,7 @@ pub trait VMAction : Field {
     fn build(&mut self, _: &dyn ExtActCaller, _: &[u8]) -> Result<usize, Error> { panic_never_call_this!() }
 }
 
-
+*/
 
 
 

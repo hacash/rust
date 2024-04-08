@@ -29,7 +29,7 @@ impl VM for HacashVM {
         }
     }
 
-    fn exec_tx(&self, tx: &dyn TransactionRead, _: &dyn ExecEnv, bst: &mut dyn State) -> RetErr {
+    fn exec_tx(&self, _: &dyn TransactionRead, bst: &mut dyn State) -> RetErr {
         err!("")
     }
 
