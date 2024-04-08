@@ -8,10 +8,10 @@ pub trait VMAction : Field {
     fn code(&self) -> u8 { 0 } // bytecode
     fn kind(&self) -> u16 { 0 } // action kind
     fn opnum(&self) -> u8 { 0 } // stack number of operate 
-    fn childs<'a>(&'a self) -> &'a Vec<Box<dyn VMAction>> { panic_never_call_this!() }
-    fn body<'a>(&'a self) -> &'a[u8] { &[] } // action body data
-    fn to_vm<'a>(&'a self) -> &'a dyn VMAction { panic_never_call_this!() } 
-    fn to_ext<'a>(&'a self) -> &'a dyn Action { panic_never_call_this!() } 
+    fn childs(&self) -> &Vec<Box<dyn VMAction>> { panic_never_call_this!() }
+    fn body(&self) -> &[u8] { &[] } // action body data
+    fn as_vm(&self) -> &dyn VMAction { panic_never_call_this!() } 
+    fn as_ext(&self) -> &dyn Action { panic_never_call_this!() } 
     // fn build(&mut self, _: &dyn ExtActCaller, _: &[u8]) -> Result<usize, Error> { panic_never_call_this!() }
 }
 

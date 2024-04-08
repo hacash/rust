@@ -1,7 +1,7 @@
 
 pub trait ExecResult {
     fn gas_use(&self) -> u32 { 0 }
-    fn ret_val<'a>(&'a self) -> &'a[u8] { &[] }
+    fn ret_val(&self) -> &[u8] { &[] }
     fn abort(&self) -> Option<Error>{ None }
 }
 /*
@@ -10,9 +10,10 @@ pub trait ExecResult {
 
 
 pub trait ExecEnv<'a> {
-    fn main_address(&'a self) -> &'a Address { panic_never_call_this!() }
+    fn pending_height(&self) -> u64 { 0 }
+    fn main_address(&self) -> &Address { panic_never_call_this!() }
     fn check_signature(&self, _: &Address) -> bool { false }
-    fn address_list(&'a self) -> &'a[Address] { &[] }
+    fn address_list(&self) -> &[Address] { &[] }
     fn call_depth(&self) -> u32 { 0 }
 }
 

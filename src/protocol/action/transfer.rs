@@ -7,16 +7,15 @@ ActionDefine!{
         to : Address
         amt : Amount
     ),
-    // level
-    ACTLV_TOP,
-    // burn 90
-    false,
-    // params
-    (self, env, state, store),
-    // req_sign
-    [],
-    // exec
-    { panic_never_call_this!() }
+    ACTLV_TOP, // level
+    false, // burn 90
+    (self, env, state, store), // params
+    [], // req_sign
+    {
+        let from = env.main_address(); 
+        operate::hac_transfer(env, state, from, &self.to, &self.amt);
+        Box::new(operate::ActExecRes::new())
+    }
 }
 
 
@@ -28,15 +27,10 @@ ActionDefine!{
         from : Address
         amt : Amount
     ),
-    // level
-    ACTLV_TOP,
-    // burn 90
-    false,
-    // params
-    (self, env, state, store),
-    // req_sign
-    [self.from],
-    // exec
+    ACTLV_TOP, // level
+    false, // burn 90
+    (self, env, state, store), // params
+    [self.from], // req_sign
     { panic_never_call_this!() }
 }
 

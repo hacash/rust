@@ -62,6 +62,9 @@ impl StoreDB for ChainState {
 
 
 impl State for ChainState {
+    fn as_db(&mut self) -> &mut dyn StoreDB {
+        self
+    }
 }
 
 

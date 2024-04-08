@@ -27,16 +27,16 @@ impl VMAction for $actname {
     fn kind(&self) -> u16 {
         $actid
     }
-    fn to_vm<'a>(&'a self) -> &'a dyn VMAction {
+    fn as_vm(&self) -> &dyn VMAction {
         self
     }
-    fn to_ext<'a>(&'a self) -> &'a dyn Action {
+    fn as_ext(&self) -> &dyn Action {
         self
     }
 }
 
 impl ActExec for $actname {
-    fn execute(&self, $p_env: &dyn ExecEnv, $p_state: &mut dyn State, $p_store: &dyn Store) -> Box<dyn ExecResult> {
+    fn execute(&$p_self, $p_env: &dyn ExecEnv, $p_state: &mut dyn State, $p_store: &dyn Store) -> Box<dyn ExecResult> {
         $exec
     }
 }

@@ -9,12 +9,12 @@ pub fn $func_name(state: &mut CoreState, $addr: &Address, $amt: &Amount) -> Ret<
 		return Err(format!("amount {} value is not positive", $amt.to_fin_string()))
     }
     let mut userbls;
-    if let Some(b) = state.get_balance( $addr ) ? {
+    if let Some(b) = state.balance( $addr ) {
         userbls = b;
     } else {
-        userbls = BalanceItem::new(); // empty
+        userbls = Balance::new(); // empty
     }
-    let $oldhac = userbls.get_hacash();
+    let $oldhac = userbls.hacash;
     /* -------- */
     let newamt = $newamtblock;// operate
     /* -------- */
@@ -22,8 +22,8 @@ pub fn $func_name(state: &mut CoreState, $addr: &Address, $amt: &Amount) -> Ret<
 		return Err("amount size over 11 can not to store".to_string())
     }
     // save
-    userbls.set_hacash( newamt.clone() );
-    state.set_balance($addr, &userbls) ? ;
+    userbls.hacash = newamt.clone();
+    state.set_balance($addr, &userbls);
     Ok(newamt)
 }
 
@@ -38,11 +38,10 @@ fnHacashOperateCommon!(hac_add, addr, amt, oldhac, {
     oldhac.add( amt ) ? 
 });
 
-/* 
 
-pub_fn_hacash_operate_common!(hac_sub, addr, amt, oldhac, {  
+fnHacashOperateCommon!(hac_sub, addr, amt, oldhac, {  
     // check
-    if oldhac < amt {
+    if oldhac < *amt {
 		return Err(format!("do hac_sub error: address {} balance {} not enough, need {}", 
             addr.to_readable(), oldhac.to_fin_string(), amt.to_fin_string()))
     }
@@ -50,30 +49,31 @@ pub_fn_hacash_operate_common!(hac_sub, addr, amt, oldhac, {
     oldhac.sub( amt ) ?
 });
 
-*/
-
-/**************************** 
 
 
-pub fn hac_transfer(state: &mut dyn ChainState, addr_from: &Address, addr_to: &Address, amt: &Amount) -> Result<(), String> {
-	let is_trs_to_my_self = addr_from == addr_to;
-    if is_trs_to_my_self && state.pending_block_height().value() < 20_0000 {
+/****************************/
+
+
+pub fn hac_transfer(env: &dyn ExecEnv, stadb: &mut dyn State, addr_from: &Address, addr_to: &Address, amt: &Amount) -> RetErr {
+	let mut state = CoreState::wrap(stadb.as_db());
+    let is_trs_to_my_self = addr_from == addr_to;
+    if is_trs_to_my_self && env.pending_height() < 20_0000 {
         // you can transfer it to yourself without changing the status, which is a waste of service fees
 		return Ok(()) 
     }
 	// after 200000 height, the amount transferred to self is not allowed to be greater than the available balance!
-    hac_sub(state, addr_from, amt) ? ;
-    hac_add(state, addr_to, amt) ? ;
+    hac_sub(&mut state, addr_from, amt) ? ;
+    hac_add(&mut state, addr_to, amt) ? ;
     // ok
     Ok(())
 }
 
 
-pub fn hac_check(state: &mut dyn ChainState, addr: &Address, amt: &Amount) -> Result<Amount, String> {
+pub fn hac_check(state: &mut CoreState, addr: &Address, amt: &Amount) -> Ret<Amount> {
     if ! amt.is_positive() {
         return Err("check amount is cannot empty".to_string())
     }
-    if let Some(bls) = state.get_balance( addr ) ? {
+    if let Some(bls) = state.balance( addr ) {
         if bls.hacash >= *amt {
             return Ok(bls.hacash)
         }
@@ -81,8 +81,6 @@ pub fn hac_check(state: &mut dyn ChainState, addr: &Address, amt: &Amount) -> Re
     Err("address {} balance not enough".to_string())
 }
 
-
-*/
 
 
 
