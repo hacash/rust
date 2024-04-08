@@ -5,7 +5,7 @@ macro_rules! StructFieldList {
     ($class: ident, $count: ident, $count_type: ty, $value: ident, $value_type: ty) => (
 
 
-#[derive(Clone)]
+// #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct $class  {
 	$count: $count_type,
 	$value: Vec<$value_type>,
@@ -26,7 +26,7 @@ impl IndexMut<usize> for $class {
 
 impl Parse for $class {
 
-    fn parse(&mut self, buf: &[u8], seek: usize) -> Result<usize, Error> {
+    fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
         let mut seek = self.$count.parse(buf, seek) ?;
         let count = self.$count.to_u64() as usize;
         self.$value = Vec::new();

@@ -4,9 +4,9 @@ pub trait TransactionRead : Field {
     fn hash(&self) -> Hash { panic_never_call_this!() }
     fn hash_with_fee(&self) -> Hash { panic_never_call_this!() }
 
-    fn ty(&self) -> u8;
+    fn ty(&self) -> u8 { panic_never_call_this!() }
 
-    fn address(&self) -> &Address;
+    fn address(&self) -> &Address { panic_never_call_this!() }
     fn fee(&self) -> &Amount { panic_never_call_this!(); }
     // fn fee_miner_received(&self) -> Amount { panic_never_call_this!() }
     fn timestamp(&self) -> &Timestamp { panic_never_call_this!() }
@@ -25,7 +25,7 @@ pub trait TransactionRead : Field {
 
 pub trait Transaction : TransactionRead {
 
-    fn to_readonly<'a>(&'a self) -> &'a dyn TransactionRead { panic_never_call_this!() }
+    fn to_readonly(&self) -> &dyn TransactionRead { panic_never_call_this!() }
 
     // fn verify_all_need_signs(&self) -> Option<Error> { panic_never_call_this!() }
     // fn verify_target_signs(&self, _: &HashSet<Address>) -> Option<Error> { panic_never_call_this!() }

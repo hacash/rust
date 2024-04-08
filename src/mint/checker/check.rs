@@ -17,7 +17,14 @@ impl MintChecker for BlockMintChecker {
         impl_coinbase(self, cbtx)
     }
 
-    fn genesis(&self, state: &mut dyn StoreDB) -> RetErr {
-        impl_genesis(self, state)
+    fn initialize(&self, state: &mut dyn StoreDB) -> RetErr {
+        impl_initialize(self, state)
     } 
+
+    fn genesis(&self) -> Box<dyn BlockPkg> {
+        let gnsblk = genesis_block();
+        // let body = gnsblk.serialize();
+        let pkg = BlockPackage::new(Box::new(gnsblk));
+        Box::new(pkg)
+    }
 }

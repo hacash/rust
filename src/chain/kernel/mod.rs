@@ -20,6 +20,8 @@ use crate::mint::checker::*;
 
 use super::chunk;
 use super::chunk::*;
+use super::roller;
+use super::roller::*;
 
 use crate::vm;
 

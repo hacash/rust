@@ -6,7 +6,7 @@ macro_rules! StructFieldStruct {
 
 
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+// #[derive(DebugDebug, Clone, PartialEq, Eq)]
 pub struct $class {
     $(
         pub $item: $type
@@ -16,7 +16,7 @@ pub struct $class {
 
 impl Parse for $class {
 
-    fn parse(&mut self, buf: &[u8], seek: usize) -> Result<usize, Error> {
+    fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
         let mut sk: usize = seek;
         $(
             sk = self.$item.parse(buf, sk) ?;

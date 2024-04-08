@@ -6,7 +6,7 @@ macro_rules! StructFieldOptional {
     ($class:ident, $value:ident, $value_type:ident) => (
 
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+// #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct $class {
     exist: Bool,
     $value: Option<$value_type>,
@@ -15,7 +15,7 @@ pub struct $class {
 
 impl Parse for $class {
 
-    fn parse(&mut self, buf: &[u8], seek: usize) -> Result<usize, Error> {
+    fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
         let mut seek = self.exist.parse(buf, seek) ?;
         if self.is_exist() {
             let (val, mvsk) = <$value_type>::create(&buf[seek..]) ?;

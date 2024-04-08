@@ -5,7 +5,9 @@ pub trait MintChecker {
     fn consensus(&self, _: &dyn Block) -> RetErr;
     fn coinbase(&self, _: &dyn Transaction) -> RetErr;
     // do
-    fn genesis(&self, _: &mut dyn StoreDB) -> RetErr;
+    fn initialize(&self, _: &mut dyn StoreDB) -> RetErr;
+    // data
+    fn genesis(&self) -> Box<dyn BlockPkg>;
 }
 
 

@@ -9,6 +9,7 @@ use crate::interface::protocol::*;
 use crate::interface::chain::*;
 use crate::interface::vm::*;
 
+use crate::protocol::*;
 
 
 include!("origin.rs");

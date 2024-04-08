@@ -26,6 +26,7 @@ impl BlockChainKernel {
         std::fs::create_dir_all(&cnf.ctrkv_data_dir);
         // block store
         let stoldb = BlockStore::open(&cnf.store_data_dir);
+        let cstate = ChainState::open(&cnf.state_data_dir);
         // kernel
         panic!("{}", "test")
         // let kernel = BlockChainKernel{

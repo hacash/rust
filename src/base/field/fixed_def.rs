@@ -128,7 +128,7 @@ impl Serialize for $class {
 
 impl Parse for $class {
 
-    fn parse(&mut self, buf: &[u8], seek: usize) -> Result<usize, Error> {
+    fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
         let bts = buf_clip_mvsk!(buf, $size);
         self.bytes = bts.try_into().unwrap();
         Ok(seek + $size)

@@ -6,6 +6,7 @@
 macro_rules! StructFieldDynList {
     ($class: ident, $lenty: ty, $dynty: ident, $parseobjfunc: path) => (
 
+// #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct $class {
     count: $lenty,
     vlist: Vec<Box<dyn $dynty>>
@@ -13,14 +14,14 @@ pub struct $class {
 
 impl Parse for $class {
 
-    fn parse(&mut self, buf: &[u8], seek: usize) -> Result<usize, Error> {
+    fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
         let mut seek = self.count.parse(buf, seek) ?;
         let count = self.count.to_u64() as usize;
         self.vlist = Vec::new();
         for _ in 0..count {
             let(obj, mvsk) = $parseobjfunc(&buf[seek..]) ?;
             seek = mvsk;
-            self.vlist.push(Box::new(obj));
+            self.vlist.push(obj);
         }
         Ok(seek)
     }
@@ -90,6 +91,6 @@ impl $class {
 
 
 // test
-StructFieldDynList!{DynList278452983475923874, Uint1, Field, Uint1::create}
+// StructFieldDynList!{DynList278452983475923874, Uint1, Field, Uint1::create}
 
 

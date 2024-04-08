@@ -42,7 +42,7 @@ fn do_insert(kernel: &BlockChainKernel, cnf: &KernelConf, this: &StateRoller, mi
     }
     // check prev hash
     let prevhx = block.prevhash();
-    let prevchunk = chunk::locate_base_chunk(this, prevhx);
+    let prevchunk = roller::locate_base_chunk(this, prevhx);
     let Some(prevchunk) = prevchunk else {
         return errf!("cannot find base block by prev hash {}", prevhx)
     };
@@ -110,8 +110,8 @@ fn do_insert(kernel: &BlockChainKernel, cnf: &KernelConf, this: &StateRoller, mi
     let mut tempstate = fork_temp_state(this.state.upgrade().unwrap());
     // if init genesis status
     if isrhei == 1 {
-        // genesis init error
-        mintk.genesis(&mut tempstate) ? ;
+        // do initialize 
+        mintk.initialize(&mut tempstate) ? ;
     }
     // exec each tx
     // let txstabs = Arc::new(tempstate);
