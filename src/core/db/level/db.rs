@@ -21,13 +21,14 @@ pub struct LevelDB {
 
 impl LevelDB {
 
-    pub fn create(dir: &Path) -> LevelDB {
+    pub fn open(dir: &Path) -> LevelDB {
         // let mut opts = Options::new();
         // opts.create_if_missing = true;
         // let ldb = LevelDatabase::open(dir, opts).unwrap();
         let mut error = ptr::null_mut();
         let database = unsafe {
             let c_options = leveldb_options_create();
+            leveldb_options_set_create_if_missing(c_options, 1u8);
             let c_dbpath = CString::new(dir.to_str().unwrap()).unwrap();
             let db = leveldb_open(c_options as *const leveldb_options_t,
                 c_dbpath.as_bytes_with_nul().as_ptr() as *const c_char,

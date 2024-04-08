@@ -35,11 +35,10 @@ RUSTFLAGS="$RUSTFLAGS -Awarnings" RUST_BACKTRACE=1 cargo check / build / run
 
 fn main() {
     
-    main_test8327459283();
+    // main_test8327459283();
 
-
-    // let inicnf = read_config();
-    // start_hacash_node(inicnf);
+    let inicnf = read_config();
+    start_hacash_node(inicnf);
 
 }
 
@@ -70,7 +69,7 @@ fn read_config() -> sys::IniObj {
 // start node
 fn start_hacash_node(iniobj: sys::IniObj) {
     // println!("startHacashNode ini={:?}", iniobj);
-    let kernel = BlockChainKernel::create(&iniobj);
+    let kernel = BlockChainKernel::open(&iniobj);
 
 
 }

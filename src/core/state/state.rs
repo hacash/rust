@@ -70,6 +70,15 @@ impl State for ChainState {
 
 impl ChainState {
 
+    pub fn open(dir: &Path) -> ChainState {
+        let ldb = LevelDB::open(dir);
+        ChainState{
+            memk: MemoryDB::new(),
+            disk: Arc::new(ldb),
+            base: RwLock::new(None),
+        }
+    }
+
     pub fn flush_disk(&self) {
         impl_flush_disk(self)
     }

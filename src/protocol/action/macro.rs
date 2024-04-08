@@ -27,6 +27,9 @@ impl VMAction for $actname {
     fn kind(&self) -> u16 {
         $actid
     }
+    fn gas(&self) -> u32 {
+        $gas
+    }
     fn as_vm(&self) -> &dyn VMAction {
         self
     }

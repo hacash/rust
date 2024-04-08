@@ -16,9 +16,10 @@ pub fn NewKernelConf(ini: &IniObj) -> KernelConf {
 
     let mut data_dir = "./hacash_mainnet_data".to_string();
 
-    let cnfsec = &ini["kernel"];
-    if let Some(dtdir) = &cnfsec["datadir"] {
-        data_dir = dtdir.clone();
+    if let Some(cnfsec) = ini.get("kernel") {
+        if let Some(Some(dtdir)) = cnfsec.get("data_dir") {
+            data_dir = dtdir.clone();
+        }
     }
     
 

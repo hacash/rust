@@ -18,14 +18,14 @@ pub struct BlockChainKernel {
 
 impl BlockChainKernel {
 
-    pub fn create(ini: &IniObj) -> BlockChainKernel {
+    pub fn open(ini: &IniObj) -> BlockChainKernel {
         let cnf = NewKernelConf(ini);
         // data dir
         std::fs::create_dir_all(&cnf.store_data_dir);
         std::fs::create_dir_all(&cnf.state_data_dir);
         std::fs::create_dir_all(&cnf.ctrkv_data_dir);
         // block store
-        let stoldb = BlockStore::create(&cnf.store_data_dir);
+        let stoldb = BlockStore::open(&cnf.store_data_dir);
         // kernel
         panic!("{}", "test")
         // let kernel = BlockChainKernel{

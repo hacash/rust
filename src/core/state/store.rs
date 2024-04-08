@@ -45,8 +45,8 @@ impl Store for BlockStore {
 
 impl BlockStore {
 
-    pub fn create(dir: &Path) -> BlockStore {
-        let ldb = LevelDB::create(dir);
+    pub fn open(dir: &Path) -> BlockStore {
+        let ldb = LevelDB::open(dir);
         BlockStore{
             ldb: Arc::new(ldb),
         }
