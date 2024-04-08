@@ -4,7 +4,7 @@ use crate::base::field::*;
 use crate::interface::field::*;
 use crate::interface::protocol::*;
 use crate::interface::vm::*;
-use crate::core::protocol::*;
+use crate::protocol::*;
 
 use super::bytecode::*;
 

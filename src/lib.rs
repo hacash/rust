@@ -27,6 +27,7 @@ mod base;
 mod interface;
 mod config;
 mod core;
+mod protocol;
 mod mint;
 mod vm;
 mod chain;

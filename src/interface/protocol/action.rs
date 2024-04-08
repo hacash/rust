@@ -9,8 +9,9 @@ pub trait VMAction : Field {
     fn kind(&self) -> u16 { 0 } // action kind
     fn opnum(&self) -> u8 { 0 } // stack number of operate 
     fn childs<'a>(&'a self) -> &'a Vec<Box<dyn VMAction>> { panic_never_call_this!() }
-    fn extbody<'a>(&'a self) -> &'a[u8] { &[] } // extend action body data
-
+    fn body<'a>(&'a self) -> &'a[u8] { &[] } // action body data
+    fn to_vm<'a>(&'a self) -> &'a dyn VMAction { panic_never_call_this!() } 
+    fn to_ext<'a>(&'a self) -> &'a dyn Action { panic_never_call_this!() } 
     // fn build(&mut self, _: &dyn ExtActCaller, _: &[u8]) -> Result<usize, Error> { panic_never_call_this!() }
 }
 
@@ -18,7 +19,8 @@ pub trait VMAction : Field {
 /**
  * Extend Action
  */
-pub trait Action : VMAction + Cutout + ActExec {
+pub trait Action : VMAction + ActExec { // Cutout
+    fn level(&self) -> u8 { ACTLV_ANY } // any
     fn burn_90(&self) -> bool { false } // is_burning_90_persent_fee
     fn req_sign(&self) -> HashSet<Address> { HashSet::new() } // request_need_sign_addresses
 }

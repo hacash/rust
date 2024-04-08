@@ -3,7 +3,7 @@
 
 pub struct ASTBuilder {
     model: u8,
-    extcall: ExtActionCaller,
+    // extcall: ExtActionCaller,
 }
 
 

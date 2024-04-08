@@ -3,7 +3,7 @@ use std::sync::Arc;
 use crate::sys::*;
 use crate::base::field::*;
 use crate::core::field::*;
-use crate::chain::db::*;
+use crate::core::db::*;
 
 
 use super::field::*;

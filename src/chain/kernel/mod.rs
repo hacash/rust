@@ -13,10 +13,11 @@ use crate::interface::vm::*;
 use crate::config::*;
 use crate::base::field::*;
 use crate::base::util::*;
+use crate::core::db::*;
+use crate::core::state::*;
+
 use crate::mint::checker::*;
 
-use super::db::*;
-use super::state::*;
 use super::chunk;
 use super::chunk::*;
 

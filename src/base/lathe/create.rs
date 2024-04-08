@@ -13,7 +13,7 @@ macro_rules! fnFieldMustCreate {
             }
         }
 
-        fn create(buf: &[u8]) -> Result<($class, usize), Error> {
+        fn create(buf: &[u8]) -> Ret<($class, usize)> {
             let mut v = <$class>::new();
             let res = v.parse(buf, 0);
             match res {

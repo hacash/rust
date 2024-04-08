@@ -11,8 +11,9 @@ use crate::interface::chain::*;
 use crate::sys::*;
 use crate::base::field::*;
 use crate::core::field::*;
-use crate::core::protocol::*;
 use crate::core::component::*;
+use crate::protocol::action::*;
+use crate::protocol::block::*;
 
 use super::util::*;
 use super::db::*;

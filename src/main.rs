@@ -14,6 +14,7 @@ mod base;
 mod config;
 mod interface;
 mod core;
+mod protocol;
 mod mint;
 mod vm;
 mod chain;
@@ -90,11 +91,11 @@ fn start_hacash_node(iniobj: sys::IniObj) {
 
 fn main_test8327459283() {
 
-    let act1 = crate::core::protocol::ACTION_KIND_1;
+    let act1 = crate::protocol::action::ACTION_KIND_1;
     println!("{}", act1);
 
-    let mut actobj = crate::core::protocol::SatTransfer::new();
-    println!("{:?}", hex::encode(actobj.serialize()));
+    let mut actobj = crate::protocol::action::HacTransfer::new();
+    println!("{}", hex::encode(actobj.serialize()));
 
 
 

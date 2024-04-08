@@ -6,7 +6,7 @@ use crate::interface::mint::*;
 
 use crate::core::field::*;
 use crate::core::component::*;
-use crate::chain::state::*;
+use crate::core::state::*;
 
 include!("check.rs");
 include!("consensus.rs");
