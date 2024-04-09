@@ -3,10 +3,10 @@
 
 
 #[macro_export]
-macro_rules! StructFieldDynList {
+macro_rules! StructFieldDynVec {
     ($class: ident, $lenty: ty, $dynty: ident, $parseobjfunc: path) => (
 
-
+#[derive(Clone)]
 pub struct $class {
     count: $lenty,
     vlist: Vec<Box<dyn $dynty>>
@@ -14,17 +14,7 @@ pub struct $class {
 
 impl std::fmt::Debug for $class {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f,"[dyn list {}]", self.count.to_64());
-    }
-}
-
-impl Clone for $class {
-    fn clone(&self) -> $class {
-        let mut ary = vec![];
-        $class{
-            count: self.count.clone(),
-            vlist: ary,
-        }
+        write!(f,"[dyn list {}]", self.count.to_u64())
     }
 }
 
@@ -37,11 +27,10 @@ impl PartialEq for $class {
 
 impl Eq for $class {}
 
-
 impl Parse for $class {
 
-    fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
-        let mut seek = self.count.parse(buf, seek) ?;
+    fn parse(&mut self, buf: &[u8], sk: usize) -> Ret<usize> {
+        let mut seek = sk; //self.count.parse(buf, seek) ?;
         let count = self.count.to_u64() as usize;
         self.vlist = Vec::new();
         for _ in 0..count {
@@ -57,8 +46,8 @@ impl Serialize for $class {
     
     fn serialize(&self) -> Vec<u8> {
         let mut bts = vec![];
-        let bt1 = self.count.serialize();
-        bts.push(bt1);
+        // let bt1 = self.count.serialize();
+        // bts.push(bt1);
         for i in 0..self.count.to_usize() {
             let bt = self.vlist[i].as_ref().serialize();
             bts.push(bt);
@@ -67,7 +56,7 @@ impl Serialize for $class {
     }
 
     fn size(&self) -> usize {
-        let mut sznum = self.count.size();
+        let mut sznum = 0; // self.count.size();
         for i in 0..self.count.to_usize() {
             sznum += self.vlist[i as usize].as_ref().size();
         }

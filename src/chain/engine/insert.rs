@@ -1,6 +1,6 @@
 
 
-impl Kernel for BlockChainKernel {
+impl Engine for BlockEngine {
 
     fn insert(&self, blkpkg: Box<dyn BlockPkg>) -> RetErr {    
         self.isrlck.lock();
@@ -27,7 +27,7 @@ impl Kernel for BlockChainKernel {
 /**
  * do insert block crate new state
  */
-fn do_insert(kernel: &BlockChainKernel, cnf: &KernelConf, this: &StateRoller, mintk: &dyn MintChecker, blkpkg: &dyn BlockPkg) -> Ret<(Arc<RollChunk>, Arc<ChainState>)> {
+fn do_insert(kernel: &BlockEngine, cnf: &KernelConf, this: &StateRoller, mintk: &dyn MintChecker, blkpkg: &dyn BlockPkg) -> Ret<(Arc<RollChunk>, Arc<ChainState>)> {
 
     // check height
     let block = blkpkg.objc();

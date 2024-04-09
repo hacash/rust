@@ -21,7 +21,7 @@ mod chain;
 
 use crate::interface::field::*;
 use crate::core::account::Account;
-use crate::chain::kernel::*;
+use crate::chain::engine::*;
 
 /**
 
@@ -69,7 +69,7 @@ fn read_config() -> sys::IniObj {
 // start node
 fn start_hacash_node(iniobj: sys::IniObj) {
     // println!("startHacashNode ini={:?}", iniobj);
-    let kernel = BlockChainKernel::open(&iniobj);
+    let engine = BlockEngine::open(&iniobj);
 
 
 }

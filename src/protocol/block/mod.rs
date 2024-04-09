@@ -1,3 +1,5 @@
+use std::fmt::{Debug, Formatter};
+
 use concat_idents::concat_idents;
 
 use crate::sys::*;

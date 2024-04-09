@@ -38,6 +38,7 @@ regex = "1.10.0"
 wasm-bindgen = "0.2.87"
 ini = "1.3.0"
 leveldb-sys = "2.0.9"
+dyn-clone = "1.0.17"
 
 # rocksdb = "0.22.0"
 # easy-http-request = "0.2.13"

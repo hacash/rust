@@ -6,12 +6,17 @@ macro_rules! StructFieldOptional {
     ($class:ident, $value:ident, $value_type:ident) => (
 
 
-// #[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct $class {
     exist: Bool,
     $value: Option<$value_type>,
 }
 
+impl std::fmt::Debug for $class {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f,"[ifval]")
+    }
+}
 
 impl Parse for $class {
 
@@ -91,7 +96,7 @@ impl $class {
     // clone
     pub fn gain_value(&self) -> $value_type {
         match self.exist.check() {
-            true => self.$value.clone().unwrap(),
+            true => self.$value.as_ref().unwrap().clone(),
             false => <$value_type>::new(),
         }
     }

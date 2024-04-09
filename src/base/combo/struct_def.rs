@@ -6,7 +6,7 @@ macro_rules! StructFieldStruct {
 
 
 
-// #[derive(DebugDebug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct $class {
     $(
         pub $item: $type

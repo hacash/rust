@@ -1,5 +1,5 @@
 
-pub struct BlockChainKernel {
+pub struct BlockEngine {
 
     cnf: KernelConf,
 
@@ -16,9 +16,9 @@ pub struct BlockChainKernel {
     // updlck: RwLock<bool>,
 }
 
-impl BlockChainKernel {
+impl BlockEngine {
 
-    pub fn open(ini: &IniObj) -> BlockChainKernel {
+    pub fn open(ini: &IniObj) -> BlockEngine {
         let cnf = NewKernelConf(ini);
         // data dir
         std::fs::create_dir_all(&cnf.store_data_dir);
@@ -27,6 +27,7 @@ impl BlockChainKernel {
         // block store
         let stoldb = BlockStore::open(&cnf.store_data_dir);
         let cstate = ChainState::open(&cnf.state_data_dir);
+        
         // kernel
         panic!("{}", "test")
         // let kernel = BlockChainKernel{

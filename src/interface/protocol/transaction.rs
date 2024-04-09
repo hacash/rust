@@ -1,6 +1,6 @@
 
-pub trait TransactionRead : Field {    
-    
+pub trait TransactionRead : Field + dyn_clone::DynClone {    
+
     fn hash(&self) -> Hash { panic_never_call_this!() }
     fn hash_with_fee(&self) -> Hash { panic_never_call_this!() }
 
@@ -33,3 +33,6 @@ pub trait Transaction : TransactionRead {
     fn push_action(&mut self, _: Box<dyn Action>) -> Option<Error> { panic_never_call_this!() }
 
 }
+
+dyn_clone::clone_trait_object!(TransactionRead);
+dyn_clone::clone_trait_object!(Transaction);

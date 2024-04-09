@@ -5,10 +5,16 @@ macro_rules! StructFieldList {
     ($class: ident, $count: ident, $count_type: ty, $value: ident, $value_type: ty) => (
 
 
-// #[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct $class  {
 	$count: $count_type,
 	$value: Vec<$value_type>,
+}
+
+impl std::fmt::Debug for $class {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f,"[list {}]", self.$count.to_u64())
+    }
 }
 
 impl Index<usize> for $class {

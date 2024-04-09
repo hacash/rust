@@ -22,7 +22,7 @@ impl MintChecker for BlockMintChecker {
     } 
 
     fn genesis(&self) -> Box<dyn BlockPkg> {
-        let gnsblk = genesis_block();
+        let gnsblk = create_genesis_block();
         // let body = gnsblk.serialize();
         let pkg = BlockPackage::new(Box::new(gnsblk));
         Box::new(pkg)
