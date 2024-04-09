@@ -15,7 +15,7 @@ macro_rules! fnFloatFromToParseBytes {
         });
 
         concat_idents!(fn_parse_1 = parse_, $tarty {
-        fn fn_parse_1(&mut self, fv: $tarty) -> Option<Error> {
+        fn fn_parse_1(&mut self, fv: $tarty) -> RetErr {
             let sz = $size;
             let tz = $tsz;
             if sz != tz {
@@ -23,7 +23,7 @@ macro_rules! fnFloatFromToParseBytes {
             }
             let bts = fv.to_be_bytes();
             self.bytes = bts[0..tz].try_into().unwrap();
-            None
+            Ok(())
         }
         });
 

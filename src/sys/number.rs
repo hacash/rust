@@ -23,7 +23,7 @@ pub const UINT_MAX_DEFS: [u64; 9] = [
 
 // bytes <=> uint common fn
 
-pub fn bytes_to_uint(buf: &[u8], msz: usize, len: usize) -> Result<u64, Error> {
+pub fn bytes_to_uint(buf: &[u8], msz: usize, len: usize) -> Ret<u64> {
     if len > msz || len > 8 {        
         return Err("size cannot over ".to_owned() + &msz.to_string())
     }
@@ -37,7 +37,7 @@ pub fn bytes_to_uint(buf: &[u8], msz: usize, len: usize) -> Result<u64, Error> {
     Ok(u64::from_be_bytes(vbts))
 }
 
-pub fn bytes_from_uint(val: u64, msz: usize, len: usize) -> Result<Vec<u8>, Error> {
+pub fn bytes_from_uint(val: u64, msz: usize, len: usize) -> Ret<Vec<u8>> {
     if len > msz {
         return Err("size cannot over ".to_owned() + &msz.to_string())
     }

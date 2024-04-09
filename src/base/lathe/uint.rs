@@ -10,10 +10,10 @@ macro_rules! fnUintFromToParseBytes {
     });
 
     concat_idents!(fn_parse_1 = parse_, $tarty {
-    fn fn_parse_1(&mut self, val: $tarty) -> Option<Error> {
-        let bts = bytes_from_uint(val as u64, $tsz, $size).ok() ?;
-        self.bytes = bts.try_into().ok() ?;
-        None
+    fn fn_parse_1(&mut self, val: $tarty) -> RetErr {
+        let bts = bytes_from_uint(val as u64, $tsz, $size) ? ;
+        self.bytes = bts.try_into().unwrap();
+        Ok(())
     }
     });
 
@@ -21,7 +21,7 @@ macro_rules! fnUintFromToParseBytes {
     fn fn_from_1(val: $tarty) -> Self where Self: Sized {
         let mut obj = <$class>::new();
         // obj.parse_uint(val as u64).unwrap();
-        if let Some(e) = field_parse_uint(&mut obj, val as u64, $size) {
+        if let Err(e) = field_parse_uint(&mut obj, val as u64, $size) {
             panic!("{}", e)
         }
         obj
