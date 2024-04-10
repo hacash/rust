@@ -96,6 +96,10 @@ impl $class {
             }
         }
 	}
+
+    pub fn list(&self) -> &Vec<Box<dyn $dynty>> {
+        &self.vlist
+    }
 }
 
 

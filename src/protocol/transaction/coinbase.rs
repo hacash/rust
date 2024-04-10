@@ -22,6 +22,18 @@ StructFieldStruct!{ TransactionCoinbase,
 
 
 impl TransactionRead for TransactionCoinbase {
+
+    fn hash(&self) -> Hash { 
+        let stuff = self.serialize();
+        let hx = x16rs::calculate_hash(stuff);
+        Hash::must(&hx[..])
+    }
+    
+    fn hash_with_fee(&self) -> Hash {
+        self.hash()
+    }
+
+    
     
 }
 

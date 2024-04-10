@@ -32,4 +32,8 @@ impl MintChecker for BlockMintChecker {
         let pkg = BlockPackage::new(Box::new(gnsblk));
         Box::new(pkg)
     }
+    
+    fn actions(&self) -> Vec<Box<dyn Action>> {
+        vec![]
+    }
 }

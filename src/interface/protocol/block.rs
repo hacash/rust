@@ -12,7 +12,7 @@ pub trait BlockRead : Serialize {
     
     fn transaction_count(&self) -> u16 { panic_never_call_this!() }
     fn transactions(&self) -> Vec<&dyn Transaction> { panic_never_call_this!() }
-    fn transaction_hash_list(&self, iswithfee: bool) -> Vec<Hash> { panic_never_call_this!() }
+    fn transaction_hash_list(&self, hash_with_fee: bool) -> Vec<Hash> { panic_never_call_this!() }
 
 }
 
@@ -20,7 +20,9 @@ pub trait BlockRead : Serialize {
 
 pub trait Block : BlockRead + Parse {
 
-    fn push_transaction(&mut self, _: &dyn Transaction) -> Option<Error> { panic_never_call_this!() }
+    fn update_mrklroot(&mut self) { panic_never_call_this!() }
+    fn set_mrklroot(&mut self, _: Hash) { panic_never_call_this!() }
+    fn push_transaction(&mut self, _: &dyn Transaction) -> RetErr { panic_never_call_this!() }
 
 }
 

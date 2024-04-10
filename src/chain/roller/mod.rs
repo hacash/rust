@@ -3,6 +3,7 @@ use std::sync::{Arc, Weak, RwLock};
 use std::cell::RefCell;
 
 use crate::interface::protocol::*;
+use crate::interface::field::*;
 
 use crate::base::field::*;
 use crate::core::field::*;

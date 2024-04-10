@@ -23,10 +23,10 @@ pub fn bytes_from_readable_string(stuff: &[u8], len: usize) -> Result<Vec<u8>, E
             break
         }
         let a = rs[i];
-        bts[i] = match a {
+        bts.push(match a {
             32..=126 => a,
             _ => return Err("string cannot readable".to_string()),
-        }
+        });
     }
     Ok(bts)
 }

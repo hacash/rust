@@ -8,6 +8,8 @@ pub trait MintChecker {
     fn initialize(&self, _: &mut dyn StoreDB) -> RetErr;
     // data
     fn genesis(&self) -> Box<dyn BlockPkg>;
+    // actions
+    fn actions(&self) -> Vec<Box<dyn Action>>;
 }
 
 

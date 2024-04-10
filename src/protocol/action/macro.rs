@@ -1,5 +1,27 @@
 
-// : $name:ident 
+
+/******* pubFnRegActions ********/
+
+
+#[macro_export]
+macro_rules! pubFnRegActions {
+    ( $($ty:ident)+ ) => {
+
+pub fn actions() -> Vec<Box<dyn Action>> {
+    vec![
+        $(
+            Box::new($ty::new()),
+        )+
+    ]
+}
+
+    }
+}
+
+
+/******* ActionDefine ********/
+
+
 #[macro_export]
 macro_rules! ActionDefine {
     {   $actname:ident : $actid:expr, 

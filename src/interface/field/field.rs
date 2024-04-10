@@ -1,6 +1,7 @@
 
 pub trait Field : Serialize + Parse {
     fn new() -> Self where Self: Sized;
+    fn wrap(_: Vec<u8>) -> Self where Self: Sized { panic_never_call_this!(); } // maybe panic!
     fn must(_: &[u8]) -> Self where Self: Sized { panic_never_call_this!(); } // maybe panic!
     fn create(_: &[u8]) -> Ret<(Self, usize)> where Self: Sized { panic_never_call_this!(); }
     

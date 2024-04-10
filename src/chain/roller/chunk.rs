@@ -34,5 +34,9 @@ impl RollChunk {
         self.parent = Arc::downgrade(&p).into();
     }
 
+    pub fn print(&self) -> String {
+        format!("{}:{}", self.height.to_u64(), self.hash.mark())
+    }
+
 }
 

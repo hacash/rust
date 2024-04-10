@@ -80,22 +80,22 @@ const HASH_MARK_SIZE: usize = HashMark::width();
 
 impl Hash {
 
-    pub fn get_half(&self) -> HashHalf {
+    pub fn half(&self) -> HashHalf {
         let pt: [u8; HASH_HALF_SIZE] = self.bytes[0..HASH_HALF_SIZE].try_into().unwrap();
         HashHalf::must(&pt)
     }
 
-    pub fn get_nonce(&self) -> HashNonce {
+    pub fn nonce(&self) -> HashNonce {
         let pt: [u8; HASH_NONCE_SIZE] = self.bytes[0..HASH_NONCE_SIZE].try_into().unwrap();
         HashNonce::must(&pt)
     }
 
-    pub fn get_check(&self) -> HashCheck {
+    pub fn check(&self) -> HashCheck {
         let pt: [u8; HASH_CHECK_SIZE] = self.bytes[0..HASH_CHECK_SIZE].try_into().unwrap();
         HashCheck::must(&pt)
     }
 
-    pub fn get_mark(&self) -> HashMark {
+    pub fn mark(&self) -> HashMark {
         let pt: [u8; HASH_MARK_SIZE] = self.bytes[0..HASH_MARK_SIZE].try_into().unwrap();
         HashMark::must(&pt)
     }

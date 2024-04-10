@@ -1,5 +1,7 @@
 use std::fmt::*;
 
+use crate::x16rs;
+
 use crate::sys::*;
 
 use crate::interface::field::*;
