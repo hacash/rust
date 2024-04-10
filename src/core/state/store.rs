@@ -37,7 +37,7 @@ impl StoreDB for BlockStore {
 }
 
 impl Store for BlockStore {
-    fn as_db(&mut self) -> &mut dyn StoreDB {
+    fn as_db(&self) -> &dyn StoreDB {
         self
     }
 }

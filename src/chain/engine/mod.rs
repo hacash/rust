@@ -15,6 +15,7 @@ use crate::base::field::*;
 use crate::base::util::*;
 use crate::core::db::*;
 use crate::core::state::*;
+use crate::core::component::*;
 
 use crate::mint::checker::*;
 
@@ -31,6 +32,7 @@ include!("init.rs");
 include!("read.rs");
 include!("insert.rs");
 include!("roll.rs");
+include!("store.rs");
 // include!("locate.rs");
 // include!("start.rs");
 

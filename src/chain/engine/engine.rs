@@ -1,3 +1,10 @@
+pub enum RollerChangeStatus {
+    Uncle,
+    Append, // append block not roll
+    AppendRoll, // append and do roll
+    AppendRollSwitchFork, // append roll and jump to another fork
+}
+
 
 pub struct BlockEngine {
 

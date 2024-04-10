@@ -34,6 +34,16 @@ impl struct_name_read<'_> {
         }
         });
     )+
+    // set block_reward
+    $(
+        concat_idents!(fn_set_1 = set_, $name1 {
+        pub fn fn_set_1(&self, obj: &$vtype1) {
+            (*self.db).set( $kfix1, &Empty::new(), obj);
+        }
+        });
+    )+
+
+
     // get balance
     $(
         concat_idents!(fn_get_2 = $name2 {
@@ -43,6 +53,22 @@ impl struct_name_read<'_> {
                 return Some(obj)
             }
             None
+        }
+        });
+    )+
+    // set balance
+    $(
+        concat_idents!(fn_set_2 = set_, $name2 {
+        pub fn fn_set_2(&self, key: &$keyty2, obj: &$vtype2) {
+            (*self.db).set($kfix2, key, obj);
+        }
+        });
+    )+
+    // del balance
+    $(
+        concat_idents!(fn_del_2 = del_, $name2 {
+        pub fn fn_del_2(&self, key: &$keyty2) {
+            (*self.db).del($kfix2, key);
         }
         });
     )+
@@ -130,11 +156,10 @@ impl $name<'_> {
         });
     )+
 
-
     // del balance
     $(
         concat_idents!(fn_del_2 = del_, $name2 {
-        pub fn fn_del_2(&mut self, key: &$keyty2) {
+        pub fn fn_del_2(&self, key: &$keyty2) {
             (*self.db).del($kfix2, key);
         }
         });

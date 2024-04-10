@@ -38,7 +38,7 @@ pub fn do_check_insert(
         return errf!("block timestamp {} cannot less than prev block timestamp {}", blk_time, prev_blk_time)
     }
     // check size
-    let blk_size = blkpkg.body().len();
+    let blk_size = blkpkg.body().length();
     if blk_size > cnf.max_block_size + 100 { // may 1MB + headmeta size
         return errf!("block size cannot over {} bytes", cnf.max_block_size + 100)
     }
@@ -142,7 +142,7 @@ pub fn do_insert(kernel: &BlockEngine, cnf: &EngineConf, this: &BlockRoller, min
         return errf!("block timestamp {} cannot less than prev block {}", blkts, prevblkts)
     }
     // check size
-    let blksz = blkpkg.body().len();
+    let blksz = blkpkg.body().length();
     if blksz > cnf.max_block_size + 90 { // may 1MB + headmeta size
         return errf!("block size cannot over {} bytes", cnf.max_block_size + 90)
     }

@@ -2,19 +2,19 @@
 /**
  * do change chunk roller and state head
  */
-fn do_roll(cnf: &EngineConf, roller: &mut BlockRoller, append: Arc<RollChunk>) -> RetErr {
+fn do_roll(cnf: &EngineConf, roller: &mut BlockRoller, append: Arc<RollChunk>) -> Ret<RollerChangeStatus> {
     let oldhead = roller.scusp.upgrade().unwrap();
     let root_height = roller.sroot.height.to_u64();
     let oldhead_height = oldhead.height.to_u64(); 
     let append_height = append.height.to_u64();
     if append_height <= oldhead_height {
         // not change head
-        return Ok(())
+        return Ok(RollerChangeStatus::Uncle)
     }
     // if roll
     if append_height <= root_height + cnf.unstable_block {
         // not roll
-        return Ok(())
+        return Ok(RollerChangeStatus::Append)
     }
     // do roll
     let mut new_root: Option<Arc<RollChunk>> = None;
@@ -37,13 +37,20 @@ fn do_roll(cnf: &EngineConf, roller: &mut BlockRoller, append: Arc<RollChunk>) -
     if new_root.height.to_u64() != root_height + 1 {
         return errf!("root chunk height error")
     }
-    // change head
-    roller.sroot.state.flush_disk(); // flush to disk
-    new_root.drop_parent();
-    roller.sroot = new_root;
+    // change head & root
     roller.scusp = Arc::downgrade(&append);
     roller.state = Arc::downgrade(&append.state);
-    Ok(())
+    roller.sroot = new_root.clone(); // roll
+    // roll root 
+    new_root.state.flush_disk(); // flush to disk
+    // new_root.drop_parent(); // do roll auto drop parent
+    // return change head
+    match oldhead.hash == *append.block.objc().prevhash() {
+        true => Ok(RollerChangeStatus::AppendRoll),
+        // jump to another fork !
+        false => Ok(RollerChangeStatus::AppendRollSwitchFork),
+    }
+    
 }
 
 
@@ -57,7 +64,7 @@ fn scan_parent_chunk(sub: Weak<RollChunk>, step: u64) -> Option<Arc<RollChunk>> 
     }
     // 
     return match up {
-        Some(b) => scan_parent_chunk((*b.parent.borrow()).clone(), step-1),
+        Some(b) => scan_parent_chunk(b.parent.clone(), step-1),
         None => None,
     }
 }

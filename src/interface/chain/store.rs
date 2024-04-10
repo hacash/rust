@@ -22,8 +22,7 @@ pub trait StoreDB {
 
 
 pub trait Store : StoreDB {
-    fn as_db(&mut self) -> &mut dyn StoreDB;
-
+    fn as_db(&self) -> &dyn StoreDB;
 }
 
 

@@ -20,7 +20,7 @@ defineChainStateOperationInstance!{
 defineChainStateOperationInstance!{
     CoreStore
     (
-        &[0, 1], latest       , Latest
+        &[0, 1], status        , StoreStatus
     )
     (
         &[0, 11], blockdata    , Hash        , BytesW4

@@ -1,7 +1,7 @@
 
 pub trait HashBodyPkg {
     fn hash(&self) -> &Hash { panic_never_call_this!() }
-    fn body(&self) -> &[u8] { panic_never_call_this!() }
+    fn body(&self) -> &BytesW4 { panic_never_call_this!() }
 }
 
 
