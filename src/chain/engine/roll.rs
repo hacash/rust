@@ -2,7 +2,7 @@
 /**
  * do change chunk roller and state head
  */
-fn do_roll(cnf: &KernelConf, this: &StateRoller, blkpkg: Box<dyn BlockPkg>, bsck: Arc<RollChunk>, state: Arc<ChainState>) 
+fn do_roll(cnf: &EngineConf, this: &StateRoller, blkpkg: Box<dyn BlockPkg>, bsck: Arc<RollChunk>, state: Arc<ChainState>) 
     -> Ret<Option<(Weak<RollChunk>, Weak<ChainState>, Arc<RollChunk>)>> {
     let istprevhx = *blkpkg.objc().prevhash();
     let mut chunk = RollChunk::create(blkpkg, state.clone());

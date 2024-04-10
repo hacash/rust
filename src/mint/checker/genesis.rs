@@ -1,3 +1,4 @@
+/* 
 use std::mem::MaybeUninit;
 use std::sync::{Mutex};
 
@@ -29,8 +30,13 @@ pub fn genesis_block() -> &'static BlockV1 {
     }
 
 }
+*/
 
-// create
+
+
+/**
+ * create
+ */ 
 pub fn create_genesis_block() -> BlockV1 {
     let blktime = Timestamp::from_uint(1549250700);
     let blknoncenum = Uint4::from_uint(160117829);

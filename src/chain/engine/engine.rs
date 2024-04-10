@@ -1,14 +1,14 @@
 
 pub struct BlockEngine {
 
-    cnf: KernelConf,
+    cnf: EngineConf,
 
     store: Arc<BlockStore>,
 
     klctx: Mutex<StateRoller>, // change
 
     mintk: Box<dyn MintChecker>,
-    vmobj: Box<dyn VM>,
+    pub vmobj: Box<dyn VM>,
     // actns: Box<dyn >,
 
     // insert lock

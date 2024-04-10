@@ -18,10 +18,10 @@ use crate::core::state::*;
 
 use crate::mint::checker::*;
 
-use super::chunk;
-use super::chunk::*;
 use super::roller;
 use super::roller::*;
+use super::execute;
+use super::execute::*;
 
 use crate::vm;
 
