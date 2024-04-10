@@ -1,5 +1,6 @@
 use std::*;
 use std::path::*;
+use std::sync::{Arc};
 
 #[macro_use]
 extern crate ini;
@@ -74,7 +75,7 @@ fn start_hacash_node(iniobj: sys::IniObj) {
     // println!("startHacashNode ini={:?}", iniobj);
     let mint_checker = Box::new(BlockMintChecker::create());
     let engine = BlockEngine::open(&iniobj, mint_checker);
-
+    let engptr = Arc::new(engine);
 
 }
 

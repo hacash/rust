@@ -2,7 +2,7 @@
 /**
  * do change chunk roller and state head
  */
-fn do_roll(cnf: &EngineConf, this: &StateRoller, blkpkg: Box<dyn BlockPkg>, bsck: Arc<RollChunk>, state: Arc<ChainState>) 
+fn do_roll(cnf: &EngineConf, this: &BlockRoller, blkpkg: Box<dyn BlockPkg>, bsck: Arc<RollChunk>, state: Arc<ChainState>) 
     -> Ret<Option<(Weak<RollChunk>, Weak<ChainState>, Arc<RollChunk>)>> {
     let istprevhx = *blkpkg.objc().prevhash();
     let mut chunk = RollChunk::create(blkpkg, state.clone());
@@ -46,7 +46,7 @@ fn do_roll(cnf: &EngineConf, this: &StateRoller, blkpkg: Box<dyn BlockPkg>, bsck
 /**
  * roll chunk state
  */
-fn do_roll_chunk_state(this: &mut StateRoller, scusp: Weak<RollChunk>, state: Weak<ChainState>, sroot: Arc<RollChunk>) -> RetErr {
+fn do_roll_chunk_state(this: &mut BlockRoller, scusp: Weak<RollChunk>, state: Weak<ChainState>, sroot: Arc<RollChunk>) -> RetErr {
 
     // flush
     // sroot.state.flush_disk();

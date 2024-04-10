@@ -108,7 +108,7 @@ pub fn do_check_insert(
 
 
 
-pub fn do_insert(kernel: &BlockEngine, cnf: &EngineConf, this: &StateRoller, mintk: &dyn MintChecker, blkpkg: &dyn BlockPkg) -> Ret<(Arc<RollChunk>, Arc<ChainState>)> {
+pub fn do_insert(kernel: &BlockEngine, cnf: &EngineConf, this: &BlockRoller, mintk: &dyn MintChecker, blkpkg: &dyn BlockPkg) -> Ret<(Arc<RollChunk>, Arc<ChainState>)> {
 
     // check height
     let block = blkpkg.objc();

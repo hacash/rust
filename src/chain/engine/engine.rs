@@ -5,7 +5,7 @@ pub struct BlockEngine {
 
     store: Arc<BlockStore>,
 
-    klctx: Mutex<StateRoller>, // change
+    klctx: Mutex<BlockRoller>, // change
 
     mintk: Box<dyn MintChecker>,
     // pub vmobj: Box<dyn VM>,
@@ -13,7 +13,6 @@ pub struct BlockEngine {
 
     // insert lock
     isrlck: Mutex<bool>,
-    // updlck: RwLock<bool>,
 }
 
 impl BlockEngine {
@@ -30,7 +29,7 @@ impl BlockEngine {
         let staptr = Arc::new(cstate);
         // base or genesis block
         let bsblk = load_base_block(mintk.as_ref(), &stoldb);
-        let roller = StateRoller::create(bsblk, staptr);
+        let roller = BlockRoller::create(bsblk, staptr);
         // engine
         let engine = BlockEngine {
             cnf: cnf,

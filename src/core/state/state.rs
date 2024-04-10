@@ -29,16 +29,15 @@ impl StoreDB for ChainState {
             }
         }
         // is have base db
-        let basedb = self.base.upgrade();
-        if let None = basedb {
-            // no base ptr, check disk db // search disk final
-            return match self.disk.get_at(key) {
-                Some(rb) => Some(Bytes::Raw(rb)),
-                _ => None, // not find
-            }
+        if let Some(basedb) = self.base.upgrade() {
+            // read from base
+            return basedb.get_at(key) 
         }
-        // must have base ptr, check base
-        basedb.unwrap().get_at(key) // search from base ptr
+        // no base ptr, check disk db // resd disk final
+        match self.disk.get_at(key) {
+            Some(rb) => Some(Bytes::Raw(rb)),
+            _ => None, // not find
+        }
     }
     
     fn get(&self, p: &[u8], k: &dyn Serialize) -> Option<Bytes> {
