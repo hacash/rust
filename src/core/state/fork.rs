@@ -1,8 +1,8 @@
 
 
 
-// fork temp 
-pub fn fork_temp_state(base: Arc<ChainState>) -> ChainState {
+// fork sub 
+pub fn fork_sub_state(base: Arc<ChainState>) -> ChainState {
     ChainState{
         // memdb
         memk: MemoryDB::new(),

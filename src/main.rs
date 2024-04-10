@@ -23,6 +23,7 @@ use crate::sys::*;
 use crate::base::field::Hash;
 use crate::interface::field::*;
 use crate::core::account::Account;
+use crate::mint::checker::*;
 use crate::chain::engine::*;
 
 /**
@@ -71,7 +72,8 @@ fn read_config() -> sys::IniObj {
 // start node
 fn start_hacash_node(iniobj: sys::IniObj) {
     // println!("startHacashNode ini={:?}", iniobj);
-    let engine = BlockEngine::open(&iniobj);
+    let mint_checker = Box::new(BlockMintChecker::create());
+    let engine = BlockEngine::open(&iniobj, mint_checker);
 
 
 }

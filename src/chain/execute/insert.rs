@@ -3,18 +3,27 @@
  * do insert block crate new state
  * return new chunk and state
  */
-pub fn do_insert_check(cnf: &EngineConf, mintk: &dyn MintChecker, prevchunk: Arc<RollChunk>, blkpkg: &dyn BlockPkg) -> Ret<(Arc<RollChunk>, Arc<ChainState>)> {
+pub fn do_check_insert(
+
+    cnf: &EngineConf, 
+    mintk: &dyn MintChecker, 
+    prev_state: Arc<ChainState>, 
+    prev_block: &dyn Block, 
+    blkpkg: &dyn BlockPkg
+
+) -> Ret<ChainState> {
+
     // check height
     let block = blkpkg.objc();
-    let prev_block = prevchunk.block.objc();
+    // let prev_block = prev_block;
     let height = block.height().to_u64();
-    let prev_height = prevchunk.height.to_u64();
+    let prev_height = prev_block.height().to_u64();
     if height != prev_height + 1 {
         return errf!("block height {} is not match to insert, need {}", height, prev_height + 1)
     }
     // check prev hash
     let prev_hx = block.prevhash();
-    let base_hx = prevchunk.hash;
+    let base_hx = prev_block.hash();
     if *prev_hx != base_hx {
         return errf!("need prev hash {} but got {}", base_hx, prev_hx)
     };
@@ -69,34 +78,30 @@ pub fn do_insert_check(cnf: &EngineConf, mintk: &dyn MintChecker, prevchunk: Arc
     if *mrklrt != mkroot {
         return errf!("block mrkl root need {} but got {}", mkroot, mrklrt)
     }
-    // check mint checker and genesis , if consensus error
+    // check mint consensus & coinbase
     mintk.consensus(&**block) ? ;
     // coinbase tx id = 0, if coinbase error
-    mintk.coinbase(&*alltxs[0]) ? ;
+    mintk.coinbase(height, &*alltxs[0]) ? ;
     // check state
-    // fork new state
-    let mut tempstate = fork_temp_state(prevchunk.state.clone());
+    let mut sub_state = fork_sub_state(prev_state.clone());
     // if init genesis status
     if height == 1 {
-        // do initialize 
-        mintk.initialize(&mut tempstate) ? ;
+        // state initialize 
+        mintk.initialize(&mut sub_state) ? ;
     }
     // exec each tx
-    // let txstabs = Arc::new(tempstate);
     for tx in alltxs.iter() {
-        // let mut txstate = fork_temp_state(txstabs.clone());
-        // kernel.vmobj.exec_tx( tx.to_readonly(), &mut tempstate) ? ;
+        // let mut txstate = fork_sub_state(txstabs.clone());
+        // kernel.vmobj.exec_tx( tx.to_readonly(), &mut sub_state) ? ;
         // ok merge copy state
-        // tempstate.merge_copy(substate.as_ref()) ? ;
+        // sub_state.merge_copy(substate.as_ref()) ? ;
     }
     // 
     
 
 
-    
-
     // test
-    Ok((prevchunk.clone(), Arc::new(tempstate)))
+    Ok(sub_state)
 
 }
 
@@ -180,20 +185,20 @@ pub fn do_insert(kernel: &BlockEngine, cnf: &EngineConf, this: &StateRoller, min
     // check mint checker and genesis , if consensus error
     mintk.consensus(&**block) ? ;
     // coinbase tx id = 0, if coinbase error
-    mintk.coinbase(&*alltxs[0]) ? ;
+    mintk.coinbase(isrhei, &*alltxs[0]) ? ;
     // check state
     // fork new state
-    let mut tempstate = fork_temp_state(this.state.upgrade().unwrap());
+    let mut tempstate = fork_sub_state(this.state.upgrade().unwrap());
     // if init genesis status
     if isrhei == 1 {
-        // do initialize 
+        // set initialize 
         mintk.initialize(&mut tempstate) ? ;
     }
     // exec each tx
     // let txstabs = Arc::new(tempstate);
     for tx in alltxs.iter() {
-        // let mut txstate = fork_temp_state(txstabs.clone());
-        kernel.vmobj.exec_tx( tx.to_readonly(), &mut tempstate) ? ;
+        // let mut txstate = fork_sub_state(txstabs.clone());
+        // kernel.vmobj.exec_tx( tx.to_readonly(), &mut tempstate) ? ;
         // ok merge copy state
         // tempstate.merge_copy(substate.as_ref()) ? ;
     }

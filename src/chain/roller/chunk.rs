@@ -22,7 +22,7 @@ impl RollChunk {
             block: blkpkg,
             state: state,
             childs: Vec::new().into(),
-            parent: Weak::new().into(),
+            parent: Weak::new().into(), // none
         }
     }
 

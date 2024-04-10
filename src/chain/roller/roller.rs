@@ -12,6 +12,15 @@ pub struct StateRoller {
 
 impl StateRoller {
 
-    pub fn create(){}
+    pub fn create(blkpkg: Box<dyn BlockPkg>, state: Arc<ChainState>) -> StateRoller {
+        let chunk = RollChunk::create(blkpkg, state.clone());
+        let ckptr = Arc::new(chunk);
+        StateRoller {
+            state: Arc::downgrade(&state),
+            scusp: Arc::downgrade(&ckptr),
+            sroot: ckptr,
+        }
+    }
+
 
 }

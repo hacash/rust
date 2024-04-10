@@ -5,6 +5,11 @@ pub struct BlockMintChecker {
 
 }
 
+impl BlockMintChecker {
+    pub fn create() -> BlockMintChecker {
+        BlockMintChecker{}
+    }
+}
 
 
 impl MintChecker for BlockMintChecker {
@@ -13,8 +18,8 @@ impl MintChecker for BlockMintChecker {
         impl_consensus(self, cbtx)
     }
 
-    fn coinbase(&self, cbtx: &dyn Transaction) -> RetErr {
-        impl_coinbase(self, cbtx)
+    fn coinbase(&self, height: u64, cbtx: &dyn Transaction) -> RetErr {
+        impl_coinbase(self, height, cbtx)
     }
 
     fn initialize(&self, state: &mut dyn StoreDB) -> RetErr {

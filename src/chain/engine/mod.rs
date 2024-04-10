@@ -25,13 +25,14 @@ use super::execute::*;
 
 use crate::vm;
 
+
 include!("engine.rs");
+include!("init.rs");
 include!("read.rs");
 include!("insert.rs");
 include!("roll.rs");
 // include!("locate.rs");
 // include!("start.rs");
-// include!("init.rs");
 
 
 

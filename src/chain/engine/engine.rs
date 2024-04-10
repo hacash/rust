@@ -8,7 +8,7 @@ pub struct BlockEngine {
     klctx: Mutex<StateRoller>, // change
 
     mintk: Box<dyn MintChecker>,
-    pub vmobj: Box<dyn VM>,
+    // pub vmobj: Box<dyn VM>,
     // actns: Box<dyn >,
 
     // insert lock
@@ -18,24 +18,28 @@ pub struct BlockEngine {
 
 impl BlockEngine {
 
-    pub fn open(ini: &IniObj) -> BlockEngine {
+    pub fn open(ini: &IniObj, mintk: Box<dyn MintChecker>) -> BlockEngine {
         let cnf = NewKernelConf(ini);
         // data dir
         std::fs::create_dir_all(&cnf.store_data_dir);
         std::fs::create_dir_all(&cnf.state_data_dir);
         std::fs::create_dir_all(&cnf.ctrkv_data_dir);
-        // block store
+        // state & store
         let stoldb = BlockStore::open(&cnf.store_data_dir);
         let cstate = ChainState::open(&cnf.state_data_dir);
-        
-        // kernel
-        panic!("{}", "test")
-        // let kernel = BlockChainKernel{
-        //     cnf: cnf,
-        //     store: Arc::new(stoldb),
-        // };
-
-        // kernel
+        let staptr = Arc::new(cstate);
+        // base or genesis block
+        let bsblk = load_base_block(mintk.as_ref(), &stoldb);
+        let roller = StateRoller::create(bsblk, staptr);
+        // engine
+        let engine = BlockEngine {
+            cnf: cnf,
+            store: Arc::new(stoldb),
+            klctx: Mutex::new(roller),
+            mintk: mintk,
+            isrlck: Mutex::new(true),
+        };
+        engine
     }
 
     pub fn start(&mut self) -> RetErr {

@@ -1,5 +1,5 @@
 
-fn impl_coinbase(this: &BlockMintChecker, cbtx: &dyn Transaction) -> RetErr {
+fn impl_coinbase(this: &BlockMintChecker, height: u64, cbtx: &dyn Transaction) -> RetErr {
         
 
 

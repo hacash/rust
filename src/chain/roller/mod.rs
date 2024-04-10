@@ -12,4 +12,5 @@ use crate::core::component::*;
 
 include!("chunk.rs");
 include!("roller.rs");
+include!("init.rs");
 include!("find.rs");

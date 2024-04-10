@@ -3,6 +3,8 @@
 pub trait State : StoreDB {
 
     fn as_db(&mut self) -> &mut dyn StoreDB;
+
+    
     
 
     // fn load(&self, data: &Bytes, v: &mut dyn Parse) -> RetErr { panic_never_call_this!() }
