@@ -16,4 +16,5 @@ use crate::protocol::*;
 
 include!("origin.rs");
 include!("intro.rs");
+include!("v1.rs");
 include!("block.rs");
