@@ -4,7 +4,8 @@ impl Engine for BlockEngine {
 
     fn insert(&self, blkpkg: Box<dyn BlockPkg>) -> RetErr {    
         self.isrlck.lock();
-        // find base chunk
+
+        // search base chunk
         let prev_hx = blkpkg.objc().prevhash();
         let base_chunk = {
             let roll_root = self.klctx.lock().unwrap();
@@ -14,6 +15,7 @@ impl Engine for BlockEngine {
             }
             bsck.unwrap()
         };
+
         // try insert
         let sub_state = do_check_insert(
             &self.cnf, 
@@ -23,11 +25,16 @@ impl Engine for BlockEngine {
             blkpkg.as_ref(),
         ) ? ;
         let state_ptr = Arc::new(sub_state);
-        // change roller chunk
+
+        // append chunk
         let new_chunk = RollChunk::create(blkpkg, state_ptr);
         new_chunk.set_parent(base_chunk.clone());
         let chunk_ptr = Arc::new(new_chunk);
-        base_chunk.push_child(chunk_ptr);
+        base_chunk.push_child(chunk_ptr.clone());
+
+        // if do roll and flush to disk
+        let mut roll_root = self.klctx.lock().unwrap();
+        do_roll( &self.cnf, &mut roll_root, chunk_ptr)
 
         /*
         // lock
@@ -43,9 +50,9 @@ impl Engine for BlockEngine {
             let mut ctx = self.klctx.lock().unwrap();
             do_roll_chunk_state(&mut ctx, scusp, state, sroot) ? ;
         }
-        */
         // ok finish 
         Ok(())
+        */
     }
 
 }

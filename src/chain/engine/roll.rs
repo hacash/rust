@@ -2,7 +2,85 @@
 /**
  * do change chunk roller and state head
  */
-fn do_roll(cnf: &EngineConf, this: &BlockRoller, blkpkg: Box<dyn BlockPkg>, bsck: Arc<RollChunk>, state: Arc<ChainState>) 
+fn do_roll(cnf: &EngineConf, roller: &mut BlockRoller, append: Arc<RollChunk>) -> RetErr {
+    let oldhead = roller.scusp.upgrade().unwrap();
+    let root_height = roller.sroot.height.to_u64();
+    let oldhead_height = oldhead.height.to_u64(); 
+    let append_height = append.height.to_u64();
+    if append_height <= oldhead_height {
+        // not change head
+        return Ok(())
+    }
+    // if roll
+    if append_height <= root_height + cnf.unstable_block {
+        // not roll
+        return Ok(())
+    }
+    // do roll
+    let mut new_root: Option<Arc<RollChunk>> = None;
+    {
+        let rtchilds = roller.sroot.childs.borrow();
+        if rtchilds.len() == 1 {
+            // only one child
+            new_root = Some(rtchilds[0].clone());
+        }
+    }
+    if let None = new_root {
+        // search form new head to root
+        let start = Arc::downgrade(&append);
+        new_root = scan_parent_chunk(start, cnf.unstable_block);
+    }
+    if let None = new_root {
+        return errf!("cannot find the base root chunk")
+    }
+    let new_root = new_root.unwrap();
+    if new_root.height.to_u64() != root_height + 1 {
+        return errf!("root chunk height error")
+    }
+    // change head
+    roller.sroot.state.flush_disk(); // flush to disk
+    new_root.drop_parent();
+    roller.sroot = new_root;
+    roller.scusp = Arc::downgrade(&append);
+    roller.state = Arc::downgrade(&append.state);
+    Ok(())
+}
+
+
+/**
+ * scan parent chunk
+ */
+fn scan_parent_chunk(sub: Weak<RollChunk>, step: u64) -> Option<Arc<RollChunk>> {
+    let up = sub.upgrade();
+    if step == 0 {
+        return up
+    }
+    // 
+    return match up {
+        Some(b) => scan_parent_chunk((*b.parent.borrow()).clone(), step-1),
+        None => None,
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+
+
+fn do_roll_old(cnf: &EngineConf, this: &BlockRoller, blkpkg: Box<dyn BlockPkg>, bsck: Arc<RollChunk>, state: Arc<ChainState>) 
     -> Ret<Option<(Weak<RollChunk>, Weak<ChainState>, Arc<RollChunk>)>> {
     let istprevhx = *blkpkg.objc().prevhash();
     let mut chunk = RollChunk::create(blkpkg, state.clone());
@@ -41,11 +119,12 @@ fn do_roll(cnf: &EngineConf, this: &BlockRoller, blkpkg: Box<dyn BlockPkg>, bsck
     Ok(Some((Arc::downgrade(&chunkobj), Arc::downgrade(&state), tarrt)))
 }
 
+*/
 
 
-/**
- * roll chunk state
- */
+
+/*
+// roll chunk state
 fn do_roll_chunk_state(this: &mut BlockRoller, scusp: Weak<RollChunk>, state: Weak<ChainState>, sroot: Arc<RollChunk>) -> RetErr {
 
     // flush
@@ -60,3 +139,6 @@ fn do_roll_chunk_state(this: &mut BlockRoller, scusp: Weak<RollChunk>, state: We
 
     Ok(())
 }
+
+*/
+

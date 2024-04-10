@@ -77,7 +77,7 @@ impl ChainState {
         }
     }
 
-    pub fn flush_disk(&mut self) {
+    pub fn flush_disk(&self) {
         impl_flush_disk(self)
     }
 
