@@ -7,6 +7,6 @@ pub fn fork_temp_state(base: Arc<ChainState>) -> ChainState {
         // memdb
         memk: MemoryDB::new(),
         disk: base.copy_ldb(),
-        base: RwLock::new(Some(Arc::<ChainState>::downgrade(&base))),
+        base: Arc::<ChainState>::downgrade(&base),
     }
 }

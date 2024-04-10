@@ -23,8 +23,8 @@ fn do_roll(cnf: &EngineConf, this: &StateRoller, blkpkg: Box<dyn BlockPkg>, bsck
     // }
     let mut newrootck = this.scusp.clone();
     for i in 0..cnf.unstable_block - 1 {
-        if let Some(p) = newrootck.upgrade().unwrap().parent.borrow().as_ref() {
-            newrootck = p.clone();
+        if let Some(p) = (*newrootck.upgrade().unwrap().parent.borrow()).upgrade() {
+            newrootck = Arc::downgrade(&p);
         }else{
             break;
         }
@@ -49,7 +49,7 @@ fn do_roll(cnf: &EngineConf, this: &StateRoller, blkpkg: Box<dyn BlockPkg>, bsck
 fn do_roll_chunk_state(this: &mut StateRoller, scusp: Weak<RollChunk>, state: Weak<ChainState>, sroot: Arc<RollChunk>) -> RetErr {
 
     // flush
-    sroot.state.flush_disk();
+    // sroot.state.flush_disk();
 
     // unset parent and drop
     sroot.drop_parent();

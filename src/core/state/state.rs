@@ -4,7 +4,7 @@ pub struct ChainState {
     // db: DB,
     memk: MemoryDB,
     disk: Arc<LevelDB>,
-    base: RwLock<Option<Weak<ChainState>>>,
+    base: Weak<ChainState>,
 }
 
 impl ChainState {
@@ -19,17 +19,7 @@ impl ChainState {
 impl StoreDB for ChainState {
 
     fn get_at(&self, key: &[u8]) -> Option<Bytes> {
-        // is have base db
-        let basedb = self.base.read().unwrap();
-        let basedb = basedb.as_ref();
-        if let None = basedb {
-            // no base ptr, check disk db // search disk final
-            return match self.disk.get_at(key) {
-                Some(rb) => Some(Bytes::Raw(rb)),
-                _ => None, // not find
-            }
-        }
-        // first, check local mem
+        // check mem
         if let Some(dt) = self.memk.get(key) {
             // find the key
             if let MemdbItem::Delete = dt {
@@ -38,8 +28,17 @@ impl StoreDB for ChainState {
                 return Some(Bytes::Mem(v.clone())) // find
             }
         }
+        // is have base db
+        let basedb = self.base.upgrade();
+        if let None = basedb {
+            // no base ptr, check disk db // search disk final
+            return match self.disk.get_at(key) {
+                Some(rb) => Some(Bytes::Raw(rb)),
+                _ => None, // not find
+            }
+        }
         // must have base ptr, check base
-        basedb.unwrap().upgrade().unwrap().get_at(key) // search from base ptr
+        basedb.unwrap().get_at(key) // search from base ptr
     }
     
     fn get(&self, p: &[u8], k: &dyn Serialize) -> Option<Bytes> {
@@ -75,11 +74,11 @@ impl ChainState {
         ChainState{
             memk: MemoryDB::new(),
             disk: Arc::new(ldb),
-            base: RwLock::new(None),
+            base: Weak::new().into(), // no base
         }
     }
 
-    pub fn flush_disk(&self) {
+    pub fn flush_disk(&mut self) {
         impl_flush_disk(self)
     }
 

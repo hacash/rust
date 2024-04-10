@@ -1,6 +1,6 @@
 
 
-fn impl_flush_disk(this: &ChainState) {
+fn impl_flush_disk(this: &mut ChainState) {
     let mut batch = Writebatch::new();
     for (k, v) in this.memk.iter() {
         if let MemdbItem::Delete = v {
@@ -12,7 +12,7 @@ fn impl_flush_disk(this: &ChainState) {
     // flush to disk
     this.disk.write(&batch);
     // change mark, drop base
-    *this.base.write().unwrap() = None;
+    this.base = Weak::new().into();
 }
 
 

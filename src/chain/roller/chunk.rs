@@ -8,7 +8,7 @@ pub struct RollChunk {
     pub state: Arc<ChainState>,
 
     pub childs: RefCell<Vec<Arc<RollChunk>>>,
-    pub parent: RefCell<Option<Weak<RollChunk>>>,
+    pub parent: RefCell<Weak<RollChunk>>,
 
 }
 
@@ -22,7 +22,7 @@ impl RollChunk {
             block: blkpkg,
             state: state,
             childs: Vec::new().into(),
-            parent: None.into(),
+            parent: Weak::new().into(),
         }
     }
 
@@ -31,10 +31,10 @@ impl RollChunk {
     }
 
     pub fn set_parent(&self, p: Arc<RollChunk>) {
-        *self.parent.borrow_mut() = Some(Arc::downgrade(&p).into());
+        *self.parent.borrow_mut() = Arc::downgrade(&p).into();
     }
     pub fn drop_parent(&self) {
-        *self.parent.borrow_mut() = None;
+        *self.parent.borrow_mut() = Weak::new().into();
     }
 
 }

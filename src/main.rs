@@ -19,6 +19,8 @@ mod mint;
 mod vm;
 mod chain;
 
+use crate::sys::*;
+use crate::base::field::Hash;
 use crate::interface::field::*;
 use crate::core::account::Account;
 use crate::chain::engine::*;
@@ -89,6 +91,14 @@ fn start_hacash_node(iniobj: sys::IniObj) {
 
 
 fn main_test8327459283() {
+
+
+    let hx = Hash::from_hex(b"faa1025aac192976049a91af8d552ebf5864f06732594b08456f6c7ab7d9a3e6");
+
+    let srrstr: RetErr = errf!(" hash is {}", hx);
+    println!("{}", srrstr.err().unwrap());
+
+
 
     let act1 = crate::protocol::action::ACTION_KIND_1;
     println!("{}", act1);
