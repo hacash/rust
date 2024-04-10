@@ -12,9 +12,19 @@ pub struct BlockPackage {
 
 impl HashBodyPkg for BlockPackage {
 
+    fn hash(&self) -> &Hash { 
+		&self.hash
+	}
+    fn body(&self) -> &BytesW4 {
+		&self.data
+	}
 }
 
 impl BlockPkg for BlockPackage {
+
+    fn objc(&self) -> &Box<dyn Block> { 
+		&self.objc
+	}
 	
 }
 

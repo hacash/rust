@@ -6,7 +6,7 @@ pub trait HashBodyPkg {
 
 
 pub trait BlockPkg : HashBodyPkg {
-    fn objc(&self) -> &Box<dyn Block> { panic_never_call_this!() }
+    fn objc(&self) -> &Box<dyn Block>;
     fn origin(&self) -> BLOCK_ORIGIN { BLOCK_ORIGIN::UNKNOW }
 }
 

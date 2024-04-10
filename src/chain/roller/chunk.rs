@@ -35,7 +35,8 @@ impl RollChunk {
     }
 
     pub fn print(&self) -> String {
-        format!("{}:{}", self.height.to_u64(), self.hash.mark())
+        let mark = &self.hash.as_ref()[30..];
+        format!("{}:{}", self.height.to_u64(), hex::encode(mark))
     }
 
 }
