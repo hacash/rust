@@ -59,9 +59,10 @@ impl Parse for $class {
         let (obj, sk) = <$lenty>::create(&buf[seek..]) ?;
         self.len = obj;
         let conlen = self.len.to_usize();
-        let bts = buf_clip_mvsk!(buf[seek..], conlen);
+        let nsk = seek + sk;
+        let bts = buf_clip_mvsk!(buf[nsk..], conlen);
         self.bytes = bts.to_vec();
-        Ok(sk + conlen)
+        Ok(nsk + conlen)
     }
 
 }
@@ -113,7 +114,6 @@ impl $class {
         self.bytes = [self.bytes.clone(), tar.to_vec()].concat();
         None
     }
-
 
 }
 

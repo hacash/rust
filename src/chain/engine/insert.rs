@@ -1,11 +1,23 @@
 
 
+
 impl Engine for BlockEngine {
+
 
     fn insert(&self, blkpkg: Box<dyn BlockPkg>) -> RetErr {    
         self.isrlck.lock();
+        self.insert_unsafe(blkpkg)
+    }
 
+}
+
+
+impl BlockEngine {
+
+    fn insert_unsafe(&self, blkpkg: Box<dyn BlockPkg>) -> RetErr {  
         // search base chunk
+        let blk_hei = blkpkg.objc().height();
+        let blk_hash = blkpkg.hash();
         let prev_hx = blkpkg.objc().prevhash();
         let base_chunk = {
             let roll_root = self.klctx.lock().unwrap();
@@ -15,7 +27,12 @@ impl Engine for BlockEngine {
             }
             bsck.unwrap()
         };
-
+        // check repeat
+        for sub in base_chunk.childs.borrow().iter() {
+            if *blk_hash == sub.hash {
+                return errf!("repetitive block height {} hash {}", blk_hei.to_u64(), blk_hash)
+            }
+        }
         // try insert
         let sub_state = do_check_insert(
             &self.cnf, 
@@ -35,7 +52,7 @@ impl Engine for BlockEngine {
         // if do roll and flush to disk
         let mut roll_root = self.klctx.lock().unwrap();
         let status = do_roll( &self.cnf, &mut roll_root, chunk_ptr.clone()) ? ;
-        println!("{:?}", status);
+        // println!("{:?}", status);
 
         // do store
         do_store(&self.cnf, self.store.as_ref(), &mut roll_root, chunk_ptr, status)
@@ -43,7 +60,6 @@ impl Engine for BlockEngine {
     }
 
 }
-
 
 
 

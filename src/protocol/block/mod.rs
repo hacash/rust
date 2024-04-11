@@ -6,6 +6,7 @@ use crate::x16rs;
 use crate::sys::*;
 use crate::base::field::*;
 use crate::core::field::*;
+use crate::core::component::*;
 
 use crate::interface::field::*;
 use crate::interface::protocol::*;

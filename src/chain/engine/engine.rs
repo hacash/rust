@@ -51,13 +51,16 @@ impl BlockEngine {
         let bsblk = load_base_block(mintk.as_ref(), &stoldb);
         let roller = BlockRoller::create(bsblk, staptr);
         // engine
-        let engine = BlockEngine {
+        let mut engine = BlockEngine {
             cnf: cnf,
             store: Arc::new(stoldb),
             klctx: Mutex::new(roller),
             mintk: mintk,
             isrlck: Mutex::new(true),
         };
+        // rebuild unstable blocks
+        engine.rebuild_unstable_blocks();
+        // ok finish
         engine
     }
 

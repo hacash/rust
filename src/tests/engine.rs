@@ -74,7 +74,7 @@ pub fn engine_test_1(engine: Arc<BlockEngine>) {
     }
 
     // delete datadir
-    std::fs::remove_dir_all("./hacash_mainnet_data");
+    // std::fs::remove_dir_all("./hacash_mainnet_data");
 
 
 }

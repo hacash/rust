@@ -5,9 +5,9 @@
 
 // BlockPkg
 pub struct BlockPackage {
-	hash: Hash,
-	data: BytesW4,
-    objc: Box<dyn Block>,
+	pub hash: Hash,
+	pub data: BytesW4,
+    pub objc: Box<dyn Block>,
 }
 
 impl HashBodyPkg for BlockPackage {
