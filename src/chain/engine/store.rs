@@ -4,39 +4,42 @@
  * store block
  */
 fn do_store(cnf: &EngineConf, storef: &BlockStore, roller: &mut BlockRoller, append: Arc<RollChunk>, change_status: RollerChangeStatus) -> RetErr {
+    let rcs = change_status;
     let store = CoreStoreRead::wrap(storef);
     // save block
     let blkhei = &append.height;
     let blkhx = append.block.hash();
     let blkbd = append.block.body();
     store.put_blockdata(blkhx, blkbd);
-    if let RollerChangeStatus::Uncle = change_status {
-        return Ok(())
+    println!("put_blockdata {} {}", blkhei, blkhx);
+    // if append
+    if rcs.append {
+        // save append ptr
+        store.put_blockptr(blkhei, blkhx);
+        println!("put_blockptr {} {}", blkhei, blkhx);
     }
-    // save append ptr
-    store.put_blockptr(blkhei, blkhx);
-    if let RollerChangeStatus::Append = change_status {
-        return Ok(()) // not roll
+    // if roll
+    if rcs.roll {
+        let status = StoreStatus{
+            root_height: roller.sroot.height.clone(),
+        };
+        println!("===> roll root status height {}", roller.sroot.height.to_u64());
+        store.put_status(&status);
     }
-    // save roll status
-    let status = StoreStatus{
-        root_height: roller.sroot.height.clone(),
-    };
-    store.put_status(&status);
-    if let RollerChangeStatus::AppendRoll = change_status {
-        return Ok(()) // not switch fork
-    }
-    // switch fork // AppendRollSwitchFork
-    let mut prev = append.clone();
-    for i in 0 .. cnf.unstable_block {
-        if let Some(p) = prev.parent.upgrade() {
-            // change ptr
-            store.put_blockptr(&p.height, &p.hash);
-            prev = p; // prev
-        }else{
-            break; // end
+    // if switch fork 
+    if rcs.switchfork {
+        let mut prev = append.clone();
+        for i in 0 .. cnf.unstable_block {
+            if let Some(p) = prev.parent.upgrade() {
+                // change ptr
+                println!("switch fork ^^^^ put_blockptr {} {}", &p.height, &p.hash);
+                store.put_blockptr(&p.height, &p.hash);
+                prev = p; // prev
+            }else{
+                break; // end
+            }
         }
     }
-    // ok
+    // finish
     Ok(())
 }

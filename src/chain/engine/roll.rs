@@ -1,22 +1,33 @@
 
 /**
  * do change chunk roller and state head
+ * return (Append, Roll, Switch)
  */
 fn do_roll(cnf: &EngineConf, roller: &mut BlockRoller, append: Arc<RollChunk>) -> Ret<RollerChangeStatus> {
+    let mut rcs_status = RollerChangeStatus::new();
+    
     let oldhead = roller.scusp.upgrade().unwrap();
     let root_height = roller.sroot.height.to_u64();
     let oldhead_height = oldhead.height.to_u64(); 
     let append_height = append.height.to_u64();
     if append_height <= oldhead_height {
         // not change head
-        return Ok(RollerChangeStatus::Uncle)
+        return Ok(rcs_status) // just uncle
+    }
+    // change head
+    roller.scusp = Arc::downgrade(&append);
+    roller.state = Arc::downgrade(&append.state);
+    rcs_status.append = true; // append
+    if oldhead.hash != *append.block.objc().prevhash() {
+        rcs_status.switchfork = true; // switch fork !!!
     }
     // if roll
     if append_height <= root_height + cnf.unstable_block {
         // not roll
-        return Ok(RollerChangeStatus::Append)
+        return Ok(rcs_status)
     }
-    // do roll
+    rcs_status.roll = true; // roll
+    // do roll to disk
     let mut new_root: Option<Arc<RollChunk>> = None;
     {
         let rtchilds = roller.sroot.childs.borrow();
@@ -37,19 +48,13 @@ fn do_roll(cnf: &EngineConf, roller: &mut BlockRoller, append: Arc<RollChunk>) -
     if new_root.height.to_u64() != root_height + 1 {
         return errf!("root chunk height error")
     }
-    // change head & root
-    roller.scusp = Arc::downgrade(&append);
-    roller.state = Arc::downgrade(&append.state);
+    // change root
     roller.sroot = new_root.clone(); // roll
     // roll root 
+    // println!("!!!!!! flush_disk height {}", new_root.height.to_u64());
     new_root.state.flush_disk(); // flush to disk
     // new_root.drop_parent(); // do roll auto drop parent
-    // return change head
-    match oldhead.hash == *append.block.objc().prevhash() {
-        true => Ok(RollerChangeStatus::AppendRoll),
-        // jump to another fork !
-        false => Ok(RollerChangeStatus::AppendRollSwitchFork),
-    }
+    return Ok(rcs_status)
     
 }
 

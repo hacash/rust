@@ -35,6 +35,7 @@ impl Engine for BlockEngine {
         // if do roll and flush to disk
         let mut roll_root = self.klctx.lock().unwrap();
         let status = do_roll( &self.cnf, &mut roll_root, chunk_ptr.clone()) ? ;
+        println!("{:?}", status);
 
         // do store
         do_store(&self.cnf, self.store.as_ref(), &mut roll_root, chunk_ptr, status)

@@ -1,10 +1,23 @@
-pub enum RollerChangeStatus {
-    Uncle,
-    Append, // append block not roll
-    AppendRoll, // append and do roll
-    AppendRollSwitchFork, // append roll and jump to another fork
+
+#[derive(Debug)]
+struct RollerChangeStatus {
+    roll: bool,   
+    append: bool, 
+    switchfork: bool,
 }
 
+impl RollerChangeStatus {
+    fn new() -> RollerChangeStatus {
+        RollerChangeStatus{
+            roll: false,   
+            append: false, 
+            switchfork: false,
+        }
+    }
+}
+
+
+/**********************/
 
 pub struct BlockEngine {
 

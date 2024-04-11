@@ -20,7 +20,7 @@ pub struct RollChunk {
             hex::encode(&self.hash.as_ref()[30..]),
         );
     }
-}*/ 
+}*/
 
 
 
