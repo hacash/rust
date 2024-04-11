@@ -97,6 +97,10 @@ impl $class {
         }
 	}
 
+    pub fn set_count<T>(&mut self, nt: T) where T: std::ops::Add<u64, Output = u64> { 
+        self.count = <$lenty>::from_uint(nt);
+    }
+
     pub fn list(&self) -> &Vec<Box<dyn $dynty>> {
         &self.vlist
     }

@@ -1,8 +1,8 @@
 
 
 #[macro_export]
-macro_rules! StructFieldStruct {
-    ($class: ident, $( $item: ident: $type: ty )+) => (
+macro_rules! StructFieldStructSetParse {
+    ($p_self:ident, $p_buf:ident, $p_seek:ident, $parse_code: block, $class: ident, $( $item: ident: $type: ty )+) => (
 
 
 
@@ -16,10 +16,11 @@ pub struct $class {
 
 impl Parse for $class {
 
-    fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
-        let mut sk: usize = seek;
+    fn parse(&mut $p_self, $p_buf: &[u8], $p_seek: usize) -> Ret<usize> {
+        $parse_code;
+        let mut sk: usize = $p_seek;
         $(
-            sk = self.$item.parse(buf, sk) ?;
+            sk = $p_self.$item.parse($p_buf, sk) ?;
         )+
         Ok(sk)
     }
@@ -67,6 +68,14 @@ impl $class {
 
 
 
+    )
+}
+
+
+#[macro_export]
+macro_rules! StructFieldStruct {
+    ($class: ident, $( $item: ident: $type: ty )+) => (
+        StructFieldStructSetParse!(self, buf, seek, {}, $class, $( $item: $type )+ );
     )
 }
 

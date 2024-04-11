@@ -21,7 +21,10 @@ impl std::fmt::Debug for $class {
 impl Parse for $class {
 
     fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
+        // println!("{}", hex::encode(buf));
+        // println!("StructFieldOptional parse exist {} {}", buf.len(), seek);
         let mut seek = self.exist.parse(buf, seek) ?;
+        // println!("StructFieldOptional parse {}", seek);
         if self.is_exist() {
             let (val, mvsk) = <$value_type>::create(&buf[seek..]) ?;
             self.$value = Some(val);

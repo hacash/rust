@@ -1,6 +1,6 @@
 
 fn load_base_block(mintk: &dyn MintChecker, storef: &BlockStore) -> Box<dyn BlockPkg> {
-    let store = CoreStoreRead::wrap(storef.as_db());
+    let store = CoreStoreRead::wrap(storef);
     let status = store.status();
     let rhei = &status.root_height;
     let rhein = rhei.to_u64();

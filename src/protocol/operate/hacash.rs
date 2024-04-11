@@ -55,7 +55,7 @@ fnHacashOperateCommon!(hac_sub, addr, amt, oldhac, {
 
 
 pub fn hac_transfer(env: &dyn ExecEnv, stadb: &mut dyn State, addr_from: &Address, addr_to: &Address, amt: &Amount) -> RetErr {
-	let mut state = CoreState::wrap(stadb.as_db());
+	let mut state = CoreState::wrap(stadb);
     let is_trs_to_my_self = addr_from == addr_to;
     if is_trs_to_my_self && env.pending_height() < 20_0000 {
         // you can transfer it to yourself without changing the status, which is a waste of service fees

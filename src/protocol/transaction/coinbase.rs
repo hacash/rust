@@ -32,7 +32,6 @@ impl TransactionRead for TransactionCoinbase {
     fn hash_with_fee(&self) -> Hash {
         self.hash()
     }
-
     
     
 }

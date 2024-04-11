@@ -45,7 +45,7 @@ pub fn do_check_insert(
     // check tx count
     let is_hash_with_fee = true;
     let txhxs = block.transaction_hash_list(is_hash_with_fee); // hash with fee
-    let txcount = block.transaction_count() as usize;
+    let txcount = block.transaction_count().to_usize();
     if txcount < 1 {
         return err!("block txs cannot empty, need coinbase tx")
     }
@@ -59,12 +59,13 @@ pub fn do_check_insert(
     let alltxs = block.transactions();
     let mut txttsize = 0usize;
     let mut txttnum = 0usize;
-    for tx in alltxs.iter() {
-        txttsize += tx.size();
-        txttnum += 1;
-        if tx.timestamp().to_u64() > cur_time {
+    for tx in alltxs {
+        // coinbase not check time
+        if txttnum > 0 && tx.timestamp().to_u64() > cur_time {
             return errf!("tx timestamp {} cannot more than now {}", tx.timestamp(), cur_time)
         }
+        txttsize += tx.size();
+        txttnum += 1;
     }
     if txttnum != txcount {
         return errf!("block tx count need {} but got {}", txcount, txttnum)        
@@ -73,7 +74,7 @@ pub fn do_check_insert(
         return errf!("block txs total size cannot over {} bytes", cnf.max_block_size)
     }
     // check mrkl root
-    let mkroot = merge_mrkl_root(&txhxs);
+    let mkroot = block::calculate_mrklroot(&txhxs);
     let mrklrt = block.mrklroot();
     if *mrklrt != mkroot {
         return errf!("block mrkl root need {} but got {}", mkroot, mrklrt)
@@ -90,7 +91,7 @@ pub fn do_check_insert(
         mintk.initialize(&mut sub_state) ? ;
     }
     // exec each tx
-    for tx in alltxs.iter() {
+    for tx in alltxs {
         // let mut txstate = fork_sub_state(txstabs.clone());
         // kernel.vmobj.exec_tx( tx.to_readonly(), &mut sub_state) ? ;
         // ok merge copy state
@@ -106,7 +107,7 @@ pub fn do_check_insert(
 }
 
 
-
+/*
 
 pub fn do_insert(kernel: &BlockEngine, cnf: &EngineConf, this: &BlockRoller, mintk: &dyn MintChecker, blkpkg: &dyn BlockPkg) -> Ret<(Arc<RollChunk>, Arc<ChainState>)> {
 
@@ -149,7 +150,7 @@ pub fn do_insert(kernel: &BlockEngine, cnf: &EngineConf, this: &BlockRoller, min
     // check tx count
     let is_hash_with_fee = true;
     let txhxs = block.transaction_hash_list(is_hash_with_fee); // hash with fee
-    let txcount = block.transaction_count() as usize;
+    let txcount = block.transaction_count().to_usize();
     if txcount < 1 {
         return err!("block txs cannot empty, need coinbase tx")
     }
@@ -163,7 +164,7 @@ pub fn do_insert(kernel: &BlockEngine, cnf: &EngineConf, this: &BlockRoller, min
     let alltxs = block.transactions();
     let mut txttsize = 0usize;
     let mut txttnum = 0usize;
-    for tx in alltxs.iter() {
+    for tx in alltxs {
         txttsize += tx.size();
         txttnum += 1;
         if tx.timestamp().to_u64() > ctis {
@@ -196,7 +197,7 @@ pub fn do_insert(kernel: &BlockEngine, cnf: &EngineConf, this: &BlockRoller, min
     }
     // exec each tx
     // let txstabs = Arc::new(tempstate);
-    for tx in alltxs.iter() {
+    for tx in alltxs {
         // let mut txstate = fork_sub_state(txstabs.clone());
         // kernel.vmobj.exec_tx( tx.to_readonly(), &mut tempstate) ? ;
         // ok merge copy state
@@ -210,5 +211,6 @@ pub fn do_insert(kernel: &BlockEngine, cnf: &EngineConf, this: &BlockRoller, min
     Ok((prevchunk.clone(), Arc::new(tempstate)))
 }
 
+*/
 
 

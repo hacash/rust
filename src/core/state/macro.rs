@@ -4,7 +4,8 @@
 #[macro_export]
 macro_rules! defineChainStateOperationInstance{
     (
-        $name:ident
+        $base:ident,
+        $name:ident,
         ($( $kfix1:expr, $name1:ident, $vtype1:ty )+)
         ($( $kfix2:expr, $name2:ident, $keyty2:ty, $vtype2:ty )+)
     ) => (
@@ -13,10 +14,10 @@ macro_rules! defineChainStateOperationInstance{
 
 concat_idents!(struct_name_read = $name, Read {
 pub struct struct_name_read<'a> {
-    db: &'a dyn StoreDB,
+    db: &'a dyn $base,
 }
 impl struct_name_read<'_> {
-    pub fn wrap<'a>(sta: &'a dyn StoreDB) -> struct_name_read {
+    pub fn wrap<'a>(sta: &'a dyn $base) -> struct_name_read {
         struct_name_read{
             db: sta,
         }
@@ -82,12 +83,12 @@ impl struct_name_read<'_> {
 ///////////////
 
 pub struct $name<'a> {
-    db: &'a mut dyn StoreDB,
+    db: &'a mut dyn $base,
 }
 
 impl $name<'_> {
 
-    pub fn wrap(sta: &mut dyn StoreDB) -> $name {
+    pub fn wrap(sta: &mut dyn $base) -> $name {
         $name{
             db: sta,
         }

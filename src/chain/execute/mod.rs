@@ -17,6 +17,8 @@ use crate::base::util::*;
 use crate::core::db::*;
 use crate::core::state::*;
 
+use crate::protocol::block;
+
 use crate::mint::checker::*;
 
 use super::roller;

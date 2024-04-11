@@ -1,7 +1,7 @@
 
 
 defineChainStateOperationInstance!{
-    CoreState
+    State, CoreState,
     (
         &[0, 1], block_reward       , Amount
         &[0, 2], latest_block_intro , BlockIntro
@@ -18,7 +18,7 @@ defineChainStateOperationInstance!{
 
 
 defineChainStateOperationInstance!{
-    CoreStore
+    Store, CoreStore,
     (
         &[0, 1], status        , StoreStatus
     )

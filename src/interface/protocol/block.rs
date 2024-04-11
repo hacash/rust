@@ -10,8 +10,8 @@ pub trait BlockRead : Serialize {
     fn prevhash(&self) -> &Hash { panic_never_call_this!() }
     fn mrklroot(&self) -> &Hash { panic_never_call_this!() }
     
-    fn transaction_count(&self) -> u16 { panic_never_call_this!() }
-    fn transactions(&self) -> Vec<&dyn Transaction> { panic_never_call_this!() }
+    fn transaction_count(&self) -> &Uint4 { panic_never_call_this!() }
+    fn transactions(&self) -> &Vec<Box<dyn Transaction>> { panic_never_call_this!() }
     fn transaction_hash_list(&self, hash_with_fee: bool) -> Vec<Hash> { panic_never_call_this!() }
 
 }

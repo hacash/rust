@@ -129,7 +129,7 @@ impl Serialize for $class {
 impl Parse for $class {
 
     fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
-        let bts = buf_clip_mvsk!(buf, $size);
+        let bts = buf_clip_mvsk!(buf[seek..], $size);
         self.bytes = bts.try_into().unwrap();
         Ok(seek + $size)
     }
@@ -148,13 +148,6 @@ impl Field for $class {
 
     // must & create function
     fnFieldMustCreate!($class);
-
-    fn wrap(data: Vec<u8>)  -> $class {
-        let bts: [u8; $size] = data.try_into().unwrap();
-        $class{
-            bytes: bts,
-        }
-    }
 
     fn from_uint<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { 
         let mut obj = <$class>::new();

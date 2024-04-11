@@ -1,5 +1,5 @@
 
-fn impl_initialize(this: &BlockMintChecker, db: &mut dyn StoreDB) -> RetErr {
+fn impl_initialize(this: &BlockMintChecker, db: &mut dyn State) -> RetErr {
     
 	let addr1 = Address::form_readable("12vi7DEZjh6KrK5PVmmqSgvuJPCsZMmpfi").unwrap();
 	let addr2 = Address::form_readable("1LsQLqkd8FQDh3R7ZhxC5fndNf92WfhM19").unwrap();
@@ -9,12 +9,11 @@ fn impl_initialize(this: &BlockMintChecker, db: &mut dyn StoreDB) -> RetErr {
     let bls1 = Balance::hacash(amt1);
     let bls2 = Balance::hacash(amt2);
     let mut state = CoreState::wrap(db);
-    state.set_balance(&addr1, &bls2);
-    state.set_balance(&addr2, &bls1);
-    state.set_balance(&addr3, &bls1);
+    state.put_balance(&addr1, &bls2);
+    state.put_balance(&addr2, &bls1);
+    state.put_balance(&addr3, &bls1);
 
-
-    let stateread = CoreStateRead::wrap(db);
+    // let stateread = CoreStateRead::wrap(db);
 
     // ok
     Ok(())

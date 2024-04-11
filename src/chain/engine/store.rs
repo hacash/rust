@@ -4,7 +4,7 @@
  * store block
  */
 fn do_store(cnf: &EngineConf, storef: &BlockStore, roller: &mut BlockRoller, append: Arc<RollChunk>, change_status: RollerChangeStatus) -> RetErr {
-    let store = CoreStoreRead::wrap(storef.as_db());
+    let store = CoreStoreRead::wrap(storef);
     // save block
     let blkhei = &append.height;
     let blkhx = append.block.hash();

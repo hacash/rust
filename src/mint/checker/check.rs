@@ -22,7 +22,7 @@ impl MintChecker for BlockMintChecker {
         impl_coinbase(self, height, cbtx)
     }
 
-    fn initialize(&self, state: &mut dyn StoreDB) -> RetErr {
+    fn initialize(&self, state: &mut dyn State) -> RetErr {
         impl_initialize(self, state)
     } 
 
@@ -32,7 +32,7 @@ impl MintChecker for BlockMintChecker {
         let pkg = BlockPackage::new(Box::new(gnsblk));
         Box::new(pkg)
     }
-    
+
     fn actions(&self) -> Vec<Box<dyn Action>> {
         vec![]
     }

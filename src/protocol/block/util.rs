@@ -1,6 +1,6 @@
 
 
-fn mrkl_merge(list: Vec<Hash>) -> Vec<Hash> {
+fn mrkl_merge(list: &Vec<Hash>) -> Vec<Hash> {
     let num = list.len();
     let mut res = vec![];
     let mut x = 0usize;
@@ -24,14 +24,16 @@ fn mrkl_merge(list: Vec<Hash>) -> Vec<Hash> {
 /**
  * 
  */
-pub fn calculate_mrklroot(list: Vec<Hash>) -> Hash {
+pub fn calculate_mrklroot(list: &Vec<Hash>) -> Hash {
     let mut reslist = list;
+    let mut tmp;
     loop {
         // println!("mrklroot len={}", list.len());
         if reslist.len() <= 1 {
             return reslist[0].clone()
         }
-        reslist = mrkl_merge(reslist);
+        tmp = mrkl_merge(&reslist);
+        reslist = &tmp;
     }
 }
 

@@ -59,7 +59,7 @@ impl Parse for $class {
         let (obj, sk) = <$lenty>::create(&buf[seek..]) ?;
         self.len = obj;
         let conlen = self.len.to_usize();
-        let bts = buf_clip_mvsk!(buf, conlen);
+        let bts = buf_clip_mvsk!(buf[seek..], conlen);
         self.bytes = bts.to_vec();
         Ok(sk + conlen)
     }

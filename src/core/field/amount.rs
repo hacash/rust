@@ -7,8 +7,12 @@ static _BIG_MEI_DIP_UNIT: u8 = 248 - 8 - 8; // 232
 
 macro_rules! amount_check_data_len{
     ($self:expr, $tip:expr) => (
-        if $self.dist.abs() as usize != $self.byte.len() {
-            panic!("Amount.{}() dist abs is not match byte len.", $tip)
+        {
+            let l1 = $self.dist.abs() as usize;
+            let l2 = $self.byte.len();
+            if l1 != l2 {
+                panic!("Amount.{}() dist abs {} is not match byte len {}.", $tip, l1, l2)
+            }
         }
     )
 }
@@ -100,15 +104,16 @@ impl Parse for Amount {
         let mut seek = seek;
         // get unit
         let btv = buf_clip_mvsk!(buf[seek..], 1);
-        self.unit = btv[1];
+        self.unit = btv[0];
         seek += 1;        
         // get dist
         let btv = buf_clip_mvsk!(buf[seek..], 1);
-        self.dist = btv[1] as i8;
+        self.dist = btv[0] as i8;
         seek += 1;
         // get bytes
         let btlen = self.dist.abs() as usize;
         let btv = buf_clip_mvsk!(buf[seek..], btlen);
+        self.byte = btv;
         amount_check_data_len!(self, "parse");
         Ok(seek + btlen)
     }
