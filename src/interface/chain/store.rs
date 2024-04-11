@@ -12,17 +12,16 @@ pub trait StoreDB {
             }
         }
     }
-    // disk
-    fn set(&self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) { panic_never_call_this!() }
-    fn del(&self, p: &[u8], k: &dyn Serialize) { panic_never_call_this!() }
     // mem
-    fn put(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) { panic_never_call_this!() }
-    fn rm( &mut self, p: &[u8], k: &dyn Serialize) { panic_never_call_this!() }
+    fn set(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) { panic_never_call_this!() }
+    fn del(&mut self, p: &[u8], k: &dyn Serialize) { panic_never_call_this!() }
+    // disk
+    fn put(&self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) { panic_never_call_this!() }
+    fn rm( &self, p: &[u8], k: &dyn Serialize) { panic_never_call_this!() }
 }
 
 
 pub trait Store : StoreDB {
-    fn as_db(&self) -> &dyn StoreDB;
 }
 
 

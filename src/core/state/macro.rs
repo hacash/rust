@@ -35,11 +35,12 @@ impl struct_name_read<'_> {
         }
         });
     )+
-    // set block_reward
+
+    // put
     $(
-        concat_idents!(fn_set_1 = set_, $name1 {
-        pub fn fn_set_1(&self, obj: &$vtype1) {
-            (*self.db).set( $kfix1, &Empty::new(), obj);
+        concat_idents!(fn_put_1 = put_, $name1 {
+        pub fn fn_put_1(&self, obj: &$vtype1) {
+            (*self.db).put( $kfix1, &Empty::new(), obj);
         }
         });
     )+
@@ -57,19 +58,21 @@ impl struct_name_read<'_> {
         }
         });
     )+
-    // set balance
+
+    // put
     $(
-        concat_idents!(fn_set_2 = set_, $name2 {
-        pub fn fn_set_2(&self, key: &$keyty2, obj: &$vtype2) {
-            (*self.db).set($kfix2, key, obj);
+        concat_idents!(fn_put_2 = put_, $name2 {
+        pub fn fn_put_2(&self, key: &$keyty2, obj: &$vtype2) {
+            (*self.db).put( $kfix2, key, obj);
         }
         });
     )+
-    // del balance
+
+    // rm
     $(
-        concat_idents!(fn_del_2 = del_, $name2 {
-        pub fn fn_del_2(&self, key: &$keyty2) {
-            (*self.db).del($kfix2, key);
+        concat_idents!(fn_rm_2 = rm_, $name2 {
+        pub fn fn_rm_2(&mut self, key: &$keyty2) {
+            (*self.db).rm( $kfix2, key);
         }
         });
     )+
@@ -108,8 +111,9 @@ impl $name<'_> {
     // set block_reward
     $(
         concat_idents!(fn_set_1 = set_, $name1 {
-        pub fn fn_set_1(&self, obj: &$vtype1) {
-            (*self.db).set( $kfix1, &Empty::new(), obj);
+        pub fn fn_set_1(&mut self, obj: &$vtype1) {
+            let mut sta = &mut self.db;
+            sta.set( $kfix1, &Empty::new(), obj);
         }
         });
     )+
@@ -117,9 +121,8 @@ impl $name<'_> {
     // put block_reward
     $(
         concat_idents!(fn_put_1 = put_, $name1 {
-        pub fn fn_put_1(&mut self, obj: &$vtype1) {
-            let mut sta = &mut self.db;
-            sta.put( $kfix1, &Empty::new(), obj);
+        pub fn fn_put_1(&self, obj: &$vtype1) {
+            (*self.db).put( $kfix1, &Empty::new(), obj);
         }
         });
     )+
@@ -141,18 +144,9 @@ impl $name<'_> {
     // set balance
     $(
         concat_idents!(fn_set_2 = set_, $name2 {
-        pub fn fn_set_2(&self, key: &$keyty2, obj: &$vtype2) {
-            (*self.db).set($kfix2, key, obj);
-        }
-        });
-    )+
-
-    // put balance
-    $(
-        concat_idents!(fn_put_2 = put_, $name2 {
-        pub fn fn_put_2(&mut self, key: &$keyty2, obj: &$vtype2) {
+        pub fn fn_set_2(&mut self, key: &$keyty2, obj: &$vtype2) {
             let mut sta = &mut self.db;
-            sta.put($kfix2, key, obj);
+            sta.set($kfix2, key, obj);
         }
         });
     )+
@@ -160,8 +154,18 @@ impl $name<'_> {
     // del balance
     $(
         concat_idents!(fn_del_2 = del_, $name2 {
-        pub fn fn_del_2(&self, key: &$keyty2) {
-            (*self.db).del($kfix2, key);
+        pub fn fn_del_2(&mut self, key: &$keyty2) {
+            let mut sta = &mut self.db;
+            sta.del($kfix2, key);
+        }
+        });
+    )+
+
+    // put balance
+    $(
+        concat_idents!(fn_put_2 = put_, $name2 {
+        pub fn fn_put_2(&self, key: &$keyty2, obj: &$vtype2) {
+            (*self.db).put($kfix2, key, obj);
         }
         });
     )+
@@ -169,9 +173,8 @@ impl $name<'_> {
     // rm balance
     $(
         concat_idents!(fn_rm_2 = rm_, $name2 {
-        pub fn fn_rm_2(&mut self, key: &$keyty2) {
-            let mut sta = &mut self.db;
-            sta.rm($kfix2, key);
+        pub fn fn_rm_2(&self, key: &$keyty2) {
+            (*self.db).rm($kfix2, key);
         }
         });
     )+

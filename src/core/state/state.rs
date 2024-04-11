@@ -15,6 +15,13 @@ impl ChainState {
     
 }
 
+// for debug
+/* impl Drop for ChainState {
+    fn drop(&mut self) {
+        println!("ChainState drop !");
+    }
+}*/
+
 
 impl StoreDB for ChainState {
 
@@ -45,13 +52,13 @@ impl StoreDB for ChainState {
         self.get_at(&key)
     }
     
-    fn put(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) {
+    fn set(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) {
         let key = splice_key(p, k);
         let vdt = v.serialize();
         self.memk.set(&key, &vdt); // local mem
     }
 
-    fn rm(&mut self, p: &[u8], k: &dyn Serialize) {
+    fn del(&mut self, p: &[u8], k: &dyn Serialize) {
         let key = splice_key(p, k);
         self.memk.del(&key); // local mem
     }
@@ -60,9 +67,6 @@ impl StoreDB for ChainState {
 
 
 impl State for ChainState {
-    fn as_db(&mut self) -> &mut dyn StoreDB {
-        self
-    }
 }
 
 

@@ -12,6 +12,17 @@ pub struct RollChunk {
 
 }
 
+// for debug
+/* impl Drop for RollChunk {
+    fn drop(&mut self) {
+        println!("RollChunk height {} hash {} droped!", 
+            self.height.to_u64(), 
+            hex::encode(&self.hash.as_ref()[30..]),
+        );
+    }
+}*/ 
+
+
 
 impl RollChunk {
 

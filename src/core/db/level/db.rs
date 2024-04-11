@@ -81,7 +81,7 @@ impl LevelDB {
     }
 
     // set
-    pub fn set(&self, k: &[u8], value: &[u8]) {
+    pub fn put(&self, k: &[u8], value: &[u8]) {
         let mut error = ptr::null_mut();
         unsafe {
             let c_writeoptions = leveldb_writeoptions_create();
@@ -101,7 +101,7 @@ impl LevelDB {
     }
 
     // del
-    pub fn del(&self, k: &[u8]) {
+    pub fn rm(&self, k: &[u8]) {
         let mut error = ptr::null_mut();
         unsafe {
             let c_writeoptions = leveldb_writeoptions_create();

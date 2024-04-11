@@ -9,12 +9,12 @@ fn do_store(cnf: &EngineConf, storef: &BlockStore, roller: &mut BlockRoller, app
     let blkhei = &append.height;
     let blkhx = append.block.hash();
     let blkbd = append.block.body();
-    store.set_blockdata(blkhx, blkbd);
+    store.put_blockdata(blkhx, blkbd);
     if let RollerChangeStatus::Uncle = change_status {
         return Ok(())
     }
     // save append ptr
-    store.set_blockptr(blkhei, blkhx);
+    store.put_blockptr(blkhei, blkhx);
     if let RollerChangeStatus::Append = change_status {
         return Ok(()) // not roll
     }
@@ -22,7 +22,7 @@ fn do_store(cnf: &EngineConf, storef: &BlockStore, roller: &mut BlockRoller, app
     let status = StoreStatus{
         root_height: roller.sroot.height.clone(),
     };
-    store.set_status(&status);
+    store.put_status(&status);
     if let RollerChangeStatus::AppendRoll = change_status {
         return Ok(()) // not switch fork
     }
@@ -31,7 +31,7 @@ fn do_store(cnf: &EngineConf, storef: &BlockStore, roller: &mut BlockRoller, app
     for i in 0 .. cnf.unstable_block {
         if let Some(p) = prev.parent.upgrade() {
             // change ptr
-            store.set_blockptr(&p.height, &p.hash);
+            store.put_blockptr(&p.height, &p.hash);
             prev = p; // prev
         }else{
             break; // end

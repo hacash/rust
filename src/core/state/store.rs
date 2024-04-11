@@ -21,15 +21,15 @@ impl StoreDB for BlockStore {
         self.get_at(&key)
     }
     
-    fn set(&self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) {
+    fn put(&self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) {
         let key = splice_key(p, k);
         let vdt = v.serialize();
-        self.ldb.set(&key, &vdt); // disk
+        self.ldb.put(&key, &vdt); // disk
     }
 
-    fn del(&self, p: &[u8], k: &dyn Serialize) {
+    fn rm(&self, p: &[u8], k: &dyn Serialize) {
         let key = splice_key(p, k);
-        self.ldb.del(&key); // disk
+        self.ldb.rm(&key); // disk
     }
 
 
@@ -37,9 +37,6 @@ impl StoreDB for BlockStore {
 }
 
 impl Store for BlockStore {
-    fn as_db(&self) -> &dyn StoreDB {
-        self
-    }
 }
 
 

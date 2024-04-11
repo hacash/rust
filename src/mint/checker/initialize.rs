@@ -9,9 +9,9 @@ fn impl_initialize(this: &BlockMintChecker, db: &mut dyn State) -> RetErr {
     let bls1 = Balance::hacash(amt1);
     let bls2 = Balance::hacash(amt2);
     let mut state = CoreState::wrap(db);
-    state.put_balance(&addr1, &bls2);
-    state.put_balance(&addr2, &bls1);
-    state.put_balance(&addr3, &bls1);
+    state.set_balance(&addr1, &bls2);
+    state.set_balance(&addr2, &bls1);
+    state.set_balance(&addr3, &bls1);
 
     // let stateread = CoreStateRead::wrap(db);
 
