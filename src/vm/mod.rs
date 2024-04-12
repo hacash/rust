@@ -8,16 +8,15 @@ use crate::interface::chain::*;
 use crate::interface::vm::*;
 
 
-
-pub mod action;
-
 mod stack;
 mod memory;
 mod storage;
 mod bytecode;
 mod ast;
-pub mod vm;
 
+
+pub mod action;
+pub mod vm;
 
 
 pub struct HacashVM {
@@ -36,7 +35,8 @@ impl VM for HacashVM {
     }
 
     fn exec(&self, env: &dyn ExecEnv, bst: &mut dyn State, con: &Vec<Box<dyn VMAction>>) -> RetErr {
-        err!("")
+        vm::do_exec(env, bst, self.store.as_ref(), con)
     }
 
 }
+

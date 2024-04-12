@@ -6,9 +6,9 @@
 pub fn do_check_insert(
 
     cnf: &EngineConf, 
-    vm: &dyn VM,
+    vmobj: &dyn VM,
     mintk: &dyn MintChecker, 
-    prev_state: Arc<ChainState>, 
+    prev_state: Arc<ChainState>,
     prev_block: &dyn Block, 
     blkpkg: &dyn BlockPkg
 
@@ -92,11 +92,14 @@ pub fn do_check_insert(
         mintk.initialize(&mut sub_state) ? ;
     }
     // exec each tx
+    let mut execn = 0;
     for tx in alltxs {
-        // let mut txstate = fork_sub_state(txstabs.clone());
-        // kernel.vmobj.exec_tx( tx.to_readonly(), &mut sub_state) ? ;
-        // ok merge copy state
-        // sub_state.merge_copy(substate.as_ref()) ? ;
+        tx.execute(height, &mut sub_state) ? ;
+        if execn > 0 {
+            // ignore coinbase tx
+            exec_tx_actions(height, vmobj, &mut sub_state, tx.as_read()) ? ;
+        }
+        execn += 1;
     }
     // 
     

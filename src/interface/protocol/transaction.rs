@@ -23,9 +23,9 @@ pub trait TransactionRead : Field + dyn_clone::DynClone {
 }
 
 
-pub trait Transaction : TransactionRead {
+pub trait Transaction : TransactionRead + TxExec {
 
-    fn to_readonly(&self) -> &dyn TransactionRead { panic_never_call_this!() }
+    fn as_read(&self) -> &dyn TransactionRead;
 
     // fn verify_all_need_signs(&self) -> Option<Error> { panic_never_call_this!() }
     // fn verify_target_signs(&self, _: &HashSet<Address>) -> Option<Error> { panic_never_call_this!() }

@@ -52,10 +52,38 @@ impl TransactionRead for $class {
 }
 
 impl Transaction for $class {
-    
+    fn as_read(&self) -> &dyn TransactionRead {
+        self
+    }
 }
 
+impl TxExec for  $class {
 
+    fn execute(&self, blkhei: u64, sta: &mut dyn State) -> RetErr {
+        let mut state = CoreState::wrap(sta);
+        // check tx exist
+        let txhx = self.hash();
+        let mut exiobj;
+        if let Some(exi) = state.txexist(&txhx) {
+            exiobj = exi;
+        }else{
+            exiobj = TxExist::new();
+        }
+        let exhei = exiobj.height.to_u64();
+        if exhei > 0 {
+            return errf!("tx {} already exist in height {}", txhx, exhei)
+        }
+        // save exist mark
+        exiobj.height = BlockHeight::from_uint(blkhei);
+        state.set_txexist(&txhx, &exiobj);
+        // sub fee
+        let feeadr = self.address();
+        let amt = self.fee();
+        operate::hac_sub(&mut state, feeadr, amt) ? ;
+        Ok(())
+    }
+    
+}
 
 
 

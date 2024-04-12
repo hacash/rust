@@ -1,6 +1,59 @@
 
 
 
+
+/**
+ * req block data from other node by rpc url
+ */
+pub fn engine_test_2(engine: Arc<BlockEngine>) {
+
+    loop {
+        let blkdts = b"";
+        let blkdts = BytesW4::from_vec_u8(blkdts.to_vec());
+        let pkg = protocol::block::create_pkg(blkdts).unwrap();
+        if let Err(e) = engine.insert(pkg) {
+            panic!("{}", e);
+        }
+    }
+
+
+
+}
+
+
+
+
+pub fn engine_test_1(engine: Arc<BlockEngine>) {
+
+    // //  1549280970
+    // create_block(3, 1549280971, "1e78eaa957a162e1b80caa856670fa0df3ba16e694a8edbfc057b71c15fd0ae6");
+    // return
+    
+
+
+    engine.print_roller();
+
+    let blks = _test_blocks();
+
+    for blk in blks {
+
+        println!("\n---------------------------------------\n");
+
+        let pkg = BlockPackage::new(Box::new(blk));
+        if let Err(e) = engine.insert(Box::new(pkg)) {
+            println!("{}", e);
+        }
+        engine.print_roller();
+    }
+
+    // delete datadir
+    // std::fs::remove_dir_all("./hacash_mainnet_data");
+
+
+}
+
+
+
 fn _test_blocks() -> Vec<BlockV1> {
     let datas = vec![
         // hei: 1, hash: 001e231cb03f9938d54f04407797b8188f0375eb10f0bcb426dccae87dcadb56
@@ -45,39 +98,6 @@ fn _test_blocks() -> Vec<BlockV1> {
 }
 
 
-
-
-
-
-
-pub fn engine_test_1(engine: Arc<BlockEngine>) {
-
-    // //  1549280970
-    // create_block(3, 1549280971, "1e78eaa957a162e1b80caa856670fa0df3ba16e694a8edbfc057b71c15fd0ae6");
-    // return
-    
-
-
-    engine.print_roller();
-
-    let blks = _test_blocks();
-
-    for blk in blks {
-
-        println!("\n---------------------------------------\n");
-
-        let pkg = BlockPackage::new(Box::new(blk));
-        if let Err(e) = engine.insert(Box::new(pkg)) {
-            println!("{}", e);
-        }
-        engine.print_roller();
-    }
-
-    // delete datadir
-    // std::fs::remove_dir_all("./hacash_mainnet_data");
-
-
-}
 
 
 pub fn create_block(height: u64, pt: u64, prev: &str) {

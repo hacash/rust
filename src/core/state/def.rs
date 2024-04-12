@@ -8,7 +8,7 @@ defineChainStateOperationInstance!{
     )
     (
         &[0, 33], txexist    , Hash    , TxExist
-        &[0, 33], balance    , Address , Balance
+        &[0, 34], balance    , Address , Balance
     )
 }
 

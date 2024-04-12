@@ -14,6 +14,7 @@ use crate::core::field::*;
 use crate::core::account::*;
 use crate::core::component::*;
 
+use crate::protocol;
 use crate::protocol::transaction::*;
 use crate::protocol::block::*;
 use crate::chain::engine::*;

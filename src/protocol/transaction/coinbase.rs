@@ -48,5 +48,17 @@ impl TransactionRead for TransactionCoinbase {
 }
 
 impl Transaction for TransactionCoinbase {
+    fn as_read(&self) -> &dyn TransactionRead {
+        self
+    }
+}
 
+impl TxExec for TransactionCoinbase {
+    fn execute(&self, _: u64, sta: &mut dyn State) -> RetErr {
+        let mut state = CoreState::wrap(sta);
+        let rwdadr = self.address();
+        let amt = self.reward();
+        operate::hac_add(&mut state, rwdadr, amt) ? ;
+        Ok(())
+    }
 }
