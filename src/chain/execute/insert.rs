@@ -6,6 +6,7 @@
 pub fn do_check_insert(
 
     cnf: &EngineConf, 
+    vm: &dyn VM,
     mintk: &dyn MintChecker, 
     prev_state: Arc<ChainState>, 
     prev_block: &dyn Block, 

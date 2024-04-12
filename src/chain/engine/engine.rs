@@ -28,7 +28,7 @@ pub struct BlockEngine {
     klctx: Mutex<BlockRoller>, // change
 
     mintk: Box<dyn MintChecker>,
-    // pub vmobj: Box<dyn VM>,
+    vmobj: Box<dyn VM>,
     // actns: Box<dyn >,
 
     // insert lock
@@ -50,10 +50,14 @@ impl BlockEngine {
         // base or genesis block
         let bsblk = load_base_block(mintk.as_ref(), &stoldb);
         let roller = BlockRoller::create(bsblk, staptr);
+        let stoptr = Arc::new(stoldb);
+        // vm
+        let vmobj = vm::HacashVM::new(ini, stoptr.clone());
         // engine
         let mut engine = BlockEngine {
             cnf: cnf,
-            store: Arc::new(stoldb),
+            store: stoptr.clone(),
+            vmobj: Box::new(vmobj),
             klctx: Mutex::new(roller),
             mintk: mintk,
             isrlck: Mutex::new(true),
