@@ -34,7 +34,7 @@ impl Field for ASTLeaf {
     }
 }
 
-
+/*
 impl VMAction for ASTLeaf {
     fn code(&self) -> u8 {
         self.code
@@ -44,7 +44,7 @@ impl VMAction for ASTLeaf {
     //     self.parse(buf, 0)
     // }
 }
-
+*/
 
 impl ASTLeaf {
 

@@ -1,6 +1,6 @@
 
-macro_rules! transactionsTypeDefineCreateFunc{
-    ( $( $trstype:ident, $typev:expr, $class:ty ),+ ) => (
+macro_rules! pubFnTransactionsTypeDefineCreate {
+    ( $( $trstype:ident, $typev:expr, $class:ty )+ ) => (
 
 // kind define
 $(
@@ -27,3 +27,38 @@ pub fn create(buf: &[u8]) -> Ret<(Box<dyn Transaction>, usize)> {
 
     )
 }
+
+
+
+/*************** transaction ****************/
+
+
+macro_rules! DefineCommonTransaction {
+    ($tyid: expr, $class:ident) => (
+
+// Transaction Type 1 & 2
+StructFieldStruct!{ $class, 
+	ty        : Uint1
+	timestamp : Timestamp
+	address   : Address
+	fee       : Amount
+    actions   : DynListVMAction
+    signs     : SignListW2
+	ano_mark  : Uint2
+}
+
+impl TransactionRead for $class {
+    
+}
+
+impl Transaction for $class {
+    
+}
+
+
+
+
+
+    )
+}
+

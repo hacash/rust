@@ -37,7 +37,7 @@ fn _do_rebuild(this: &mut BlockEngine) {
         chei
     };
     // build
-    print!("[Engine] Rebuild unstable blocks {}", next_height);
+    print!("[Engine] Rebuild unstable blocks ({})", next_height);
     // insert lock
     this.isrlck.lock();
     loop {

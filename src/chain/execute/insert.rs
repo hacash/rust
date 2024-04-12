@@ -1,7 +1,7 @@
 
 /**
  * do insert block crate new state
- * return new chunk and state
+ * return new state
  */
 pub fn do_check_insert(
 

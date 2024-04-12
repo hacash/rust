@@ -14,7 +14,7 @@ pub struct $class {
 
 impl std::fmt::Debug for $class {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f,"[dyn list {}]", self.count.to_64());
+        write!(f,"[dyn list {}]", self.count.to_u64())
     }
 }
 

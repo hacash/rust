@@ -28,8 +28,7 @@ hex = "0.4.3"
 base58check = "0.1.0"
 num-traits = "0.2"
 num-bigint = "0.4.3"
-getrandom = { version = "0.2.10", features = ["js"] }
-rand = "0.8.5"
+getrandom = { version = "0.2.14", features = ["js"] }
 libsecp256k1 = "0.7.0"
 ripemd = "0.1.1"
 sha3 = "0.10.1"

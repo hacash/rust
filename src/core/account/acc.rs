@@ -6,7 +6,9 @@ impl Account {
     pub fn create_randomly() -> Result<Account, Error> {
         loop {
             let mut data = [0u8; 32];
-            rand::thread_rng().fill_bytes(&mut data);
+            if let Err(e) = getrandom::getrandom(&mut data) {
+                return Err(e.to_string())
+            }
             // println!("{:?}", data)
             if data[0] < 255 {
                 return Account::create_by_secret_key_value(data)

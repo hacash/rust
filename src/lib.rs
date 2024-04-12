@@ -27,6 +27,7 @@ mod base;
 mod interface;
 mod config;
 mod core;
+#[macro_use]
 mod protocol;
 mod mint;
 mod vm;

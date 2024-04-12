@@ -32,7 +32,18 @@ impl TransactionRead for TransactionCoinbase {
     fn hash_with_fee(&self) -> Hash {
         self.hash()
     }
-    
+
+    fn ty(&self) -> u8 {
+        self.ty.to_u8()
+    }
+
+    fn address(&self) -> &Address {
+        &self.address
+    }
+
+    fn reward(&self) -> &Amount {
+        &self.reward
+    }
     
 }
 

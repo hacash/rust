@@ -4,15 +4,53 @@
 
 
 #[macro_export]
-macro_rules! pubFnRegActions {
+macro_rules! pubFnRegActionCreates {
     ( $($ty:ident)+ ) => {
 
-pub fn actions() -> Vec<Box<dyn Action>> {
-    vec![
-        $(
-            Box::new($ty::new()),
-        )+
-    ]
+pub fn try_create(kind: u16, buf: &[u8]) -> Ret<Option<(Box<dyn Action>, usize)>> {
+    $(   
+    if kind == <$ty>::kid() {
+        let (act, sk) = <$ty>::create(buf) ? ;
+        return Ok(Some((Box::new(act), sk)))
+    }
+    )+
+    Ok(None)
+}
+
+pub fn try_create_vm(kind: u16, buf: &[u8]) -> Ret<Option<(Box<dyn VMAction>, usize)>> {
+    $(   
+    if kind == <$ty>::kid() {
+        let (act, sk) = <$ty>::create(buf) ? ;
+        return Ok(Some((Box::new(act), sk)))
+    }
+    )+
+    Ok(None)
+}
+
+
+pub fn cut_kind(buf: &[u8]) -> Ret<u16> {
+    let mut kind = Uint2::new();
+    kind.parse(buf, 0) ? ;
+    let kid = kind.to_u16();
+    Ok(kid)
+}
+
+pub fn create(buf: &[u8]) -> Ret<(Box<dyn Action>, usize)> {
+    let kid = cut_kind(buf) ? ;
+    let hasact = try_create(kid, buf) ? ;
+    match hasact {
+        Some(res) => Ok(res),
+        None => Err(format!("Action Kind <{}> not find.", kid))
+    }
+}
+
+pub fn create_vm(buf: &[u8]) -> Ret<(Box<dyn VMAction>, usize)> {
+    let kid = cut_kind(buf) ? ;
+    let hasact = try_create_vm(kid, buf) ? ;
+    match hasact {
+        Some(res) => Ok(res),
+        None => Err(format!("Action Kind <{}> not find.", kid))
+    }
 }
 
     }
@@ -80,6 +118,11 @@ impl Action for $actname {
 }
 
 impl $actname {
+
+    pub fn kid() -> u16 {
+        $actid
+    }
+
     pub fn new() -> $actname {
         let mut obj = <$actname as Field>::new();
         obj.kind.parse_u16($actid);

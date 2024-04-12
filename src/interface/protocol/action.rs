@@ -4,7 +4,7 @@
 /**
  * for Extend Action / HVM AST Node / Bytecode
  */
-pub trait VMAction : Field {
+pub trait VMAction : Field + dyn_clone::DynClone {
     fn code(&self) -> u8 { 0 } // bytecode
     fn kind(&self) -> u16 { 0 } // action kind
     fn gas(&self) -> u32 { 0 } // gas use
@@ -32,5 +32,7 @@ pub trait ActionContainer {
     fn build(&self, _: &[u8]) -> Ret<(Box<dyn Action>, usize)> { panic_never_call_this!() }
 }
 
+
+dyn_clone::clone_trait_object!(VMAction);
 
 

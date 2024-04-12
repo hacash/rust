@@ -1,6 +1,6 @@
 use base58check::*;
 use libsecp256k1::{ util, SecretKey, PublicKey, Signature, Message };
-use rand::{self, RngCore};
+// use rand::{self, RngCore};
 
 use crate::sys::*;
 use crate::x16rs::{ sha2, ripemd160 };

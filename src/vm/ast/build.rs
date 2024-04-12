@@ -10,6 +10,7 @@ fn bbb(ext: &dyn Any) -> bool {
     false
 }
 
+/*
 fn build_ast_item(extcl: &dyn ExtActCaller, buf: &[u8]) -> Result<(Box<dyn VMAction>, usize), Error> {
     if buf.len() < 1 {
         return err_buf_short!()
@@ -36,4 +37,4 @@ fn build_ast_item(extcl: &dyn ExtActCaller, buf: &[u8]) -> Result<(Box<dyn VMAct
     // error
     err!( format!("cannot find opcode {}", opcd) )
 }
-
+*/
