@@ -33,9 +33,10 @@ impl Parse for $class {
         let mut seek = sk; //self.count.parse(buf, seek) ?;
         let count = self.count.to_u64() as usize;
         self.vlist = Vec::new();
-        for _ in 0..count {
+        for i in 0..count {
+            // if i > 0 { println!("parse tx {} buf {}", i, hex::encode(&buf[seek..])); }
             let(obj, mvsk) = $parseobjfunc(&buf[seek..]) ?;
-            seek = mvsk;
+            seek += mvsk;
             self.vlist.push(obj);
         }
         Ok(seek)
@@ -100,6 +101,10 @@ impl $class {
     pub fn set_count<T>(&mut self, nt: T) where T: std::ops::Add<u64, Output = u64> { 
         self.count = <$lenty>::from_uint(nt);
     }
+
+	pub fn count(&self) -> &$lenty {
+		&self.count
+	}
 
     pub fn list(&self) -> &Vec<Box<dyn $dynty>> {
         &self.vlist

@@ -30,10 +30,37 @@ impl TxPool for MemTxPool {
         grp.insert(txp)
     }
 
-    fn delete(&self, _: &Vec<Hash>, _: isize) {}
-    fn clean(&self, _: isize) {}
+    fn delete(&self, hxs: &Vec<Hash>, gi: isize) {
+        let gid = self.get_group_id(gi);
+        // do delete
+        let mut grp = self.groups[gid].write().unwrap();
+        grp.delete(hxs)
+    }
 
+    fn clean(&self, gi: isize) {
+        let gid = self.get_group_id(gi);
+        // do clean
+        let mut grp = self.groups[gid].write().unwrap();
+        grp.clean()
+    }
+
+
+}
+
+
+
+impl MemTxPool{ 
     // from group id
-    fn find(&self, _: &Hash, _: isize) -> Option<Box<dyn TxPkg>> { None }
+    fn find(&self, hx: &Hash, gi: isize) -> Option<Box<dyn TxPkg>> {
+        let gid = self.get_group_id(gi);
+        // do clean
+        let grp = self.groups[gid].read().unwrap();
+        match grp.find(hx) {
+            Some((_, &ref tx)) => Some(tx.clone()),
+            None => None,
+        }
+    }
     
 }
+
+

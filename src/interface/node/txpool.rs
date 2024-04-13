@@ -5,6 +5,6 @@ pub trait TxPool {
     fn delete(&self, _: &Vec<Hash>, _: isize) {} // from group id
     fn clean(&self, _: isize) {} // by group id
     
-    fn find(&self, _: &Hash, _: isize) -> Option<Box<dyn TxPkg>> { None } // from group id
-
+    // fn find(&self, _: &Hash, _: isize) -> Option<Box<dyn TxPkg>> { None } // from group id
+    // fn scan(&self, _: usize, _: isize) -> Option<Box<dyn TxPkg>>;
 }

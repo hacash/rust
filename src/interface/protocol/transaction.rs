@@ -8,7 +8,6 @@ pub trait TransactionRead : Field + dyn_clone::DynClone {
 
     fn address(&self) -> &Address { panic_never_call_this!() }
     fn fee(&self) -> &Amount { panic_never_call_this!(); }
-    // fn fee_miner_received(&self) -> Amount { panic_never_call_this!() }
     fn timestamp(&self) -> &Timestamp { panic_never_call_this!() }
 
     fn reward(&self) -> &Amount { panic_never_call_this!() }
@@ -20,6 +19,8 @@ pub trait TransactionRead : Field + dyn_clone::DynClone {
     fn signs(&self) -> &Vec<Sign> { panic_never_call_this!(); }
     
     // fn fee_purity(&self) -> u32 { 0 }
+    fn fee_got(&self) -> Amount { panic_never_call_this!(); } // fee_miner_received
+    fn burn_90(&self) -> bool { panic_never_call_this!(); } // burn_90_percent_fee
 }
 
 

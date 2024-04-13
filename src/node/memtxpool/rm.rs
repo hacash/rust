@@ -1,5 +1,9 @@
 
 impl TxGroup {
+    
+    fn clean(&mut self) {
+        self.txpkgs.clear()
+    }
 
     fn remove(&mut self, txhx: &Hash) -> Option<Box<dyn TxPkg>> {
         let rmid = self.search(txhx);

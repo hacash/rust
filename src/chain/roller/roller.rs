@@ -22,5 +22,13 @@ impl BlockRoller {
         }
     }
 
+    pub fn root_height(&self) -> BlockHeight {
+        self.sroot.height.clone()
+    }
+
+    pub fn last_height(&self) -> BlockHeight {
+        self.scusp.upgrade().unwrap().height.clone()
+    }
+
 
 }

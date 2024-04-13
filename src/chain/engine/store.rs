@@ -21,7 +21,8 @@ fn do_store(cnf: &EngineConf, storef: &BlockStore, roller: &mut BlockRoller, app
     // if roll
     if rcs.roll {
         let status = StoreStatus{
-            root_height: roller.sroot.height.clone(),
+            root_height: roller.root_height(),
+            last_height: roller.last_height(),
         };
         // println!("===> roll root status height {}", roller.sroot.height.to_u64());
         store.put_status(&status);

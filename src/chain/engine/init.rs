@@ -9,7 +9,7 @@ fn load_base_block(mintk: &dyn MintChecker, storef: &BlockStore) -> Box<dyn Bloc
         return mintk.genesis()
     }
     // read block data
-    let resblk = load_block_parkage_by_height(&store, &rhei);
+    let resblk = load_block_package_by_height(&store, &rhei);
     if let Err(e) = resblk {
         panic!("{}", e)
     }
@@ -42,7 +42,7 @@ fn _do_rebuild(this: &mut BlockEngine) {
     this.isrlck.lock();
     loop {
         next_height += 1;
-        let resblk = load_block_parkage(&store, next_height);
+        let resblk = load_block_package(&store, next_height);
         if let Err(_) = resblk {
             println!(" ok.");
             return // end finish

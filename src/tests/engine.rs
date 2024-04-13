@@ -11,15 +11,23 @@ pub fn engine_test_2(engine: Arc<BlockEngine>) {
 
 
     let mut height = 1;
+    let store = CoreStoreRead::wrap(engine.store());
+    let last = store.status();
+    let lhei = last.last_height.to_u64();
+    height = lhei + 1; // next hei
 
+    
     loop {
 
         let url = format!("http://127.0.0.1:33381/query?action=blockdatahex&body=1&id={}", height);
         let mut body = Vec::new();
         let res = request::get(url, &mut body).unwrap();
         let blkdts = hex::decode(body).unwrap();
+        if height % 500 == 0 {
+            println!("{}", height);
+        }
         // println!("Status: {} {}", res.status_code(), res.reason());
-        // println!("{}", hex::encode(blkdts));
+        // println!("create block {} {}", height, hex::encode(blkdts.to_vec()));
         // let blkdts = b"";
         let blkdts = BytesW4::from_vec_u8(blkdts.to_vec());
         let pkg = match protocol::block::create_pkg(blkdts) {
@@ -36,10 +44,6 @@ pub fn engine_test_2(engine: Arc<BlockEngine>) {
         // next 
         height += 1;
     }
-
-
-    // delete datadir
-    std::fs::remove_dir_all("./hacash_mainnet_data");
 
 
 

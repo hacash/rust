@@ -37,8 +37,8 @@ impl Parse for $class {
         let count = self.$count.to_u64() as usize;
         self.$value = Vec::new();
         for _ in 0..count {
-            let obj: $value_type;
-            (obj, seek) = <$value_type>::create(&buf[seek..]) ?;
+            let (obj, mvsk) = <$value_type>::create(&buf[seek..]) ?;
+            seek += mvsk;
             self.$value.push(obj);
         }
         Ok(seek)
@@ -87,15 +87,11 @@ impl Field for $class {
 
 impl $class {
 
-	pub fn len(&self) -> usize {
-		self.count() as usize
+	pub fn count(&self) -> &$count_type {
+		&self.$count
 	}
 
-	pub fn count(&self) -> u64 {
-		self.$count.to_u64()
-	}
-
-	pub fn value(&self) -> &Vec<$value_type> {
+	pub fn list(&self) -> &Vec<$value_type> {
 		&self.$value
 	}
 

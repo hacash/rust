@@ -7,6 +7,7 @@ macro_rules! StructFieldDynList {
     ($class: ident, $lenty: ty, $dynty: ident, $parseobjfunc: path) => (
 
 
+#[derive(Clone)]
 pub struct $class {
     count: $lenty,
     vlist: Vec<Box<dyn $dynty>>
@@ -15,16 +16,6 @@ pub struct $class {
 impl std::fmt::Debug for $class {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f,"[dyn list {}]", self.count.to_u64())
-    }
-}
-
-impl Clone for $class {
-    fn clone(&self) -> $class {
-        let mut ary = vec![];
-        $class{
-            count: self.count.clone(),
-            vlist: ary,
-        }
     }
 }
 
@@ -46,7 +37,7 @@ impl Parse for $class {
         self.vlist = Vec::new();
         for _ in 0..count {
             let(obj, mvsk) = $parseobjfunc(&buf[seek..]) ?;
-            seek = mvsk;
+            seek += mvsk;
             self.vlist.push(obj);
         }
         Ok(seek)
@@ -107,6 +98,16 @@ impl $class {
             }
         }
 	}
+
+	pub fn count(&self) -> &$lenty {
+		&self.count
+	}
+
+    pub fn list(&self) -> &Vec<Box<dyn $dynty>> {
+        &self.vlist
+    }
+
+
 }
 
 

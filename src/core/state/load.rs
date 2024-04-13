@@ -1,11 +1,11 @@
 
 
-pub fn load_block_parkage(store: &CoreStoreRead, rhei: u64) -> Ret<Box<dyn BlockPkg>> {
+pub fn load_block_package(store: &CoreStoreRead, rhei: u64) -> Ret<Box<dyn BlockPkg>> {
     let hei = BlockHeight::from_uint(rhei);
-    load_block_parkage_by_height(store, &hei)
+    load_block_package_by_height(store, &hei)
 }
 
-pub fn load_block_parkage_by_height(store: &CoreStoreRead, rhei: &BlockHeight) -> Ret<Box<dyn BlockPkg>> {
+pub fn load_block_package_by_height(store: &CoreStoreRead, rhei: &BlockHeight) -> Ret<Box<dyn BlockPkg>> {
 
     // read block data
     let rhx = store.blockptr(rhei);

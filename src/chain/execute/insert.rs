@@ -60,10 +60,14 @@ pub fn do_check_insert(
     let alltxs = block.transactions();
     let mut txttsize = 0usize;
     let mut txttnum = 0usize;
+    let mut alltxfee = Amount::new();
     for tx in alltxs {
         // coinbase not check time
-        if txttnum > 0 && tx.timestamp().to_u64() > cur_time {
-            return errf!("tx timestamp {} cannot more than now {}", tx.timestamp(), cur_time)
+        if txttnum > 0 {
+            if tx.timestamp().to_u64() > cur_time {
+                return errf!("tx timestamp {} cannot more than now {}", tx.timestamp(), cur_time)
+            }
+            alltxfee = alltxfee.add(&tx.fee_got()) ? ; // fee_miner_received
         }
         txttsize += tx.size();
         txttnum += 1;
@@ -83,7 +87,8 @@ pub fn do_check_insert(
     // check mint consensus & coinbase
     mintk.consensus(&**block) ? ;
     // coinbase tx id = 0, if coinbase error
-    mintk.coinbase(height, &*alltxs[0]) ? ;
+    let coinbase_tx = &*alltxs[0];
+    mintk.coinbase(height, coinbase_tx) ? ;
     // check state
     let mut sub_state = fork_sub_state(prev_state.clone());
     // if init genesis status
@@ -101,10 +106,12 @@ pub fn do_check_insert(
         }
         execn += 1;
     }
-    // 
-    
-
-
+    // add miner got fee
+    if alltxfee.is_positive() { // amt > 0
+        let miner = coinbase_tx.address();
+        let mut corestate = CoreState::wrap(&mut sub_state);
+        operate::hac_add(&mut corestate, miner, &alltxfee) ? ;
+    }
     // test
     Ok(sub_state)
 

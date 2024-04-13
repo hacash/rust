@@ -9,10 +9,10 @@ $(
 
 // create func
 pub fn create(buf: &[u8]) -> Ret<(Box<dyn Transaction>, usize)> {
-    // println!("----- transactions.parse start ------ {}", seek);
+    // println!("----- transactions.parse start ------ {}", hex::encode(buf));
     let bts = buf_clip_mvsk!(buf, 1);
     let ty = bts[0] as u8;
-    let seek = 1;
+    let seek = 0;
     // println!("----- transactions. typev.value()------ {} {}", seek, typev.value());
     match ty {
     $(
@@ -47,7 +47,76 @@ StructFieldStruct!{ $class,
 	ano_mark  : Uint2
 }
 
+impl $class {
+
+    fn hash_ex(&self, adfe: Vec<u8>) -> Hash {
+        let stuff = vec![
+            self.ty.serialize(),
+            self.timestamp.serialize(),
+            self.address.serialize(),
+            adfe, /* self.fee.serialize()*/
+            self.actions.serialize()
+        ].concat();
+        let hx = x16rs::calculate_hash(stuff);
+        Hash::must(&hx[..])
+    }
+
+}
+
 impl TransactionRead for $class {
+    
+    fn hash(&self) -> Hash {
+        self.hash_ex(vec![]) // no fee field
+    }
+    
+    fn hash_with_fee(&self) -> Hash {
+        self.hash_ex(self.fee.serialize()) // with fee
+    }
+
+    fn ty(&self) -> u8 {
+        self.ty.to_u8()
+    }
+
+    fn address(&self) -> &Address {
+        &self.address
+    }
+    fn fee(&self) -> &Amount {
+        &self.fee
+    }
+
+    fn timestamp(&self) -> &Timestamp {
+        &self.timestamp
+    }
+
+    fn action_count(&self) -> u16 {
+        self.actions.count().to_u64() as u16
+    }
+    fn actions(&self) -> &Vec<Box<dyn VMAction>> {
+        self.actions.list()
+    }
+
+    fn signs(&self) -> &Vec<Sign> {
+        self.signs.list()
+    }
+    
+    // burn_90_percent_fee
+    fn burn_90(&self) -> bool {
+        for act in self.actions() {
+            if act.as_ext().burn_90() {
+                return true // burn
+            }
+        }
+        false // not
+    }
+
+    // fee_miner_received
+    fn fee_got(&self) -> Amount {
+        let mut gfee = self.fee().clone();
+        if self.burn_90() && gfee.unit() > 1 {
+            gfee.unit_sub(1); // butn 90
+        }
+        gfee
+    } 
     
 }
 
@@ -60,6 +129,10 @@ impl Transaction for $class {
 impl TxExec for  $class {
 
     fn execute(&self, blkhei: u64, sta: &mut dyn State) -> RetErr {
+        // check BlockHeight more than 20w trs.Fee.Size() must less than 6 bytes.
+        if blkhei > 20_0000 && self.fee.size() > 2+4 {
+            return errf!("tx fee size cannot be more than 6 bytes when block height abover 200,000")
+        }
         let mut state = CoreState::wrap(sta);
         // check tx exist
         let txhx = self.hash();
@@ -82,7 +155,7 @@ impl TxExec for  $class {
         operate::hac_sub(&mut state, feeadr, amt) ? ;
         Ok(())
     }
-    
+
 }
 
 

@@ -28,12 +28,13 @@ pub fn bytes_to_uint(buf: &[u8], msz: usize, len: usize) -> Ret<u64> {
         return Err("size cannot over ".to_owned() + &msz.to_string())
     }
     let mut vbts = [0u8; 8];
-    let left = msz - len;
+    let left = 8 - len;
     let mut i = 0;
-    for k in left..msz {
+    for k in left..8 {
         vbts[k] = buf[i];
         i += 1;
     }
+    // println!("{} {} {} {}", msz, len, hex::encode(buf), hex::encode(vbts));
     Ok(u64::from_be_bytes(vbts))
 }
 
