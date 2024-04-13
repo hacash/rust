@@ -1,6 +1,43 @@
+use std::time::Instant;
 
 
+fn tdat() -> Box<dyn Action> {
+    let obj = protocol::action::HacTransfer::new();
+    Box::new(obj)
+}
 
+pub fn main_test_vecspeed387425983() {
+
+    let mut datas = vec![];
+    let max = 5000usize;
+
+    for i in 0 .. 111 {
+        // datas.push(tdat());
+        datas.push(1u128);
+    }
+
+    let start_time = Instant::now();
+
+
+    for i in 0..max {
+        // datas.insert(1, tdat());
+        datas.insert(1, 1u128);
+    }
+
+    for i in 0..max {
+        datas.remove(1);
+    }
+
+    let end_time = Instant::now();
+
+    let elapsed_time = end_time - start_time;
+    println!("代码运行时间: {:?}", elapsed_time);
+
+    // println!("vec len {} {} ", datas.len(), hex::encode(datas[0].serialize()));
+    println!("vec len {}", datas.len());
+
+
+}
 
 
 pub fn main_test8327459283() {

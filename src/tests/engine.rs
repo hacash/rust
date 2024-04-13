@@ -1,4 +1,6 @@
 
+use http_req::request;
+
 
 
 
@@ -7,14 +9,39 @@
  */
 pub fn engine_test_2(engine: Arc<BlockEngine>) {
 
+
+    let mut height = 1;
+
     loop {
-        let blkdts = b"";
+
+        let url = format!("http://127.0.0.1:33381/query?action=blockdatahex&body=1&id={}", height);
+        let mut body = Vec::new();
+        let res = request::get(url, &mut body).unwrap();
+        let blkdts = hex::decode(body).unwrap();
+        // println!("Status: {} {}", res.status_code(), res.reason());
+        // println!("{}", hex::encode(blkdts));
+        // let blkdts = b"";
         let blkdts = BytesW4::from_vec_u8(blkdts.to_vec());
-        let pkg = protocol::block::create_pkg(blkdts).unwrap();
+        let pkg = match protocol::block::create_pkg(blkdts) {
+            Err(e) => {
+                println!("create_pkg() height {} error: {}", height, e);
+                break;
+            },
+            Ok(pkg) => pkg
+        };
         if let Err(e) = engine.insert(pkg) {
-            panic!("{}", e);
+            println!("engine.insert() height {} error: {}", height, e);
+            break;
         }
+        // next 
+        height += 1;
     }
+
+
+    // delete datadir
+    std::fs::remove_dir_all("./hacash_mainnet_data");
+
+
 
 
 

@@ -32,6 +32,7 @@ mod protocol;
 mod mint;
 mod vm;
 mod chain;
+mod node;
 
 
 

@@ -20,6 +20,7 @@ mod protocol;
 mod mint;
 mod vm;
 mod chain;
+mod node;
 mod tests;
 
 use crate::sys::*;
@@ -44,6 +45,7 @@ RUSTFLAGS="$RUSTFLAGS -Awarnings" RUST_BACKTRACE=1 cargo check / build / run
 fn main() {
     
     // main_test8327459283();
+    // main_test_vecspeed387425983();
 
     let inicnf = read_config();
     start_hacash_node(inicnf);
@@ -81,7 +83,7 @@ fn start_hacash_node(iniobj: sys::IniObj) {
     let engine = BlockEngine::open(&iniobj, mint_checker);
     let engptr = Arc::new(engine);
     // test
-    engine_test_1(engptr);
+    engine_test_2(engptr);
 
 }
 
