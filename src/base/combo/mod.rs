@@ -14,6 +14,7 @@ use super::field::*;
 
 
 include!("optional_def.rs");
+include!("optional.rs");
 include!("struct_def.rs");
 include!("list_def.rs");
 include!("dynlist_def.rs");

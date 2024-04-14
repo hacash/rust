@@ -12,11 +12,6 @@ defineChainStateOperationInstance!{
     )
 }
 
-/*
-        // &[0, 3], latest_diamond     , DiamondSmelt
-*/
-
-
 defineChainStateOperationInstance!{
     Store, CoreStore,
     (

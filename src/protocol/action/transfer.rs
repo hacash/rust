@@ -8,9 +8,9 @@ ActionDefine!{
         amt : Amount
     ),
     ACTLV_TOP, // level
-    false, // burn 90
     21 + 11, // gas = 32
     (self, env, state, store), // params
+    false, // burn 90
     [], // req sign
     {
         let from = env.main_address(); 
@@ -30,9 +30,9 @@ ActionDefine!{
         amt : Amount
     ),
     ACTLV_TOP, // level
-    false, // burn 90
     21 + 11, // gas = 32
     (self, env, state, store), // params
+    false, // burn 90
     [self.from], // req sign
     { 
         let to = env.main_address(); 

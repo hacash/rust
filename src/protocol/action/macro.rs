@@ -57,28 +57,18 @@ macro_rules! pubFnRegActionCreates {
 
 /******* ActionDefine ********/
 
-
 #[macro_export]
-macro_rules! ActionDefine {
+macro_rules! ActionDefineWithStruct {
     {   $actname:ident : $actid:expr, 
-        ($( $item:ident : $type:ty )*), 
-        $lv:expr, $burn90:expr, $gas:expr,
+        $lv:expr, $gas:expr,
         ($p_self:ident, $p_env:ident, $p_state:ident, $p_store:ident ), 
-        $reqsign:expr, $exec:expr 
+        $burn90:expr, $reqsign:expr, $exec:expr 
     } => {
 
 // ACTION_KIND DEFINE
 concat_idents!(ACTION_KIND_ID = ACTION_KIND_, $actid {
 pub const ACTION_KIND_ID: u16 = $actid;
 });
-
-
-StructFieldStruct!{ $actname ,
-    kind: Uint2
-    $( 
-        $item : $type 
-    )*
-}
 
 
 impl VMAction for $actname {
@@ -107,7 +97,7 @@ impl Action for $actname {
     fn level(&self) -> u8 {
         $lv
     }
-    fn burn_90(&self) -> bool { 
+    fn burn_90(&$p_self) -> bool { 
         $burn90
     }
     fn req_sign(&$p_self) -> HashSet<Address> {
@@ -143,3 +133,29 @@ pub struct ACTION_NAME {
     }
 }
 
+
+#[macro_export]
+macro_rules! ActionDefine {
+    {   $actname:ident : $actid:expr, 
+        ($( $item:ident : $type:ty )*), 
+        $lv:expr, $gas:expr,
+        ($p_self:ident, $p_env:ident, $p_state:ident, $p_store:ident ), 
+        $burn90:expr, $reqsign:expr, $exec:expr 
+    } => {
+
+        StructFieldStruct!{ $actname ,
+            kind: Uint2
+            $( 
+                $item : $type 
+            )*
+        }
+
+        ActionDefineWithStruct!{
+            $actname : $actid, 
+            $lv, $gas,
+            ($p_self, $p_env, $p_state, $p_store ), 
+            $burn90, $reqsign, $exec 
+        }
+
+    }
+}

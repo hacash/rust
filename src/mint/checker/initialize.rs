@@ -13,7 +13,7 @@ fn impl_initialize(this: &BlockMintChecker, db: &mut dyn State) -> RetErr {
     state.set_balance(&addr2, &bls1);
     state.set_balance(&addr3, &bls1);
 
-    // let stateread = CoreStateRead::wrap(db);
+    // let stateread = CoreStateDisk::wrap(db);
 
     // ok
     Ok(())

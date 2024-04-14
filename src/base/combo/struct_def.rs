@@ -1,10 +1,10 @@
 
 
 #[macro_export]
-macro_rules! StructFieldStructSetParse {
-    ($p_self:ident, $p_buf:ident, $p_seek:ident, $parse_code: block, $class: ident, $( $item: ident: $type: ty )+) => (
+macro_rules! StructFieldStructSetParseSerializeSize {
+    ($p_self:ident, $p_buf:ident, $p_seek:ident, $parse_code: block, $serialize_code: block, $size_code: block, $class: ident, $( $item: ident: $type: ty )+) => (
 
-
+        
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct $class {
@@ -30,18 +30,20 @@ impl Parse for $class {
 
 impl Serialize for $class {
 
-    fn serialize(&self) -> Vec<u8> {
+    fn serialize(&$p_self) -> Vec<u8> {
+        $serialize_code;
         vec![
         $(
-            self.$item.serialize()
+            $p_self.$item.serialize()
         ),+
         ].concat()
     }
 
-    fn size(&self) -> usize {
+    fn size(&$p_self) -> usize {
+        $size_code;
         let mut size: usize = 0;
         $(
-            size += self.$item.size();
+            size += $p_self.$item.size();
         )+
         size
     }
@@ -70,6 +72,15 @@ impl $class {
 
     )
 }
+
+
+#[macro_export]
+macro_rules! StructFieldStructSetParse {
+    ($p_self:ident, $p_buf:ident, $p_seek:ident, $parse_code: block, $class: ident, $( $item: ident: $type: ty )+) => (
+        StructFieldStructSetParseSerializeSize!($p_self, $p_buf, $p_seek, $parse_code, {}, {}, $class, $( $item: $type )+ );
+    )
+}
+
 
 
 #[macro_export]

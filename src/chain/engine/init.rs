@@ -1,6 +1,6 @@
 
 fn load_base_block(mintk: &dyn MintChecker, storef: &BlockStore) -> Box<dyn BlockPkg> {
-    let store = CoreStoreRead::wrap(storef);
+    let store = CoreStoreDisk::wrap(storef);
     let status = store.status();
     let rhei = &status.root_height;
     let rhein = rhei.to_u64();
@@ -30,7 +30,7 @@ impl BlockEngine {
 
 
 fn _do_rebuild(this: &mut BlockEngine) {
-    let store = CoreStoreRead::wrap(this.store.as_ref());
+    let store = CoreStoreDisk::wrap(this.store.as_ref());
     // next
     let mut next_height: u64 = {
         let chei = this.klctx.lock().unwrap().sroot.height.to_u64();

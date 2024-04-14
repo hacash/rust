@@ -26,6 +26,7 @@ mod sys;
 mod base;
 mod interface;
 mod config;
+#[macro_use]
 mod core;
 #[macro_use]
 mod protocol;

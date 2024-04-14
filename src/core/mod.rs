@@ -2,6 +2,8 @@ pub mod util;
 pub mod account;
 pub mod field;
 pub mod db;
+
+#[macro_use]
 pub mod state;
 pub mod component;
 

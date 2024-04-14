@@ -4,7 +4,6 @@
  */
 pubFnRegActionCreates!{
 
-    HacTransfer
-    HacFromTransfer
+    DiamondMint
 
 }

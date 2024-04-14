@@ -11,7 +11,7 @@ pub fn engine_test_2(engine: Arc<BlockEngine>) {
 
 
     let mut height = 1;
-    let store = CoreStoreRead::wrap(engine.store());
+    let store = CoreStoreDisk::wrap(engine.store());
     let last = store.status();
     let lhei = last.last_height.to_u64();
     height = lhei + 1; // next hei

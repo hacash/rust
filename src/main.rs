@@ -14,6 +14,7 @@ mod sys;
 mod base;
 mod config;
 mod interface;
+#[macro_use]
 mod core;
 #[macro_use]
 mod protocol;
@@ -45,7 +46,7 @@ RUSTFLAGS="$RUSTFLAGS -Awarnings" RUST_BACKTRACE=1 cargo check / build / run
 fn main() {
     
     // delete datadir
-    std::fs::remove_dir_all("./hacash_mainnet_data");
+    // std::fs::remove_dir_all("./hacash_mainnet_data");
 
     // main_test8327459283();
     // main_test_vecspeed387425983();

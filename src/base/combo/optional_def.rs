@@ -112,13 +112,3 @@ impl $class {
 
     )
 }
-
-
-
-
-
-
-
-
-// test
-StructFieldOptional!{ TestOptVal983456298456374, ttt, Uint1 }

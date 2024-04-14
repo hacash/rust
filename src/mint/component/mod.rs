@@ -5,11 +5,13 @@ use crate::interface::protocol::*;
 #[macro_use]
 use crate::base::lathe::*;
 use crate::base::field::*;
-
+use crate::base::combo::*;
 use crate::core::field::*;
 
-include!("block.rs");
-include!("tx.rs");
+include!("total.rs");
 include!("balance.rs");
+include!("diamond.rs");
+include!("tx.rs");
+include!("block.rs");
 
 

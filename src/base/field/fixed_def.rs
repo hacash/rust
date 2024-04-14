@@ -282,6 +282,25 @@ impl $class {
         $size
     }
 
+    pub const fn cons(v: [u8; $size]) -> $class {
+        $class {
+            bytes: v,
+        }
+    }
+
+    pub fn is_zero(&self) -> bool {
+        return ! self.is_not_zero()
+    }
+
+    pub fn is_not_zero(&self) -> bool {
+        for a in self.bytes {
+            if a > 0 {
+                return true
+            }
+        }
+        return false
+    }
+
 }
 
 

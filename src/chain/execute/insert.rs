@@ -18,6 +18,7 @@ pub fn do_check_insert(
     let block = blkpkg.objc();
     // let prev_block = prev_block;
     let height = block.height().to_u64();
+    let blkhash = block.hash();
     let prev_height = prev_block.height().to_u64();
     if height != prev_height + 1 {
         return errf!("block height {} is not match to insert, need {}", height, prev_height + 1)
@@ -102,7 +103,7 @@ pub fn do_check_insert(
         tx.execute(height, &mut sub_state) ? ;
         if execn > 0 {
             // ignore coinbase tx
-            exec_tx_actions(height, vmobj, &mut sub_state, tx.as_read()) ? ;
+            exec_tx_actions(height, blkhash, vmobj, &mut sub_state, tx.as_read()) ? ;
         }
         execn += 1;
     }

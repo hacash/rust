@@ -12,19 +12,19 @@ pub struct $class  {
 }
 
 impl std::fmt::Debug for $class {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f,"[list {}]", self.$count.to_u64())
     }
 }
 
-impl Index<usize> for $class {
+impl std::ops::Index<usize> for $class {
     type Output = $value_type;
     fn index(&self, idx: usize) -> &Self::Output {
         &self.$value[idx]
     }
 }
 
-impl IndexMut<usize> for $class {
+impl std::ops::IndexMut<usize> for $class {
     fn index_mut(&mut self, idx: usize) -> &mut Self::Output{
         &mut self.$value[idx]
     }

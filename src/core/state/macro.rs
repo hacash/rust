@@ -12,13 +12,13 @@ macro_rules! defineChainStateOperationInstance{
 
 
 
-concat_idents!(struct_name_read = $name, Read {
-pub struct struct_name_read<'a> {
+concat_idents!(struct_name_disk = $name, Disk {
+pub struct struct_name_disk<'a> {
     db: &'a dyn $base,
 }
-impl struct_name_read<'_> {
-    pub fn wrap<'a>(sta: &'a dyn $base) -> struct_name_read {
-        struct_name_read{
+impl struct_name_disk<'_> {
+    pub fn wrap<'a>(sta: &'a dyn $base) -> struct_name_disk {
+        struct_name_disk{
             db: sta,
         }
     }
