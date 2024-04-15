@@ -1,6 +1,7 @@
 test/
 *_data/
 *.loc.rs
+*.data
 
 libx16rs.so
 libx16rs.a

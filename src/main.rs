@@ -46,7 +46,7 @@ RUSTFLAGS="$RUSTFLAGS -Awarnings" RUST_BACKTRACE=1 cargo check / build / run
 fn main() {
     
     // delete datadir
-    // std::fs::remove_dir_all("./hacash_mainnet_data");
+    std::fs::remove_dir_all("./hacash_mainnet_data");
 
     // main_test8327459283();
     // main_test_vecspeed387425983();
@@ -87,7 +87,7 @@ fn start_hacash_node(iniobj: sys::IniObj) {
     let engine = BlockEngine::open(&iniobj, mint_checker);
     let engptr = Arc::new(engine);
     // test
-    engine_test_2(engptr);
+    engine_test_3(engptr);
 
 }
 

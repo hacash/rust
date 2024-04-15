@@ -1,13 +1,91 @@
+use std::fs::OpenOptions;
+use std::io::Write;
 
 use http_req::request;
 
+use crate::interface::field::*;
+use crate::base::field::*;
 
+
+/**
+ * req block data from other node by rpc url
+ */
+ pub fn engine_test_3(engine: Arc<BlockEngine>) {
+
+    // download_block_bytes();
+    // return;
+
+
+    let bytes = std::fs::read("./allblockbytes.data").unwrap();
+    let ptrs = std::fs::read("./allblockptrs.data").unwrap();
+
+    println!("block data file len {} {}", bytes.len(), ptrs.len());
+    // println!("block data = {}  ptr = {}", hex::encode(&bytes[..262]), hex::encode(&ptrs[0..32]));
+
+    let maxhei: usize = 540920;
+    // cur hei
+    let mut height: usize = 0;
+    let store = CoreStoreDisk::wrap(engine.store());
+    let last = store.status();
+    let lhei = last.last_height.to_usize();
+    height = lhei + 1; // next hei
+    // data offset
+    let mut ostleft: usize = 0;
+
+    loop {
+        // next block
+        // println!("height {}", height);
+        // read
+        let mut ptl = (height-1) * 8;
+        if ptl > ptrs.len()-8 {
+            break // all end
+        }
+        let ost = Uint4::cons(ptrs[ptl..ptl+4].try_into().unwrap()).to_usize();
+        ptl += 4;
+        let bsz = Uint4::cons(ptrs[ptl..ptl+4].try_into().unwrap()).to_usize();
+        // println!("height {} ost {} size {}", height, ost, bsz);
+        let blkdts = BytesW4::from_vec_u8(bytes[ost .. ost+bsz].to_vec());
+        ostleft = ost;
+        // create
+        let pkg = match protocol::block::create_pkg(blkdts) {
+            Err(e) => {
+                println!("create_pkg() height {} error: {}", height, e);
+                break;
+            },
+            Ok(pkg) => pkg
+        };
+        let isthei = pkg.objc().height().to_u64();
+        if let Err(e) = engine.insert(pkg) {
+            println!("engine.insert() height {} isthei {} error: {}", height, isthei, e);
+            break;
+        }
+
+        // ok 
+        if height % 1000 == 0 {
+            println!("insert height {}", height);
+        }
+        if height > maxhei {
+            break // all ok
+        }
+
+        // next
+        height += 1;
+        
+    }
+
+    println!("all {} blocks insert ok.", height)
+
+
+
+
+ }
 
 
 /**
  * req block data from other node by rpc url
  */
 pub fn engine_test_2(engine: Arc<BlockEngine>) {
+
 
 
     let mut height = 1;
@@ -83,6 +161,68 @@ pub fn engine_test_1(engine: Arc<BlockEngine>) {
 
 }
 
+fn block_bytes_write_to_file(data: Vec<u8>, ptr: Vec<u8>) {
+    // truncate append
+    let mut file1 = OpenOptions::new().write(true).append(true).open("./allblockbytes.data").unwrap();
+    let _ = file1.write_all(&data);
+    let mut file2 = OpenOptions::new().write(true).append(true).open("./allblockptrs.data").unwrap();
+    let _ = file2.write_all(&ptr);
+
+}
+
+pub fn download_block_bytes() {
+
+    let mut file1 = OpenOptions::new().write(true).truncate(true).open("./allblockbytes.data").unwrap();
+    let _ = file1.write_all(&[]);
+    let mut file2 = OpenOptions::new().write(true).truncate(true).open("./allblockptrs.data").unwrap();
+    let _ = file2.write_all(&[]);
+
+    let mut height = 1;
+    let mut databuf: Vec<Vec<u8>> = vec![];
+    let mut dptrnum = Uint4::from_u32(0);
+    let mut dataptr: Vec<Vec<u8>> = vec![];
+    loop {
+
+        let url = format!("http://127.0.0.1:33381/query?action=blockdatahex&body=1&id={}", height);
+        let mut body = Vec::new();
+        if let Ok(res) = request::get(url, &mut body) {} else {
+            break // end
+        };
+        if let Ok(blkdts) = hex::decode(&body) {
+            let blklen = blkdts.len();
+            if blklen == 0 {
+                break // end
+            }
+            
+            databuf.push(blkdts);
+            dataptr.push( dptrnum.serialize() ); // ost
+            dataptr.push( Uint4::from_usize(blklen).serialize() ); // size
+            dptrnum += blklen as u64;
+            // println!("dptrnum {} {} {} {}", height, blklen, hex::encode(dptrnum.serialize()), hex::encode(blkdts));
+            
+        } else {
+            break // end
+        };
+        if height % 1000 == 0 {
+            println!("{}", height);
+            block_bytes_write_to_file(databuf.concat(), dataptr.concat());
+            databuf.clear();
+            dataptr.clear();
+        }
+        // next
+        height += 1;
+        if height > 30 {
+            // break
+        }
+    }
+
+    // end
+    block_bytes_write_to_file(databuf.concat(), dataptr.concat());
+    databuf.clear();
+    dataptr.clear();
+
+    println!("all blocks {} ok.", height)
+}
 
 
 fn _test_blocks() -> Vec<BlockV1> {
