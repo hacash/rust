@@ -12,4 +12,6 @@ pubFnRegActionCreates!{
     DiamondFromToTransfer    // 6
     DiamondMultipleTransfer  // 7
 
+    DiamondInscription       // 32
+
 }

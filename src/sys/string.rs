@@ -31,3 +31,13 @@ pub fn bytes_from_readable_string(stuff: &[u8], len: usize) -> Result<Vec<u8>, E
     Ok(bts)
 }
 
+
+pub fn check_readable_string(bts: &[u8]) -> bool {
+    for a in bts {
+        if *a<32 || *a>126 {
+            return false // cannot read
+        }
+    }
+    return true
+}
+

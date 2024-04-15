@@ -1,7 +1,7 @@
 
 // CoinbaseExtendDataV1
 StructFieldStruct!{ CoinbaseExtendDataV1, 
-	miner_nonce   : Fixed32
+	miner_nonce   : Hash
 	witness_count : Uint1 // Number of voting witnesses
 }
 

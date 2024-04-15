@@ -195,7 +195,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
             sub.unit_sub(1);
         }
         let burn = tx_bid_fee.clone().sub(&sub) ? ; // 90%
-        ttcount.hacd_burn_zhu = Uint8::from_u64(burn.to_zhu_unsafe() as u64);
+        ttcount.hacd_bid_burn_zhu = Uint8::from_u64(burn.to_zhu_unsafe() as u64);
     }
 
 
@@ -203,7 +203,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     let visual_gene = calculate_diamond_visual_gene(dianum, &mediumhx, &diahx, &pending_hash, &tx_bid_fee);
 
     // bid_burn    
-    let average_bid_burn = calculate_diamond_average_bid_burn(dianum, ttcount.hacd_burn_zhu.to_u64());
+    let average_bid_burn = calculate_diamond_average_bid_burn(dianum, ttcount.hacd_bid_burn_zhu.to_u64());
 
     // save diamond smelt
     let diasmelt = DiamondSmelt {
@@ -225,7 +225,8 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     let diaitem = DiamondSto {
         status: DIAMOND_STATUS_NORMAL,
         address: this.address.clone(),
-        inscripts: Inscripts::new()
+        prev_engraved_height: BlockHeight::new(), // 0
+        inscripts: Inscripts::new() // none
     };
     state.set_diamond(&name, &diaitem);
     state.set_diamond_ptr(&number, &name);

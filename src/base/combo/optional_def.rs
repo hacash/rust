@@ -28,7 +28,7 @@ impl Parse for $class {
         if self.is_exist() {
             let (val, mvsk) = <$value_type>::create(&buf[seek..]) ?;
             self.$value = Some(val);
-            seek = mvsk
+            seek += mvsk
         }
         Ok(seek)
     }

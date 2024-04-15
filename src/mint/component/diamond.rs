@@ -22,6 +22,7 @@ pub const DIAMOND_STATUS_LENDING_TO_USER       : Uint1 = Uint1::from(3);
  StructFieldStruct!(DiamondSto, 
 	status    : Uint1
 	address   : Address
+	prev_engraved_height : BlockHeight
 	inscripts : Inscripts
 );
 
@@ -38,7 +39,7 @@ pub const DIAMOND_STATUS_LENDING_TO_USER       : Uint1 = Uint1::from(3);
 	miner_address             : Address
 	bid_fee                   : Amount
 	nonce                     : Fixed8
-	// custom_message            : HashOptional
+	// custom_message           : HashOptional
 	average_bid_burn          : Uint2
 	visual_gene               : Fixed10
 );

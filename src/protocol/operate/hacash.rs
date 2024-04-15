@@ -57,10 +57,15 @@ fnHacashOperateCommon!(hac_sub, addr, amt, oldhac, {
 pub fn hac_transfer(env: &dyn ExecEnv, stadb: &mut dyn State, addr_from: &Address, addr_to: &Address, amt: &Amount) -> RetErr {
 	let mut state = CoreState::wrap(stadb);
     let is_trs_to_my_self = addr_from == addr_to;
-    if is_trs_to_my_self && env.pending_height() < 20_0000 {
-        // you can transfer it to yourself without changing the status, which is a waste of service fees
-		return Ok(()) 
+    if is_trs_to_my_self {
+        if env.pending_height() >= 20_0000 {
+            // you can transfer it to yourself without changing the status, which is a waste of service fees
+            hac_check(&mut state, addr_from, amt) ? ;
+        }
+        return Ok(());
     }
+    
+
 	// after 200000 height, the amount transferred to self is not allowed to be greater than the available balance!
     // println!("hac_transfer hac_sub from {} to {} amount {}", addr_from.to_readable(), addr_to.to_readable(), amt.to_fin_string());
     hac_sub(&mut state, addr_from, amt) ? ;
@@ -72,14 +77,15 @@ pub fn hac_transfer(env: &dyn ExecEnv, stadb: &mut dyn State, addr_from: &Addres
 
 pub fn hac_check(state: &mut CoreState, addr: &Address, amt: &Amount) -> Ret<Amount> {
     if ! amt.is_positive() {
-        return Err("check amount is cannot empty".to_string())
+        return errf!("check amount is cannot empty")
     }
     if let Some(bls) = state.balance( addr ) {
+        // println!("address {} balance {}", addr.to_readable(), bls.hacash.to_fin_string() );
         if bls.hacash >= *amt {
             return Ok(bls.hacash)
         }
     }
-    Err("address {} balance not enough".to_string())
+    errf!("address {} balance not enough need {}", addr.to_readable(), amt.to_fin_string() )
 }
 
 
