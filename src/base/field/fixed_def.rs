@@ -103,7 +103,7 @@ impl Add<i32> for $class {
     #[inline]
     fn add(self, other: i32) -> Self {
         let rv = self.to_u64() + other as u64;
-        <$class>::from_uint(rv)
+        <$class>::from(rv)
     }
 }
 */

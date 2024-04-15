@@ -23,7 +23,7 @@ StructFieldFixedBytes!{ Fixed64, 64usize }
 
 pub type StringTrim16 = Fixed16;
 
-// Uint
+/* Uint
 
 pub type Uint1 = Fixed1;
 pub type Uint2 = Fixed2;
@@ -31,6 +31,7 @@ pub type Uint3 = Fixed3;
 pub type Uint4 = Fixed4;
 pub type Uint5 = Fixed5;
 pub type Uint8 = Fixed8;
+*/
 
 // NumFloat
 

@@ -4,6 +4,7 @@
  */
 pubFnRegActionCreates!{
 
-    DiamondMint
+    ChannelOpen // 2
+    DiamondMint // 4
 
 }

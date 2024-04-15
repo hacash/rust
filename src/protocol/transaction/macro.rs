@@ -147,7 +147,7 @@ impl TxExec for  $class {
             return errf!("tx {} already exist in height {}", txhx, exhei)
         }
         // save exist mark
-        exiobj.height = BlockHeight::from_uint(blkhei);
+        exiobj.height = BlockHeight::from(blkhei);
         state.set_txexist(&txhx, &exiobj);
         // sub fee
         let feeadr = self.address();

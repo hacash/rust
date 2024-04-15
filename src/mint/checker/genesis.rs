@@ -38,12 +38,12 @@ pub fn genesis_block() -> &'static BlockV1 {
  * create
  */ 
 pub fn create_genesis_block() -> BlockV1 {
-    let blktime = Timestamp::from_uint(1549250700);
-    let blknoncenum = Uint4::from_uint(160117829);
+    let blktime = Timestamp::from(1549250700);
+    let blknoncenum = Fixed4::from_uint(160117829);
     let reward_addr = Address::form_readable(&"1271438866CSDpJUqrnchoJAiGGBFSQhjd".to_string()).unwrap();
     let mut trsvec = DynVecTransaction::new(); 
     trsvec.push(Box::new(TransactionCoinbase{
-        ty: Uint1::from_uint(0),
+        ty: Uint1::from(0),
         address: reward_addr,
         reward: Amount::new_coin(1),
         message: StringTrim16::from_readable(b"hardertodobetter"),
@@ -51,17 +51,17 @@ pub fn create_genesis_block() -> BlockV1 {
     }));
     let mut genesis_block = BlockV1 {
         intro: BlockHeadMeta { 
-            head: BlockHead { 
-                version: Uint1::from_uint(1), 
-                height: BlockHeight::from_uint(0), 
+            head: BlockHead {
+                version: Uint1::from(1), 
+                height: BlockHeight::from(0), 
                 timestamp: blktime, 
                 prevhash: Hash::new(), // 000000...
                 mrklroot: Hash::new(), // 000000...
-                transaction_count: Uint4::from_uint(1) // trs 1
+                transaction_count: Uint4::from(1) // trs 1
             }, 
             meta: BlockMeta { 
                 nonce: blknoncenum, 
-                difficulty: Uint4::from_uint(0), 
+                difficulty: Uint4::from(0), 
                 witness_stage: Fixed2::new() 
             },
         },

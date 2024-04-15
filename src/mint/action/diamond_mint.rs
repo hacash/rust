@@ -81,7 +81,7 @@ impl DiamondMint {
 
     pub fn with(name: DiamondName, number: DiamondNumber) -> DiamondMint {
         DiamondMint{
-            kind: Uint2::from_u16(4),
+            kind: Uint2::from(4),
             diamond: name,
             number: number,
             prev_hash: Hash::new(),
@@ -223,7 +223,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     store.put_diamond_smelt(&name, &diasmelt);
 
     // save diamond
-    let diaitem = DiamondItem {
+    let diaitem = DiamondSto {
         status: DIAMOND_STATUS_NORMAL,
         address: this.address.clone(),
         inscripts: Inscripts::new()
@@ -303,13 +303,13 @@ pub fn calculate_diamond_average_bid_burn(diamond_number: u32, hacd_burn_zhu: u6
 
     // old
     if diamond_number <= DIAMOND_ABOVE_NUMBER_OF_STATISTICS_AVERAGE_BIDDING_BURNING {
-        return Uint2::cons([0, 10])
+        return Uint2::from(10)
     }
 
     // average
     let bsnum = diamond_number - DIAMOND_ABOVE_NUMBER_OF_BURNING90_PERCENT_TX_FEES;
     let bidfee = hacd_burn_zhu / 1_0000_0000 / (bsnum as u64) + 1;
     // ok
-    Uint2::from_u16(bidfee as u16)
+    Uint2::from(bidfee as u16)
 }
 

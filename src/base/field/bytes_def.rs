@@ -70,7 +70,7 @@ impl Parse for $class {
 impl Field for $class {
 
     fn new() -> $class {
-        let sz = <$lenty>::from_uint(0);
+        let sz = <$lenty>::from(0);
         $class{
             len: sz,
             bytes: Vec::new(),

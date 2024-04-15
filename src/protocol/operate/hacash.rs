@@ -4,7 +4,6 @@ macro_rules! fnHacashOperateCommon{
 
 pub fn $func_name(state: &mut CoreState, $addr: &Address, $amt: &Amount) -> Ret<Amount> {
     
-    
     if ! $amt.is_positive() {
 		return Err(format!("amount {} value is not positive", $amt.to_fin_string()))
     }

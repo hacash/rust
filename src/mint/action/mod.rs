@@ -19,6 +19,7 @@ use super::component::*;
 use super::state::*;
 
 
+include!("util.rs");
 include!("diamond_mint.rs");
 include!("diamond.rs");
 include!("channel.rs");

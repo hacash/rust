@@ -74,7 +74,7 @@ impl Field for $class {
 
    fn new() -> $class {
         $class {
-            $count: <$count_type>::from_uint(0),
+            $count: <$count_type>::from(0),
             $value: Vec::new(),
         }
    }

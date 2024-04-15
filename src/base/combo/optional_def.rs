@@ -13,7 +13,7 @@ pub struct $class {
 }
 
 impl std::fmt::Debug for $class {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f,"[ifval]")
     }
 }
@@ -89,7 +89,7 @@ impl $class {
         }
     }
 
-    pub fn get_value(&self) -> Option<& $value_type> {
+    pub fn if_value(&self) -> Option<& $value_type> {
         match &self.$value {
             Some(v) => Some(&v),
             None => None,
@@ -97,7 +97,7 @@ impl $class {
     }
     
     // clone
-    pub fn gain_value(&self) -> $value_type {
+    pub fn value(&self) -> $value_type {
         match self.exist.check() {
             true => self.$value.as_ref().unwrap().clone(),
             false => <$value_type>::new(),

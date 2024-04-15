@@ -7,10 +7,16 @@ use crate::sys::*;
 use crate::core::field::*;
 use crate::core::component::*;
 use crate::core::state::*;
+use crate::base::field::*;
+
+use crate::protocol::operate::*;
+
+use super::state::*;
+use super::component::*;
+use super::coinbase::*;
 
 
 
-include!("result.rs");
-include!("hacash.rs");
-include!("satoshi.rs");
+
+include!("channel.rs");
 

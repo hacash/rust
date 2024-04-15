@@ -20,6 +20,8 @@ use crate::interface::field::*;
 use super::lathe::*;
 
 include!("util.rs");
+include!("uint_def.rs");
+include!("uint.rs");
 include!("fixed_def.rs");
 include!("fixed.rs");
 include!("bytes_def.rs");

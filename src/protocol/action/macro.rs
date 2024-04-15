@@ -113,7 +113,7 @@ impl $actname {
 
     pub fn new() -> $actname {
         let mut obj = <$actname as Field>::new();
-        obj.kind.parse_u16($actid);
+        obj.kind = Uint2::from($actid);
         obj
     }
 } 

@@ -2,9 +2,9 @@
 /**
  * Diamond Status
  */
-pub const DIAMOND_STATUS_NORMAL: Uint1               = Uint1::cons([1]);
-pub const DIAMOND_STATUS_LENDING_TO_SYSTEM: Uint1    = Uint1::cons([2]);
-pub const DIAMOND_STATUS_LENDING_TO_USER: Uint1      = Uint1::cons([3]);
+pub const DIAMOND_STATUS_NORMAL                : Uint1 = Uint1::from(1);
+pub const DIAMOND_STATUS_LENDING_TO_SYSTEM     : Uint1 = Uint1::from(2);
+pub const DIAMOND_STATUS_LENDING_TO_USER       : Uint1 = Uint1::from(3);
 
 
 /**
@@ -19,7 +19,7 @@ pub const DIAMOND_STATUS_LENDING_TO_USER: Uint1      = Uint1::cons([3]);
 /**
  * Diamond
  */
- StructFieldStruct!(DiamondItem, 
+ StructFieldStruct!(DiamondSto, 
 	status    : Uint1
 	address   : Address
 	inscripts : Inscripts

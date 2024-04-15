@@ -68,7 +68,7 @@ fn if_add_chain_id(chain_id: u64, tx: &mut impl Transaction) {
     // act
     if chain_id > 0 {
         let mut act = action::new_CheckChainID();
-        act.chain_id = Uint8::from_uint(chain_id);
+        act.chain_id = Uint8::from(chain_id);
         tx.append_action(Box::new(act));
     }
 }

@@ -40,9 +40,9 @@ use crate::base::field::*;
         if ptl > ptrs.len()-8 {
             break // all end
         }
-        let ost = Uint4::cons(ptrs[ptl..ptl+4].try_into().unwrap()).to_usize();
+        let ost = Uint4::from_bytes(ptrs[ptl..ptl+4].try_into().unwrap()).to_usize();
         ptl += 4;
-        let bsz = Uint4::cons(ptrs[ptl..ptl+4].try_into().unwrap()).to_usize();
+        let bsz = Uint4::from_bytes(ptrs[ptl..ptl+4].try_into().unwrap()).to_usize();
         // println!("height {} ost {} size {}", height, ost, bsz);
         let blkdts = BytesW4::from_vec_u8(bytes[ost .. ost+bsz].to_vec());
         ostleft = ost;
@@ -179,7 +179,7 @@ pub fn download_block_bytes() {
 
     let mut height = 1;
     let mut databuf: Vec<Vec<u8>> = vec![];
-    let mut dptrnum = Uint4::from_u32(0);
+    let mut dptrnum = Uint4::from(0);
     let mut dataptr: Vec<Vec<u8>> = vec![];
     loop {
 
@@ -196,7 +196,7 @@ pub fn download_block_bytes() {
             
             databuf.push(blkdts);
             dataptr.push( dptrnum.serialize() ); // ost
-            dataptr.push( Uint4::from_usize(blklen).serialize() ); // size
+            dataptr.push( Uint4::from(blklen as u32).serialize() ); // size
             dptrnum += blklen as u64;
             // println!("dptrnum {} {} {} {}", height, blklen, hex::encode(dptrnum.serialize()), hex::encode(blkdts));
             
@@ -273,12 +273,12 @@ fn _test_blocks() -> Vec<BlockV1> {
 
 pub fn create_block(height: u64, pt: u64, prev: &str) {
 
-    let blktime = Timestamp::from_uint(pt); // 1549250700);
-    let blknoncenum = Uint4::from_uint(160117829);
+    let blktime = Timestamp::from(pt); // 1549250700);
+    let blknoncenum = Fixed4::from_uint(160117829);
     let reward_addr = Address::form_readable(&"1271438866CSDpJUqrnchoJAiGGBFSQhjd".to_string()).unwrap();
     let mut trsvec = DynVecTransaction::new(); 
     trsvec.push(Box::new(TransactionCoinbase{
-        ty: Uint1::from_uint(0),
+        ty: Uint1::from(0),
         address: reward_addr,
         reward: Amount::new_coin(1),
         message: StringTrim16::from_readable(b"hardertodobetter"),
@@ -287,16 +287,16 @@ pub fn create_block(height: u64, pt: u64, prev: &str) {
     let mut genesis_block = BlockV1 {
         intro: BlockHeadMeta { 
             head: BlockHead { 
-                version: Uint1::from_uint(1), 
-                height: BlockHeight::from_uint(height), 
+                version: Uint1::from(1), 
+                height: BlockHeight::from(height), 
                 timestamp: blktime, 
                 prevhash: Hash::from_hex(prev.as_bytes()),
                 mrklroot: Hash::new(), // 000000...
-                transaction_count: Uint4::from_uint(1) // trs 1
+                transaction_count: Uint4::from(1) // trs 1
             }, 
             meta: BlockMeta { 
                 nonce: blknoncenum, 
-                difficulty: Uint4::from_uint(0), 
+                difficulty: Uint4::from(0), 
                 witness_stage: Fixed2::new() 
             },
         },

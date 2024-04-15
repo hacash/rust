@@ -5,7 +5,14 @@
  * TotalCount
  */
  StructFieldStruct!(TotalCount, 
-	minted_diamond    : DiamondNumber
-	hacd_burn_zhu     : Uint8
+	minted_diamond        : DiamondNumber
+	hacd_burn_zhu         : Uint8 // HAC zhu
+	// channel
+	opening_channel       : Uint5
+	channel_deposit_zhu   : Uint8 // HAC zhu
+	channel_deposit_sat   : Uint8 // BTC sat
+	channel_interest_zhu  : Uint8 // HAC zhu
+
+
 );
 
