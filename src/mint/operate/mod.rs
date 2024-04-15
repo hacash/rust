@@ -19,4 +19,5 @@ use super::coinbase::*;
 
 
 include!("channel.rs");
+include!("diamond.rs");
 

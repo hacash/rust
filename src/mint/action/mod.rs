@@ -15,8 +15,9 @@ use crate::core::state::*;
 use crate::protocol::action::*;
 use crate::protocol::operate::*;
 
-use super::component::*;
 use super::state::*;
+use super::component::*;
+use super::operate::*;
 
 
 include!("util.rs");

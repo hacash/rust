@@ -98,7 +98,7 @@ impl $class {
         }
 	}
 
-    pub fn set_count<T>(&mut self, nt: T) where T: std::ops::Add<u64, Output = u64> { 
+    pub fn set_count<T: std::ops::Add<u64, Output = u64>>(&mut self, nt: T) { 
         self.count = <$lenty>::from_uint(nt);
     }
 

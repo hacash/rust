@@ -114,7 +114,6 @@ ActionDefineWithStruct!{
  */
 fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto: &dyn Store) -> RetErr {
 
-    let mut core_state = CoreState::wrap(sta);
     let mut state = MintState::wrap(sta);
     let store = MintStoreDisk::wrap(sto);
 
@@ -231,12 +230,15 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     state.set_diamond(&name, &diaitem);
     state.set_diamond_ptr(&number, &name);
 
-    // add balance
-
-
     // save count
     state.set_total_count(&ttcount);
+    drop(state);
 
+    // add balance
+    let mut core_state = CoreState::wrap(sta);
+    hacd_add(&mut core_state, &this.address, &DiamondNumber::from(1)) ? ;
+
+    // ok
     Ok(())
 }
 

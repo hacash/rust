@@ -9,8 +9,8 @@ use crate::core::component::*;
 use crate::core::state::*;
 
 
-
 include!("result.rs");
 include!("hacash.rs");
 include!("satoshi.rs");
+include!("diamond.rs");
 

@@ -34,4 +34,7 @@ impl ActExecRes {
             err: iferr.err(),
         })
     }
+    pub fn add_gas_use(&mut self, gas: u32) {
+        self.gas += gas;
+    }
 }

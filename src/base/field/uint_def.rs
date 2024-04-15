@@ -1,23 +1,3 @@
-pub const UINT1_SIZE: usize = 1;
-pub const UINT2_SIZE: usize = 2;
-pub const UINT3_SIZE: usize = 3;
-pub const UINT4_SIZE: usize = 4;
-pub const UINT5_SIZE: usize = 5;
-pub const UINT6_SIZE: usize = 6;
-pub const UINT7_SIZE: usize = 7;
-pub const UINT8_SIZE: usize = 8;
-
-pub const UINT1_SIZE_VL: usize = 1;
-pub const UINT2_SIZE_VL: usize = 2;
-pub const UINT3_SIZE_VL: usize = 4;
-pub const UINT4_SIZE_VL: usize = 4;
-pub const UINT5_SIZE_VL: usize = 8;
-pub const UINT6_SIZE_VL: usize = 8;
-pub const UINT7_SIZE_VL: usize = 8;
-pub const UINT8_SIZE_VL: usize = 8;
-
-/////////////////////////////////
-
 
 // PartialEq
 macro_rules! uintDefinePartial{
@@ -130,15 +110,6 @@ impl Deref for $name {
     }
 }
 
-
-uintDefineAllOperate!{ $name, $vty, 
-    u8, i8,
-    u16, i16,
-    u32, i32,
-    u64, i64,
-    usize, isize
-}
-
 impl PartialOrd for $name {
     #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
@@ -152,6 +123,16 @@ impl Ord for $name {
         self.value.cmp(&other.value)
     }
 }
+
+
+uintDefineAllOperate!{ $name, $vty, 
+    u8, i8,
+    u16, i16,
+    u32, i32,
+    u64, i64,
+    usize, isize
+}
+
 
 impl Add for $name {
     type Output = Self;
@@ -219,7 +200,7 @@ impl Parse for $name {
     fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
         let bts = buf_clip_mvsk!(buf[seek..], $size);
         self.value = <$name>::from_bytes_value(bts.try_into().unwrap());
-        Ok($size)
+        Ok(seek + $size)
     }
 
 }
@@ -250,6 +231,11 @@ impl Field for $name {
 
     // must & create function
     fnFieldMustCreate!($name);
+
+    fn from_uint<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { 
+        <$name>::from_u64(nt + 0u64)
+    }
+
 
 }
 
@@ -323,6 +309,7 @@ impl $name {
         for x in 1..=$size {
             real[$size-x] = bts[$size_vl-x];
         }
+        // println!("Uint to_bytes size {} bts {} real {}", $size, hex::encode(bts), hex::encode(real));
         real
     }
     

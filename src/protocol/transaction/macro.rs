@@ -143,15 +143,23 @@ impl TxExec for  $class {
             exiobj = TxExist::new();
         }
         let exhei = exiobj.height.to_u64();
-        if exhei > 0 {
-            return errf!("tx {} already exist in height {}", txhx, exhei)
+        if exhei > 0 { // have tx !!!
+            // handle hacash block chain bug start
+            let bugtx = Hash::from_hex(b"f22deb27dd2893397c2bc203ddc9bc9034e455fe630d8ee310e8b5ecc6dc5628");
+            if exhei == 63448 && txhx == bugtx {
+                // pass the BUG
+            }else{
+                return errf!("tx {} already exist in height {}", txhx, exhei)
+            }
+            // handle bug end
         }
         // save exist mark
         exiobj.height = BlockHeight::from(blkhei);
         state.set_txexist(&txhx, &exiobj);
         // sub fee
         let feeadr = self.address();
-        let amt = self.fee();
+        let amt = self.fee();    
+        // println!("tx execute pay fee from {} amount {}", feeadr.to_readable(), amt.to_fin_string());
         operate::hac_sub(&mut state, feeadr, amt) ? ;
         Ok(())
     }

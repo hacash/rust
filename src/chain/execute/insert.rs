@@ -100,11 +100,12 @@ pub fn do_check_insert(
     // exec each tx
     let mut execn = 0;
     for tx in alltxs {
-        tx.execute(height, &mut sub_state) ? ;
         if execn > 0 {
             // ignore coinbase tx
             exec_tx_actions(height, blkhash, vmobj, &mut sub_state, tx.as_read()) ? ;
         }
+        // deduct tx fee after exec all actions
+        tx.execute(height, &mut sub_state) ? ;
         execn += 1;
     }
     // add miner got fee

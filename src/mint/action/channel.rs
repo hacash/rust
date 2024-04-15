@@ -72,7 +72,7 @@ fn channel_open(this: &ChannelOpen, env: &dyn ExecEnv, sta: &mut dyn State, sto:
         let samebothaddr = *left_addr==chan.left_bill.address && *right_addr == chan.right_bill.address;
         if !samebothaddr || CHANNEL_STATUS_AGREEMENT_CLOSED != chan_stat {
             // exist or cannot reuse
-            return Err(format!("channel {} is openning or cannot reuse.", cid))
+            return errf!("channel {} is openning or cannot reuse.", cid)
         }
         reuse_version = chan.reuse_version.clone();
         reuse_version += 1u64;
@@ -128,8 +128,16 @@ fn channel_open(this: &ChannelOpen, env: &dyn ExecEnv, sta: &mut dyn State, sto:
 
 fn channel_close(this: &ChannelClose, env: &dyn ExecEnv, sta: &mut dyn State, sto: &dyn Store) -> RetErr {
 
+    let mut state = MintState::wrap(sta);
 
-
-
-    Ok(())
+    let cid = &this.channel_id;
+    check_vaild_store_item_key("channel", cid, ChannelId::width()) ? ;
+    // query
+    let chan = must_have!("channel", state.channel(cid));
+	// verify two address sign
+    env.check_signature( &chan.left_bill.address ) ? ;
+    env.check_signature( &chan.right_bill.address ) ? ;
+    drop(state);
+    // do close
+    close_channel_default( env.pending_height(), sta, cid, &chan)
 }

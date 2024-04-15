@@ -33,8 +33,8 @@ impl ExecEnv for ExecEnvObj {
     fn main_address(&self) -> &Address {
         &self.mainaddr
     }
-    fn check_signature(&self, _: &Address) -> bool {
-        true
+    fn check_signature(&self, _: &Address) -> RetErr {
+        Ok(())
     }
     fn call_depth(&self) -> u32 {
         0

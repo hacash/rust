@@ -39,3 +39,38 @@ impl DiamondName {
 StructFieldOptional!{ DiamondNumberOptional, 
     diamond_number, DiamondNumber
 }
+
+/**
+ * Diamond Name List
+ */
+ StructFieldList!(DiamondNameListMax200, 
+	count, Uint1, lists, DiamondName
+);
+
+
+impl DiamondNameListMax200 {
+
+    pub fn check(&self) -> Ret<u8> {
+        // check len
+        let setlen = self.count.uint() as u64;
+        let reallen = self.lists.len() as u64 ;
+        if setlen != reallen {
+            return errf!("check fail: length need {} but got {}", setlen, reallen)
+        }
+        if reallen == 0 {
+            return errf!("diamonds quantity cannot be zero")
+        }
+        if reallen > 200 {
+            return errf!("diamonds quantity cannot over 200")
+        }
+        // check name
+        for v in &self.lists {
+            if ! DiamondName::is_valid(v.as_ref()) {
+                return errf!("diamond name {} is not valid", v.to_readable())
+            }
+        }
+        // success
+        Ok(reallen as u8)
+    }
+
+}

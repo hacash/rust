@@ -17,8 +17,9 @@ pub fn $func_name(state: &mut CoreState, $addr: &Address, $amt: &Amount) -> Ret<
     /* -------- */
     let newamt = $newamtblock;// operate
     /* -------- */
-    if newamt.size() > 11 {
-		return Err("amount size over 11 can not to store".to_string())
+    if newamt.size() > 12 {
+		return errf!("address {} amount {} size {} over 12 can not to store", 
+        $addr.to_readable(), newamt.size(), newamt.to_fin_string())
     }
     // save
     userbls.hacash = newamt.clone();
@@ -61,6 +62,7 @@ pub fn hac_transfer(env: &dyn ExecEnv, stadb: &mut dyn State, addr_from: &Addres
 		return Ok(()) 
     }
 	// after 200000 height, the amount transferred to self is not allowed to be greater than the available balance!
+    // println!("hac_transfer hac_sub from {} to {} amount {}", addr_from.to_readable(), addr_to.to_readable(), amt.to_fin_string());
     hac_sub(&mut state, addr_from, amt) ? ;
     hac_add(&mut state, addr_to, amt) ? ;
     // ok
