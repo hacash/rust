@@ -40,6 +40,8 @@ sudo apt install g++
 sudo apt install cmake     
 
 RUSTFLAGS="$RUSTFLAGS -Awarnings" RUST_BACKTRACE=1 cargo check / build / run
+cp hacash.config.ini ./target/debug/ && RUSTFLAGS="$RUSTFLAGS -Awarnings" RUST_BACKTRACE=1 cargo run
+
 
 */
 
@@ -58,7 +60,11 @@ fn main() {
 
 }
 
-// start node
+
+
+/**
+ * create and start hash node
+ */
 fn start_hacash_node(iniobj: sys::IniObj) {
     // println!("startHacashNode ini={:?}", iniobj);
     // mint
@@ -69,12 +75,18 @@ fn start_hacash_node(iniobj: sys::IniObj) {
     let engptr = Arc::new(engine);
 
     // node
-    let hnode = HacashNode::open(&iniobj);
+    let mut hnode = HacashNode::open(&iniobj, engptr.clone());
+    if let Err(e) = hnode.start() {
+        println!("start hacash node error: {}", e);
+    }
+
 
 
 
     // test
     // engine_test_3(engptr);
+
+
 
 }
 

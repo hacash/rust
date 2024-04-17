@@ -13,3 +13,26 @@ macro_rules! must_have {
         }
     )
 }
+
+
+pub const HNERRSDEF: [&str; 8] = [
+    "Hacash",
+    "Config",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+];
+
+#[macro_export]
+macro_rules! exiterr {
+    ($ety: expr, $tip: expr, $( $ps: expr ),+)=>(
+        &format!(
+            "{}{}{}{}{}", "\n\n┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸┸\n[", HNERRSDEF[$ety], " Error] ", 
+            format!($tip, $( $ps ),+),
+            ".\n┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰┰\n\n\n", 
+        )
+    )
+}

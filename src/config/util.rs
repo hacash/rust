@@ -27,7 +27,7 @@ fn ini_must_maxlen(sec: &HashMap<String, Option<String>>, key: &str, def: &str, 
 }
 
 fn ini_must_u64(sec: &HashMap<String, Option<String>>, key: &str, dv: u64) -> u64 {
-    let val = ini_must(sec, key, "0");
+    let val = ini_must(sec, key, &dv.to_string());
     match val.parse::<u64>() {
         Ok(n) => n,
         Err(_) => dv,
@@ -35,7 +35,7 @@ fn ini_must_u64(sec: &HashMap<String, Option<String>>, key: &str, dv: u64) -> u6
 }
 
 fn ini_must_f64(sec: &HashMap<String, Option<String>>, key: &str, dv: f64) -> f64 {
-    let val = ini_must(sec, key, "0.0");
+    let val = ini_must(sec, key, &dv.to_string());
     match val.parse::<f64>() {
         Ok(n) => n,
         Err(_) => dv,
