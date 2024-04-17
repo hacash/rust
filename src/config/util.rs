@@ -1,4 +1,44 @@
 
-fn json_path(a: &String, b: &str) -> Box<Path> {
-    Path::new(a).join(b). into_boxed_path()
+fn join_path(a: &String, b: &str) -> Box<Path> {
+    Path::new(a).join(b).into_boxed_path()
 }
+
+fn ini_section(ini: &IniObj, key: &str) -> HashMap<String, Option<String>> {
+    match ini.get(key) {
+        Some(sec) => sec.clone(),
+        None => HashMap::new(),
+    }
+}
+
+fn ini_must(sec: &HashMap<String, Option<String>>, key: &str, def: &str) -> String {
+    ini_must_maxlen(sec, key, def, 0)
+}
+
+fn ini_must_maxlen(sec: &HashMap<String, Option<String>>, key: &str, def: &str, ml: usize) -> String {
+    let mut val = match sec.get(key) {
+        Some(Some(val)) => val.to_string(),
+        Some(None) => def.to_string(),
+        None => def.to_string(),
+    };
+    if ml > 0 {
+        val.truncate(ml);
+    }
+    val
+}
+
+fn ini_must_u64(sec: &HashMap<String, Option<String>>, key: &str, dv: u64) -> u64 {
+    let val = ini_must(sec, key, "0");
+    match val.parse::<u64>() {
+        Ok(n) => n,
+        Err(_) => dv,
+    }
+}
+
+fn ini_must_f64(sec: &HashMap<String, Option<String>>, key: &str, dv: f64) -> f64 {
+    let val = ini_must(sec, key, "0.0");
+    match val.parse::<f64>() {
+        Ok(n) => n,
+        Err(_) => dv,
+    }
+}
+

@@ -28,7 +28,6 @@ impl LevelDB {
         let mut error = ptr::null_mut();
         let database = unsafe {
             let c_options = leveldb_options_create();
-            
             leveldb_options_set_create_if_missing(c_options, 1u8);
             let c_dbpath = CString::new(dir.to_str().unwrap()).unwrap();
             let db = leveldb_open(c_options as *const leveldb_options_t,

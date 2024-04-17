@@ -39,7 +39,7 @@ pub struct BlockEngine {
 impl BlockEngine {
 
     pub fn open(ini: &IniObj, mintk: Box<dyn MintChecker>) -> BlockEngine {
-        let cnf = NewKernelConf(ini);
+        let cnf = EngineConf::new(ini);
         // data dir
         std::fs::create_dir_all(&cnf.store_data_dir);
         std::fs::create_dir_all(&cnf.state_data_dir);

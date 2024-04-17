@@ -2,6 +2,7 @@ test/
 *_data/
 *.loc.rs
 *.data
+*.config.ini
 
 libx16rs.so
 libx16rs.a
