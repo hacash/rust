@@ -9,7 +9,7 @@ pub struct HacashNode {
     // sigl
     mk: u32,
 
-    p2p: P2PManage,
+    p2p: Arc<P2PManage>,
     
 }
 
@@ -25,8 +25,8 @@ impl HacashNode {
         HacashNode{
             cnf: cnf,
             engine: engine,
-            tokiort: Some(rt),
-            p2p: p2p,
+            tokiort: rt.into(),
+            p2p: p2p.into(),
             // 
             mk: 1,
 
