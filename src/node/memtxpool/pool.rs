@@ -24,7 +24,7 @@ impl TxPool for MemTxPool {
 
     // insert to target group
     fn insert(&self, txp: Box<dyn TxPkg>, gi: isize) -> RetErr { 
-        let gid = self.deal_group_id(txp.as_ref(), gi) ? ;
+        let gid = self.deal_group_id(txp.as_ref(), gi)?;
         // do insert
         let mut grp = self.groups[gid].write().unwrap();
         grp.insert(txp)

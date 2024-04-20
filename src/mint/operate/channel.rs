@@ -54,7 +54,7 @@ pub fn close_channel_with_distribution(pdhei: u64, sta: &mut dyn State, channel_
         let (newamt1, newamt2) = calculate_interest_of_height(
             pdhei, paychan.belong_height.to_u64(), 
             paychan.interest_attribution, left_amt, right_amt
-        ) ? ;
+        )?;
         let ttnewhac = newamt1.add(&newamt2) ?;
         if ttnewhac.less_than( &ttamt ) {
             return errf!("interest calculate error!")
@@ -63,20 +63,20 @@ pub fn close_channel_with_distribution(pdhei: u64, sta: &mut dyn State, channel_
         ttcount.channel_interest_zhu += ttiesthac;
         ttcount.channel_deposit_zhu -= ttamt.to_zhu_unsafe() as u64;
         if newamt1.is_positive() {
-            hac_add(&mut core_state, left_addr, &newamt1) ? ;
+            hac_add(&mut core_state, left_addr, &newamt1)?;
         }
         if newamt2.is_positive() {
-            hac_add(&mut core_state, right_addr, &newamt2) ? ;
+            hac_add(&mut core_state, right_addr, &newamt2)?;
         }
     }
     let ttsatn = ttsat.to_u64();
     if ttsatn > 0 {
         ttcount.channel_deposit_sat -= ttsatn;
         if left_sat.to_u64() > 0 {
-            sat_add(&mut core_state, left_addr, left_sat) ? ;
+            sat_add(&mut core_state, left_addr, left_sat)?;
         }
         if right_sat.to_u64() > 0 {
-            sat_add(&mut core_state, right_addr, right_sat) ? ;
+            sat_add(&mut core_state, right_addr, right_sat)?;
         }
     }
     drop(core_state);

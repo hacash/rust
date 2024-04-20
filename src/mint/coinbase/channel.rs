@@ -28,10 +28,10 @@ pub fn calculate_interest(user_distribute_amt: &Amount, interest_calc_base_amt: 
         coinnum /= 10u64;
         newunit += 1;
     }
-    let realbest = Amount::from_unit_byte( newunit as u8, coinnum.to_bytes_be() ) ? ;
-    let realbest = realbest.sub(bamt) ? ;
+    let realbest = Amount::from_unit_byte( newunit as u8, coinnum.to_bytes_be() )?;
+    let realbest = realbest.sub(bamt)?;
     // println!("realest: {}", realbest.to_string());
-    let newuamt = realbest.add( uamt ) ? ;
+    let newuamt = realbest.add( uamt )?;
     // ok
     return Ok(newuamt)
 } 
@@ -40,19 +40,19 @@ pub fn calculate_interest(user_distribute_amt: &Amount, interest_calc_base_amt: 
 pub fn both_interest(distribute_type: Uint1, amtl: &Amount, amtr: &Amount, caclloop: u64, wfzn: u64)-> Ret<(Amount, Amount)> {
     
     if CHANNEL_INTEREST_ATTRIBUTION_TYPE_DEFAULT == distribute_type {
-        let amt1 = calculate_interest(amtl, amtl, caclloop, wfzn) ? ;
-        let amt2 = calculate_interest(amtr, amtr, caclloop, wfzn) ? ;
+        let amt1 = calculate_interest(amtl, amtl, caclloop, wfzn)?;
+        let amt2 = calculate_interest(amtr, amtr, caclloop, wfzn)?;
         return Ok((amt1, amt2))
     }
 
-    let ttamt = amtl.add(amtr) ? ;
+    let ttamt = amtl.add(amtr)?;
     let mut resamts = (amtl.clone(), amtr.clone());
     
     if CHANNEL_INTEREST_ATTRIBUTION_TYPE_ALL_TO_LEFT == distribute_type{
-        resamts.0 = calculate_interest(amtl, &ttamt, caclloop, wfzn) ? ;
+        resamts.0 = calculate_interest(amtl, &ttamt, caclloop, wfzn)?;
     }
     if CHANNEL_INTEREST_ATTRIBUTION_TYPE_ALL_TO_RIGHT == distribute_type{
-        resamts.1 = calculate_interest(amtr, &ttamt, caclloop, wfzn) ? ;
+        resamts.1 = calculate_interest(amtr, &ttamt, caclloop, wfzn)?;
     }
     
     Ok(resamts)

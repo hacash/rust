@@ -1,10 +1,14 @@
 
 
+#[derive(Clone)]
 pub struct NodeConf {
     pub node_id: [u8; 16],
     pub node_name: String,
     pub listen: u16,
     pub boot_nodes: Vec<SocketAddr>,
+    pub offshoot_peers: usize, // private IP
+    pub backbone_peers: usize, // public IP
+
 }
 
 
@@ -30,10 +34,13 @@ impl NodeConf {
         // boots
         let boots = ini_must(&sec, "boots", "");
         let boots = boots.replace(" ", "");
-        let boots = boots.split(",");
-        let ipts: Vec<_> = boots.map(
-            |s|s.parse::<SocketAddr>().expect(exiterr!(1,"boot node ip port '{}' not support", &s))
-        ).collect();
+        let mut ipts: Vec<SocketAddr> = Vec::new();
+        if ! boots.is_empty() {
+            let boots = boots.split(",");
+            ipts = boots.map(
+                |s|s.parse::<SocketAddr>().expect(exiterr!(1,"boot node ip port '{}' not support", &s))
+            ).collect();
+        }
         // println!("boot nodes: {:?}", ipts);
 
 
@@ -43,7 +50,10 @@ impl NodeConf {
             node_id: node_id,
             node_name: node_name,
             listen: port as u16,
-            boot_nodes: Vec::new(),
+            boot_nodes: ipts,
+            // connect peers
+            offshoot_peers: 200,
+            backbone_peers: 4,
         };
 
         // ok

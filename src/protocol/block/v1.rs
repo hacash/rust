@@ -13,7 +13,7 @@ StructFieldStructSetParse!{ self, buf, seek, {
     return {
         // intro
         let mut intro = BlockIntro::new();
-        let seek = intro.parse(buf, seek) ? ;
+        let seek = intro.parse(buf, seek)?;
         let trslen = intro.head.transaction_count.to_u64();
         self.intro = intro;
         // body

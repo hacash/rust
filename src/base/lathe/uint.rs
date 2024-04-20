@@ -11,7 +11,7 @@ macro_rules! fnUintFromToParseBytes {
 
     concat_idents!(fn_parse_1 = parse_, $tarty {
     fn fn_parse_1(&mut self, val: $tarty) -> RetErr {
-        let bts = bytes_from_uint(val as u64, $tsz, $size) ? ;
+        let bts = bytes_from_uint(val as u64, $tsz, $size)?;
         self.bytes = bts.try_into().unwrap();
         Ok(())
     }

@@ -50,8 +50,8 @@ pub fn hacd_transfer(state: &mut CoreState, addr_from: &Address, addr_to: &Addre
     if addr_from == addr_to {
 		return errf!("cannot transfer to self")
     }
-    hacd_sub(state, addr_from, hacd) ? ;
-    hacd_add(state, addr_to, hacd) ? ;
+    hacd_sub(state, addr_from, hacd)?;
+    hacd_add(state, addr_to, hacd)?;
     // ok
     Ok(())
 }

@@ -37,10 +37,10 @@ fn channel_open(this: &ChannelOpen, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     // sub balance
     let mut core_state = CoreState::wrap(sta);
     if left_amt.is_not_empty() {
-        hac_sub(&mut core_state, left_addr,  left_amt) ? ;
+        hac_sub(&mut core_state, left_addr,  left_amt)?;
     }
     if right_amt.is_not_empty() {
-        hac_sub(&mut core_state, right_addr, right_amt) ? ;
+        hac_sub(&mut core_state, right_addr, right_amt)?;
     }
     drop(core_state);
 
@@ -49,7 +49,7 @@ fn channel_open(this: &ChannelOpen, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     let store = MintStoreDisk::wrap(sto);
 
     // check id size
-    check_vaild_store_item_key("channel", &cid, ChannelId::width()) ? ;
+    check_vaild_store_item_key("channel", &cid, ChannelId::width())?;
 
     // check format
     if left_addr == right_addr {
@@ -131,12 +131,12 @@ fn channel_close(this: &ChannelClose, env: &dyn ExecEnv, sta: &mut dyn State, st
     let mut state = MintState::wrap(sta);
 
     let cid = &this.channel_id;
-    check_vaild_store_item_key("channel", cid, ChannelId::width()) ? ;
+    check_vaild_store_item_key("channel", cid, ChannelId::width())?;
     // query
     let chan = must_have!("channel", state.channel(cid));
 	// verify two address sign
-    env.check_signature( &chan.left_bill.address ) ? ;
-    env.check_signature( &chan.right_bill.address ) ? ;
+    env.check_signature( &chan.left_bill.address )?;
+    env.check_signature( &chan.right_bill.address )?;
     drop(state);
     // do close
     close_channel_default( env.pending_height(), sta, cid, &chan)

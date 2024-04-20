@@ -68,7 +68,7 @@ pub fn do_check_insert(
             if tx.timestamp().to_u64() > cur_time {
                 return errf!("tx timestamp {} cannot more than now {}", tx.timestamp(), cur_time)
             }
-            alltxfee = alltxfee.add(&tx.fee_got()) ? ; // fee_miner_received
+            alltxfee = alltxfee.add(&tx.fee_got())?; // fee_miner_received
         }
         txttsize += tx.size();
         txttnum += 1;
@@ -86,33 +86,33 @@ pub fn do_check_insert(
         return errf!("block mrkl root need {} but got {}", mkroot, mrklrt)
     }
     // check mint consensus & coinbase
-    mintk.consensus(&**block) ? ;
+    mintk.consensus(&**block)?;
     // coinbase tx id = 0, if coinbase error
     let coinbase_tx = &*alltxs[0];
-    mintk.coinbase(height, coinbase_tx) ? ;
+    mintk.coinbase(height, coinbase_tx)?;
     // check state
     let mut sub_state = fork_sub_state(prev_state.clone());
     // if init genesis status
     if height == 1 {
         // state initialize 
-        mintk.initialize(&mut sub_state) ? ;
+        mintk.initialize(&mut sub_state)?;
     }
     // exec each tx
     let mut execn = 0;
     for tx in alltxs {
         if execn > 0 {
             // ignore coinbase tx
-            exec_tx_actions(height, blkhash, vmobj, &mut sub_state, tx.as_read()) ? ;
+            exec_tx_actions(height, blkhash, vmobj, &mut sub_state, tx.as_read())?;
         }
         // deduct tx fee after exec all actions
-        tx.execute(height, &mut sub_state) ? ;
+        tx.execute(height, &mut sub_state)?;
         execn += 1;
     }
     // add miner got fee
     if alltxfee.is_positive() { // amt > 0
         let miner = coinbase_tx.address();
         let mut corestate = CoreState::wrap(&mut sub_state);
-        operate::hac_add(&mut corestate, miner, &alltxfee) ? ;
+        operate::hac_add(&mut corestate, miner, &alltxfee)?;
     }
     // test
     Ok(sub_state)
@@ -197,24 +197,24 @@ pub fn do_insert(kernel: &BlockEngine, cnf: &EngineConf, this: &BlockRoller, min
         return errf!("block mrkl root need {} but got {}", mkroot, mrklrt)
     }
     // check mint checker and genesis , if consensus error
-    mintk.consensus(&**block) ? ;
+    mintk.consensus(&**block)?;
     // coinbase tx id = 0, if coinbase error
-    mintk.coinbase(isrhei, &*alltxs[0]) ? ;
+    mintk.coinbase(isrhei, &*alltxs[0])?;
     // check state
     // fork new state
     let mut tempstate = fork_sub_state(this.state.upgrade().unwrap());
     // if init genesis status
     if isrhei == 1 {
         // set initialize 
-        mintk.initialize(&mut tempstate) ? ;
+        mintk.initialize(&mut tempstate)?;
     }
     // exec each tx
     // let txstabs = Arc::new(tempstate);
     for tx in alltxs {
         // let mut txstate = fork_sub_state(txstabs.clone());
-        // kernel.vmobj.exec_tx( tx.to_readonly(), &mut tempstate) ? ;
+        // kernel.vmobj.exec_tx( tx.to_readonly(), &mut tempstate)?;
         // ok merge copy state
-        // tempstate.merge_copy(substate.as_ref()) ? ;
+        // tempstate.merge_copy(substate.as_ref())?;
     }
     // 
     

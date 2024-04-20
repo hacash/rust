@@ -6,6 +6,7 @@ use std::collections::{ HashMap };
 pub type Error = String;
 
 include!{"panic.rs"}
+include!{"buffer.rs"}
 include!{"string.rs"}
 include!{"error.rs"}
 include!{"number.rs"}

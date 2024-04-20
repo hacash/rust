@@ -53,8 +53,8 @@ pub fn sat_transfer(state: &mut CoreState, addr_from: &Address, addr_to: &Addres
     if addr_from == addr_to {
 		return errf!("cannot trs to self")
     }
-    sat_sub(state, addr_from, sat) ? ;
-    sat_add(state, addr_to, sat) ? ;
+    sat_sub(state, addr_from, sat)?;
+    sat_add(state, addr_to, sat)?;
     // ok
     Ok(())
 }

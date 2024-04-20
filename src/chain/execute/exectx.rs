@@ -10,7 +10,7 @@ pub fn exec_tx_actions(pending_height: u64, pending_hash: Hash, vm: &dyn VM, bst
     // ignore coinbase tx
     let exlist = tx.actions();
     // exec
-    let exres = vm.exec(&env, bst, exlist) ? ;
+    let exres = vm.exec(&env, bst, exlist)?;
     // ok
     Ok(())
 }

@@ -60,7 +60,7 @@ pub fn hac_transfer(env: &dyn ExecEnv, stadb: &mut dyn State, addr_from: &Addres
     if is_trs_to_my_self {
         if env.pending_height() >= 20_0000 {
             // you can transfer it to yourself without changing the status, which is a waste of service fees
-            hac_check(&mut state, addr_from, amt) ? ;
+            hac_check(&mut state, addr_from, amt)?;
         }
         return Ok(());
     }
@@ -68,8 +68,8 @@ pub fn hac_transfer(env: &dyn ExecEnv, stadb: &mut dyn State, addr_from: &Addres
 
 	// after 200000 height, the amount transferred to self is not allowed to be greater than the available balance!
     // println!("hac_transfer hac_sub from {} to {} amount {}", addr_from.to_readable(), addr_to.to_readable(), amt.to_fin_string());
-    hac_sub(&mut state, addr_from, amt) ? ;
-    hac_add(&mut state, addr_to, amt) ? ;
+    hac_sub(&mut state, addr_from, amt)?;
+    hac_add(&mut state, addr_to, amt)?;
     // ok
     Ok(())
 }

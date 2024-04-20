@@ -25,6 +25,15 @@ macro_rules! errf {
     ( $($v:expr),+ ) => { err!(format!( $($v),+ )) };
 }
 
+#[macro_export]
+macro_rules! errunbox{
+    ($errbox:expr) => {
+        match $errbox {
+            Ok(v) => Ok(v),
+            Err(e) => Err(e.to_string()),
+        }
+    };
+}
 
 #[macro_export]
 macro_rules! ifer {

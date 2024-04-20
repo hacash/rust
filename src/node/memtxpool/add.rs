@@ -32,7 +32,7 @@ impl TxGroup {
             (rxl, rxr) = scan_group_rng_by_feep(&self.txpkgs, feep, (rxl, rxr));
         }
         // inser with rng
-        self.insert_rng(txp, feep, (rxl, rxr)) ? ;
+        self.insert_rng(txp, feep, (rxl, rxr))?;
         // check full
         if self.txpkgs.len() >= self.maxsz {
             // drop lowest

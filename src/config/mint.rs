@@ -1,4 +1,5 @@
 
+#[derive(Clone, Copy)]
 pub struct MintConf {
     // pub action: u32,
 }

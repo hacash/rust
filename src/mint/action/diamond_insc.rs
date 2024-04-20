@@ -28,7 +28,7 @@ fn diamond_inscription(this: &DiamondInscription, env: &dyn ExecEnv, sta: &mut d
     let pcost = &this.protocol_cost;
 
     // check
-    this.diamonds.check() ? ;
+    this.diamonds.check()?;
 	if pcost.size() > 4 {
 		return errf!("protocol cost amount size cannot over 4 bytes")
 	}
@@ -55,8 +55,8 @@ fn diamond_inscription(this: &DiamondInscription, env: &dyn ExecEnv, sta: &mut d
     let mut state = MintState::wrap(sta);
     let store = MintStoreDisk::wrap(sto);
     for dia in this.diamonds.list() {
-        let cc = engraved_one_diamond(pdhei, &mut state, &store, main_addr, &dia, &this.engraved_content) ? ;
-        ttcost = ttcost.add(&cc) ? ;
+        let cc = engraved_one_diamond(pdhei, &mut state, &store, main_addr, &dia, &this.engraved_content)?;
+        ttcost = ttcost.add(&cc)?;
     }
 
 	// check cost
@@ -75,7 +75,7 @@ fn diamond_inscription(this: &DiamondInscription, env: &dyn ExecEnv, sta: &mut d
     let mut core_state = CoreState::wrap(sta);
 	// sub main addr balance
 	if pcost.is_positive() {
-        hac_sub(&mut core_state, main_addr, &pcost) ? ;
+        hac_sub(&mut core_state, main_addr, &pcost)?;
 	}
 
     // finish

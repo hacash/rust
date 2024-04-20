@@ -4,7 +4,7 @@ pub fn hacd_move_one_diamond(state: &mut MintState, addr_from: &Address, addr_to
 		return errf!("cannot transfer to self")
     }
     // query
-    let mut diaitem = check_diamond_status(state, addr_from, hacd_name) ? ;
+    let mut diaitem = check_diamond_status(state, addr_from, hacd_name)?;
 	// transfer diamond
     diaitem.address = addr_to.clone();
     state.set_diamond(hacd_name, &diaitem);
@@ -36,7 +36,7 @@ pub fn check_diamond_status(state: &mut MintState, addr_from: &Address, hacd_nam
 */
 pub fn engraved_one_diamond(pending_height: u64, state: &mut MintState, store: &MintStoreDisk, addr :&Address, diamond: &DiamondName, content: &BytesW1) -> Ret<Amount> {
 
-    let mut diasto = check_diamond_status(state, addr, diamond) ? ;
+    let mut diasto = check_diamond_status(state, addr, diamond)?;
     
     // check height
     let prev_insc_hei = diasto.prev_engraved_height.uint();
@@ -57,7 +57,7 @@ pub fn engraved_one_diamond(pending_height: u64, state: &mut MintState, store: &
     let mut cost = Amount::new(); // zero
 	if haveng >= 10 {
 		// burning cost bid fee 1/10 from 11 insc
-		cost = Amount::from_i64(diaslt.average_bid_burn.uint() as i64, 247) ? ;
+		cost = Amount::from_i64(diaslt.average_bid_burn.uint() as i64, 247)?;
 	}
 
 	// do engraved

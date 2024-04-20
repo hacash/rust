@@ -24,7 +24,7 @@ fn build_ast_item(extcl: &dyn ExtActCaller, buf: &[u8]) -> Result<(Box<dyn VMAct
     let opcd = buf[0];
     // if ext action
     if opcd == 0 {
-        let body = extcl.cutout(buf) ? ;
+        let body = extcl.cutout(buf)?;
         let size = body.len();
         return Ok((Box::new(ASTExtWrap{body}), size))
     }

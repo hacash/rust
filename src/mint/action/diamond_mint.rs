@@ -25,14 +25,14 @@ StructFieldStructSetParseSerializeSize!{
     self, buf, seek, {
         // parse
         let mut skn: usize = seek;
-        skn = self.kind.parse(buf, skn) ? ;
-        skn = self.diamond.parse(buf, skn) ? ;
-        skn = self.number.parse(buf, skn) ? ;
-        skn = self.prev_hash.parse(buf, skn) ? ;
-        skn = self.nonce.parse(buf, skn) ? ;
-        skn = self.address.parse(buf, skn) ? ;
+        skn = self.kind.parse(buf, skn)?;
+        skn = self.diamond.parse(buf, skn)?;
+        skn = self.number.parse(buf, skn)?;
+        skn = self.prev_hash.parse(buf, skn)?;
+        skn = self.nonce.parse(buf, skn)?;
+        skn = self.address.parse(buf, skn)?;
         if self.number.to_u32() > DIAMOND_ABOVE_NUMBER_OF_CREATE_BY_CUSTOM_MESSAGE {
-            skn = self.custom_message.parse(buf, skn) ? ;
+            skn = self.custom_message.parse(buf, skn)?;
         }
         return Ok(skn)
     }, {
@@ -194,7 +194,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
         if sub.unit() > 1 {
             sub.unit_sub(1);
         }
-        let burn = tx_bid_fee.clone().sub(&sub) ? ; // 90%
+        let burn = tx_bid_fee.clone().sub(&sub)?; // 90%
         ttcount.hacd_bid_burn_zhu = Uint8::from_u64(burn.to_zhu_unsafe() as u64);
     }
 
@@ -237,7 +237,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
 
     // add balance
     let mut core_state = CoreState::wrap(sta);
-    hacd_add(&mut core_state, &this.address, &DiamondNumber::from(1)) ? ;
+    hacd_add(&mut core_state, &this.address, &DiamondNumber::from(1))?;
 
     // ok
     Ok(())

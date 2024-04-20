@@ -5,7 +5,7 @@ pub fn create(buf: &[u8]) -> Ret<(Box<dyn Block>, usize)> {
     let version = bts[0] as u8;
     match version {
         1 => {
-            let (blk, mvsk) = BlockV1::create(buf) ? ;
+            let (blk, mvsk) = BlockV1::create(buf)?;
             Ok((Box::new(blk), mvsk))
         }
         _ => Err(format!("Block Type <{}> not find.", version))
@@ -16,7 +16,7 @@ pub fn create(buf: &[u8]) -> Ret<(Box<dyn Block>, usize)> {
 pub fn create_pkg(bytes: BytesW4) -> Ret<Box<dyn BlockPkg>> {
     
     let buf = bytes.as_ref();
-    let (blkobj, _) = create(buf) ? ;
+    let (blkobj, _) = create(buf)?;
     let hash = blkobj.hash();
     Ok(Box::new(BlockPackage{
         hash: hash,

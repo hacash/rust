@@ -58,7 +58,7 @@ impl TxExec for TransactionCoinbase {
         let mut state = CoreState::wrap(sta);
         let rwdadr = self.address();
         let amt = self.reward();
-        operate::hac_add(&mut state, rwdadr, amt) ? ;
+        operate::hac_add(&mut state, rwdadr, amt)?;
         Ok(())
     }
 }

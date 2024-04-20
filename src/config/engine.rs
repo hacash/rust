@@ -1,4 +1,5 @@
 
+#[derive(Clone)]
 pub struct EngineConf {
     pub max_block_txs: usize,
     pub max_block_size: usize,

@@ -20,7 +20,7 @@ fn diamond_transfer(this: &DiamondTransfer, env: &dyn ExecEnv, sta: &mut dyn Sta
     let from = env.main_address();
     // move
     let mut state = MintState::wrap(sta);
-    hacd_move_one_diamond(&mut state, from, &this.to, &this.diamond) ? ;
+    hacd_move_one_diamond(&mut state, from, &this.to, &this.diamond)?;
     drop(state);
     // transfer
     let mut core_state = CoreState::wrap(sta);
@@ -55,11 +55,11 @@ fn diamond_transfer(this: &DiamondTransfer, env: &dyn ExecEnv, sta: &mut dyn Sta
 fn diamond_from_to_transfer(this: &DiamondFromToTransfer, env: &dyn ExecEnv, sta: &mut dyn State, sto: &dyn Store) -> RetErr {
 
     // check
-    let dianum = this.diamonds.check() ? ;
+    let dianum = this.diamonds.check()?;
     //transfer
     let mut state = MintState::wrap(sta);
     for dianame in this.diamonds.list() {
-        hacd_move_one_diamond(&mut state, &this.from, &this.to, &dianame) ? ; // move one
+        hacd_move_one_diamond(&mut state, &this.from, &this.to, &dianame)?; // move one
     }
     drop(state);
     // transfer
@@ -93,13 +93,13 @@ fn diamond_from_to_transfer(this: &DiamondFromToTransfer, env: &dyn ExecEnv, sta
 fn diamond_multiple_transfer(this: &DiamondMultipleTransfer, env: &dyn ExecEnv, sta: &mut dyn State, sto: &dyn Store) -> RetErr {
 
     // check
-    let dianum = this.diamonds.check() ? ;
+    let dianum = this.diamonds.check()?;
     // from
     let from = env.main_address();
     //transfer
     let mut state = MintState::wrap(sta);
     for dianame in this.diamonds.list() {
-        hacd_move_one_diamond(&mut state, from, &this.to, &dianame) ? ; // move one
+        hacd_move_one_diamond(&mut state, from, &this.to, &dianame)?; // move one
     }
     drop(state);
     // transfer

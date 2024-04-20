@@ -27,6 +27,7 @@ mod tests;
 use crate::sys::*;
 use crate::base::field::Hash;
 use crate::interface::field::*;
+use crate::interface::chain::*;
 use crate::core::account::Account;
 use crate::mint::checker::*;
 use crate::chain::engine::*;
@@ -72,14 +73,15 @@ fn start_hacash_node(iniobj: sys::IniObj) {
 
     // engine
     let engine = BlockEngine::open(&iniobj, mint_checker);
-    let engptr = Arc::new(engine);
+    let engptr: Arc<BlockEngine> = Arc::new(engine);
 
     // node
     let mut hnode = HacashNode::open(&iniobj, engptr.clone());
+
+    // start node
     if let Err(e) = hnode.start() {
         println!("start hacash node error: {}", e);
     }
-
 
 
 
@@ -87,7 +89,9 @@ fn start_hacash_node(iniobj: sys::IniObj) {
     // engine_test_3(engptr);
 
 
-
+    // run 10 year
+    // println!("main run 10 year");
+    // thread::sleep(std::time::Duration::from_secs(60*60*24*365*10));
 }
 
 
