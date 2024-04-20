@@ -4,13 +4,9 @@
 pub struct HacashNode {
     cnf: NodeConf,
     engine: Arc<BlockEngine>,
-    tokiort: Option<TokioRuntime>,
-    
-    // sigl
-    mk: u32,
-
     p2p: Arc<P2PManage>,
     
+    tokiort: Option<TokioRuntime>,
 }
 
 
@@ -25,11 +21,9 @@ impl HacashNode {
         HacashNode{
             cnf: cnf,
             engine: engine,
-            tokiort: rt.into(),
             p2p: p2p.into(),
-            // 
-            mk: 1,
 
+            tokiort: rt.into(),
         }
     }
 

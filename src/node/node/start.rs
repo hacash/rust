@@ -5,7 +5,7 @@ impl HacashNode {
     // 
     pub fn start(&mut self) -> RetErr {
 
-        let rt = self.tokiort.take().unwrap();
+        let rt = self.tokiort.as_mut().unwrap();
 
         // start p2p listen
         let p2p = self.p2p.clone();
@@ -21,7 +21,6 @@ impl HacashNode {
         });
 
         // start event loop
-        self.tokiort = Some(rt);
         self.event_loop()
 
         
