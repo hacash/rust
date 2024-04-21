@@ -7,10 +7,11 @@ StructFieldStruct!{ TxExist,
 
 
 // TxPkg
+#[derive(Clone)]
 pub struct TxPackage {
 	pub hash: Hash,
 	pub data: BytesW4,
-    pub objc: Box<dyn Tx>,
+    pub objc: Box<dyn Transaction>,
 }
 
 impl HashBodyPkg for TxPackage {
@@ -23,16 +24,16 @@ impl HashBodyPkg for TxPackage {
 	}
 }
 
-impl BlockPkg for TxPackage {
+impl TxPkg for TxPackage {
 
-    fn objc(&self) -> &Box<dyn Tx> { 
+    fn objc(&self) -> &Box<dyn Transaction> { 
 		&self.objc
 	}
 	
 }
 
 impl TxPackage {
-	pub fn new(tx: Box<dyn Tx>) -> TxPackage {
+	pub fn new(tx: Box<dyn Transaction>) -> TxPackage {
 		TxPackage{
 			hash: tx.hash(),
 			data: BytesW4::from_vec_u8(tx.serialize()),

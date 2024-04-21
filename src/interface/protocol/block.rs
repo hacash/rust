@@ -1,7 +1,7 @@
 
 
 
-pub trait BlockRead : Serialize {
+pub trait BlockRead : Serialize + Send + dyn_clone::DynClone {
 
     fn hash(&self) -> Hash { panic_never_call_this!() }
 
@@ -16,9 +16,7 @@ pub trait BlockRead : Serialize {
 
 }
 
-
-
-pub trait Block : BlockRead + Parse {
+pub trait Block : BlockRead + Parse + Send + dyn_clone::DynClone {
 
     fn update_mrklroot(&mut self) { panic_never_call_this!() }
     fn set_mrklroot(&mut self, _: Hash) { panic_never_call_this!() }
@@ -26,3 +24,6 @@ pub trait Block : BlockRead + Parse {
 
 }
 
+
+dyn_clone::clone_trait_object!(BlockRead);
+dyn_clone::clone_trait_object!(Block);

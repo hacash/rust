@@ -4,6 +4,7 @@
 
 
 // BlockPkg
+#[derive(Clone)]
 pub struct BlockPackage {
 	pub hash: Hash,
 	pub data: BytesW4,

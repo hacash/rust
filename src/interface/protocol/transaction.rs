@@ -1,5 +1,5 @@
 
-pub trait TransactionRead : Field + dyn_clone::DynClone {    
+pub trait TransactionRead : Field + Send + dyn_clone::DynClone {    
 
     fn hash(&self) -> Hash { panic_never_call_this!() }
     fn hash_with_fee(&self) -> Hash { panic_never_call_this!() }
@@ -24,7 +24,7 @@ pub trait TransactionRead : Field + dyn_clone::DynClone {
 }
 
 
-pub trait Transaction : TransactionRead + TxExec {
+pub trait Transaction : TransactionRead + TxExec + Send {
 
     fn as_read(&self) -> &dyn TransactionRead;
 
