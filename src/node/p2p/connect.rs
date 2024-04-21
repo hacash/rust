@@ -20,14 +20,17 @@ impl P2PManage {
 
     pub async fn connect_node(&self, addr: SocketAddr) -> RetErr {
         let mut conn = errunbox!( TcpStream::connect(addr).await )?;
-        self.handle_conn(conn).await
+        let report_me = true;
+        self.handle_conn(conn, report_me).await
     }
 
-    pub async fn handle_conn(&self, mut conn: TcpStream) -> RetErr {
+    pub async fn handle_conn(&self, mut conn: TcpStream, report_me: bool) -> RetErr {
         tcp_check_handshake(&mut conn, 7).await?;
-        // report my node info: mark+port+id+name
-        let nodeinfo = self.pick_my_node_info();
-        errunbox!( tcp_send_msg(&mut conn, MSG_REPORT_PEER, &nodeinfo).await )?;
+        if report_me {
+            // report my node info: mark+port+id+name
+            let nodeinfo = self.pick_my_node_info();
+            errunbox!( tcp_send_msg(&mut conn, MSG_REPORT_PEER, &nodeinfo).await )?;
+        }
         // deal conn
         self.insert_peer(conn).await
     }

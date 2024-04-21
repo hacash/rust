@@ -28,7 +28,7 @@ impl Peer {
         nick
     }
 
-    pub async fn update_active(&self) {
+    pub fn update_active(&self) {
         *self.active.lock().unwrap() = SystemTime::now();
     }
 
