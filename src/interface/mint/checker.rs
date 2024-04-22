@@ -1,6 +1,6 @@
 
 
-pub trait MintChecker {
+pub trait MintChecker: Send + Sync {
     // check
     fn consensus(&self, _: &dyn Block) -> RetErr;
     fn coinbase(&self, _: u64, _: &dyn Transaction) -> RetErr;

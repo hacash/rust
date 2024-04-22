@@ -5,13 +5,13 @@ pub trait HashBodyPkg {
 }
 
 
-pub trait BlockPkg : HashBodyPkg + Send + dyn_clone::DynClone {
+pub trait BlockPkg : HashBodyPkg + Send + Sync + dyn_clone::DynClone {
     fn objc(&self) -> &Box<dyn Block>;
     fn origin(&self) -> BLOCK_ORIGIN { BLOCK_ORIGIN::UNKNOW }
 }
 
 
-pub trait TxPkg : HashBodyPkg + Send + dyn_clone::DynClone {
+pub trait TxPkg : HashBodyPkg + Send + Sync + dyn_clone::DynClone {
     fn objc(&self) -> &Box<dyn Transaction> { panic_never_call_this!() }
     fn burn_90(&self) -> bool { false }
     fn fee_purity(&self) -> u32 { 0 }

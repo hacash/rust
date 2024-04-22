@@ -1,24 +1,22 @@
 
 
 pub struct MsgHandler {
-    // engine: Arc<BlockEngine>,
+    engine: Arc<BlockEngine>,
     txpool: Arc<MemTxPool>,
-    mk: Arc<bool>,
 }
 
 
 impl MsgHandler {
 
-    pub fn new(/*engine: Arc<BlockEngine>, */txpool: Arc<MemTxPool>) -> MsgHandler {
+    pub fn new(engine: Arc<BlockEngine>, txpool: Arc<MemTxPool>) -> MsgHandler {
         MsgHandler{
-            // engine: engine,
+            engine: engine,
             txpool: txpool,
-            mk: Arc::new(false),
         }
     }
 
     pub async fn on_connect(&self, peer: Arc<Peer>) {
-        println!("on_connect peer={}", peer.nick());
+        // println!("on_connect peer={}", peer.nick());
         
     }
     

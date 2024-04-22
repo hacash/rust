@@ -20,4 +20,8 @@ impl P2PManage {
         }
     }
 
+    fn clone_backbones(&self) -> Vec<Arc<Peer>> {
+        self.backbones.lock().unwrap().clone()
+    }
+
 }

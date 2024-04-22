@@ -1,17 +1,40 @@
 
 
 /**
+ * return: maybe drop
+ */
+fn remove_peer_from_dht_list(lklist: PeerList, peer: Arc<Peer>) -> bool {
+    let id = peer.id;
+    let mut rmid = -1isize;
+    let mut list = lklist.lock().unwrap();
+    for i in 0..list.len() {
+        if id == list[i].id {
+            rmid = i as isize;
+            break
+        }
+    }
+    // rm 
+    if rmid >=0 {
+        list.remove(rmid as usize);
+        return true;
+    }
+    // not find
+    false
+}
+
+
+/**
  * return: maybe drop one
  */
 fn insert_peer_to_dht_list(lklist: PeerList, max: usize, 
-    compare: &PeerID, peer: Arc<Peer>
+    compare: &PeerKey, peer: Arc<Peer>
 ) -> Option<Arc<Peer>> {
 
     let mut list = lklist.lock().unwrap();
     let length = list.len();
     let mut insert_idx = length;
     for i in 0..length {
-        let disnum = compare_peer_id_topology_distance(compare, &peer.pid, &list[i].pid);
+        let disnum = compare_peer_id_topology_distance(compare, &peer.key, &list[i].key);
         if disnum == 1 {
             insert_idx = i;
             break;
@@ -33,7 +56,7 @@ fn insert_peer_to_dht_list(lklist: PeerList, max: usize,
  * right closer ret -1
  * same ret 0
  */
-fn compare_peer_id_topology_distance(compare: &PeerID, left: &PeerID, right: &PeerID) -> i8 {
+fn compare_peer_id_topology_distance(compare: &PeerKey, left: &PeerKey, right: &PeerKey) -> i8 {
     for i in 0..compare.len() {
 		let ds1 = calculate_one_byte_topology_distance(compare[i], left[i]);
 		let ds2 = calculate_one_byte_topology_distance(compare[i], right[i]);

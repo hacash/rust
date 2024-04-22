@@ -29,7 +29,7 @@ impl BlockEngine {
 fn _print_one(tab: usize, rl: Arc<RollChunk>) {
     let indentation = "  ".repeat(tab);
     let tagstr = rl.print();
-    let childs = rl.childs.borrow();
+    let childs = rl.childs.lock().unwrap();
     if childs.len() == 0 {
         println!("{}<{} />", indentation, tagstr);
         return

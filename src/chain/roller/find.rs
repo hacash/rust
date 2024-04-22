@@ -5,7 +5,7 @@ fn _search_chunk(rtck: &Arc<RollChunk>, hx: &Hash) -> Option<Arc<RollChunk>> {
     if chk.hash == *hx {
         return Some(rtck.clone())
     }
-    for a in chk.childs.borrow().iter() {
+    for a in chk.childs.lock().unwrap().iter() {
         let res = _search_chunk(a, hx);
         if let Some(ck) = res {
             return Some(ck.clone())

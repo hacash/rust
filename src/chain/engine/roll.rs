@@ -30,7 +30,7 @@ fn do_roll(cnf: &EngineConf, roller: &mut BlockRoller, append: Arc<RollChunk>) -
     // do roll to disk
     let mut new_root: Option<Arc<RollChunk>> = None;
     {
-        let rtchilds = roller.sroot.childs.borrow();
+        let rtchilds = roller.sroot.childs.lock().unwrap();
         if rtchilds.len() == 1 {
             // only one child
             new_root = Some(rtchilds[0].clone());

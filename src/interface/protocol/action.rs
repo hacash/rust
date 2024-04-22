@@ -4,7 +4,7 @@
 /**
  * for Extend Action / HVM AST Node / Bytecode
  */
-pub trait VMAction : Field + Send + dyn_clone::DynClone {
+pub trait VMAction : Field + Send + Sync + dyn_clone::DynClone {
     fn code(&self) -> u8 { 0 } // bytecode
     fn kind(&self) -> u16 { 0 } // action kind
     fn gas(&self) -> u32 { 0 } // gas use
@@ -20,7 +20,7 @@ pub trait VMAction : Field + Send + dyn_clone::DynClone {
 /**
  * Extend Action
  */
-pub trait Action : VMAction + ActExec + Send { // Cutout
+pub trait Action : VMAction + ActExec + Send + Sync { // Cutout
     fn level(&self) -> u8 { ACTLV_ANY } // any
     fn burn_90(&self) -> bool { false } // is_burning_90_persent_fee
     fn req_sign(&self) -> HashSet<Address> { HashSet::new() } // request_need_sign_addresses

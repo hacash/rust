@@ -12,6 +12,9 @@ impl Drop for RawDB {
     }
 }
 
+unsafe impl Send for RawDB {}
+unsafe impl Sync for RawDB {}
+
 
 pub struct LevelDB {
     database: RawDB,

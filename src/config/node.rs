@@ -2,7 +2,7 @@
 
 #[derive(Clone)]
 pub struct NodeConf {
-    pub node_id: [u8; 16],
+    pub node_key: [u8; 16],
     pub node_name: String,
     pub listen: u16,
     pub boot_nodes: Vec<SocketAddr>,
@@ -16,11 +16,11 @@ impl NodeConf {
     pub fn new(ini: &IniObj) -> NodeConf {
         let sec = ini_section(ini, "node");
 
-        // node id
-        let node_id = read_node_id(ini);
+        // node key
+        let node_key = read_node_key(ini);
 
         // node name
-        let nidhx = hex::encode(&node_id);
+        let nidhx = hex::encode(&node_key);
         let defnm: String = "hn".to_owned() + &nidhx[..8];
         let mut node_name = ini_must_maxlen(&sec, "name", &defnm, 16); // max len = 16
         // println!("node name = {}", node_name);
@@ -47,7 +47,7 @@ impl NodeConf {
 
         // create config
         let mut cnf = NodeConf{
-            node_id: node_id,
+            node_key: node_key,
             node_name: node_name,
             listen: port as u16,
             boot_nodes: ipts,
@@ -66,30 +66,29 @@ impl NodeConf {
 /**
  * 
  */
-fn read_node_id(ini: &IniObj) -> [u8; 16] {
+fn read_node_key(ini: &IniObj) -> [u8; 16] {
 
     // datadir
     let data_dir = get_datadir(ini);
     let nidfp = data_dir + "/node.id";
         
     // node id
-    let mut node_id = [0u8; 16];
+    let mut node_key = [0u8; 16];
     let mut nidfile = OpenOptions::new().read(true).write(true).create(true).open(nidfp).expect("cannot open node info file.");
     // read
     let mut snid = String::new();
     nidfile.read_to_string(&mut snid);
     if let Ok(nid) = hex::decode(&snid) {
         if nid.len() == 16 {
-            node_id = nid.try_into().unwrap();
+            node_key = nid.try_into().unwrap();
         }
     }
-    if node_id[0] == 0 {
+    if node_key[0] == 0 {
         // save
-        getrandom::getrandom(&mut node_id);
-        nidfile.write_all(hex::encode(&node_id).as_bytes());
+        getrandom::getrandom(&mut node_key);
+        nidfile.write_all(hex::encode(&node_key).as_bytes());
     }
-    let nidhx = hex::encode(&node_id);
+    let nidhx = hex::encode(&node_key);
     // println!("node id = {}", nidhx);
-
-    node_id
+    node_key
 }

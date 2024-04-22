@@ -28,7 +28,7 @@ impl BlockEngine {
             bsck.unwrap()
         };
         // check repeat
-        for sub in base_chunk.childs.borrow().iter() {
+        for sub in base_chunk.childs.lock().unwrap().iter() {
             if *blk_hash == sub.hash {
                 return errf!("repetitive block height {} hash {}", blk_hei.to_u64(), blk_hash)
             }

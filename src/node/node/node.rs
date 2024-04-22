@@ -17,7 +17,7 @@ impl HacashNode {
         let mut cnf = NodeConf::new(ini);
 
         let txpool = Arc::new(MemTxPool::new(vec![5000, 100]));
-        let msghdl = Arc::new(MsgHandler::new(txpool.clone()));
+        let msghdl = Arc::new(MsgHandler::new(engine.clone(), txpool.clone()));
         let p2p = P2PManage::new(&cnf, msghdl.clone());
 
         let rt = tokio::runtime::Builder::new_current_thread()

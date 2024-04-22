@@ -7,21 +7,10 @@ pub struct RollChunk {
     pub block: Box<dyn BlockPkg>,
     pub state: Arc<ChainState>,
 
-    pub childs: RefCell<Vec<Arc<RollChunk>>>,
+    pub childs: Mutex<Vec<Arc<RollChunk>>>,
     pub parent: Weak<RollChunk>,
 
 }
-
-// for debug
-/* impl Drop for RollChunk {
-    fn drop(&mut self) {
-        println!("RollChunk height {} hash {} droped!", 
-            self.height.to_u64(), 
-            hex::encode(&self.hash.as_ref()[30..]),
-        );
-    }
-}*/
-
 
 
 impl RollChunk {
@@ -38,7 +27,7 @@ impl RollChunk {
     }
 
     pub fn push_child(&self, c: Arc<RollChunk>) {
-        self.childs.borrow_mut().push(c);
+        self.childs.lock().unwrap().push(c);
     }
 
     pub fn set_parent(&mut self, p: Arc<RollChunk>) {

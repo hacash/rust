@@ -1,5 +1,5 @@
 
-pub trait EngineRead {
+pub trait EngineRead: Send {
     // key is height or hash
     // fn block(&self, _: &dyn Serialize) -> Option<Box<dyn BlockPkg>> { panic_never_call_this!() }
     // key is hash
@@ -11,7 +11,7 @@ pub trait EngineRead {
     // fn avgfee(&self) -> u32 { 0 }
 }
 
-pub trait Engine : EngineRead {
+pub trait Engine : EngineRead + Send {
     // fn init(&self, _: &IniObj) -> Option<Error> { panic_never_call_this!() }
     // fn start(&self) -> Option<Error> { panic_never_call_this!() }
     fn insert(&self, _: Box<dyn BlockPkg>) -> RetErr { panic_never_call_this!() }

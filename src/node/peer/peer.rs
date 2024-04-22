@@ -5,10 +5,9 @@ static PEER_AUTO_ID_INCREASE: AtomicU64 = AtomicU64::new(0);
 #[derive(Debug)]
 pub struct Peer {
     pub id: u64,
-    pub pid: PeerID,
+    pub key: PeerKey,
     pub name: String,
     pub is_public: bool,
-    pub port: u16,
     pub addr: SocketAddr,
     // will change
     pub active: StdMutex<SystemTime>,
@@ -40,9 +39,12 @@ impl Peer {
         }
     }
 
-    pub async fn create_by_msg(mut stream: TcpStream, ty: u8, msg: Vec<u8>) -> Ret<(Arc<Peer>, OwnedReadHalf)> {
+    pub async fn create_with_msg(mut stream: TcpStream, ty: u8, msg: Vec<u8>, mynodeinfo: Vec<u8>) -> Ret<(Arc<Peer>, OwnedReadHalf)> {
+        let mut mykeyname = mynodeinfo;
+        if mykeyname.len() > PEER_KEY_SIZE*2 {
+            mykeyname = mykeyname[4..].to_vec(); // drop port
+        }
         let conn  = &mut stream;
-
         let mut addr = conn.peer_addr().unwrap();
         let mut is_public = false;
         let mut idnamebts: &[u8];
@@ -63,17 +65,24 @@ impl Peer {
         if idnamebts.len() < 32 {
             return errf!("msg length too short")
         }
-        let pid = bufcut!(idnamebts, 0, PEER_ID_SIZE);
-        let name = Fixed16::cons( bufcut!(idnamebts, PEER_ID_SIZE, PEER_ID_SIZE*2) ).to_readable().replace(" ", "");
-
+        let peerkey = bufcut!(idnamebts, 0, PEER_KEY_SIZE);
+        let name = Fixed16::cons( bufcut!(idnamebts, PEER_KEY_SIZE, PEER_KEY_SIZE*2) ).to_readable().replace(" ", "");
+        if peerkey == mykeyname[0..PEER_KEY_SIZE] {
+            return  errf!("cannot connect to self")
+        }
         // dial to check is public ip
         if MSG_REPORT_PEER == ty {
+            // to answer mys node info
+            // report my node info: mark+port+id+name
+            tcp_send_msg(conn, MSG_ANSWER_PEER, mykeyname.clone()).await?;
+            // check is public
             let mut pubaddr = addr.clone();
             pubaddr.set_port(oginport);
-            if let Ok(pb) = tcp_dial_to_check_is_public_id(pubaddr, &pid, 4).await {
+            if let Ok(pb) = tcp_dial_to_check_is_public_id(pubaddr, &peerkey, 4).await {
                 if pb {
                     is_public = true; // public connect to me
-                    println!("public connect to me!!!")
+                    addr.set_port(oginport);
+                    // println!("public connect to me!!!")
                 }
             }
         }
@@ -88,10 +97,9 @@ impl Peer {
         // create
         let mut peer = Peer {
             id: atid,
-            pid: pid,
+            key: peerkey,
             name: name,
             is_public: is_public,
-            port: oginport,
             addr: addr,
             active: SystemTime::now().into(),
             conn_write: Some(write_half).into(),

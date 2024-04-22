@@ -14,10 +14,10 @@ use super::p2p::*;
 
 
 
-pub const PEER_ID_SIZE: usize = 16;
-pub type PeerID = [u8; PEER_ID_SIZE];
-
+pub const PEER_KEY_SIZE: usize = 16;
+pub type PeerKey = [u8; PEER_KEY_SIZE];
 
 
 include!("peer.rs");
+include!("send.rs");
 

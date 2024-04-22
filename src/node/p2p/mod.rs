@@ -1,6 +1,6 @@
 use std::marker::Unpin;
 use std::time::SystemTime;
-use std::net::SocketAddr;
+use std::net::{ SocketAddr, IpAddr };
 use std::sync::atomic::{ AtomicU64, Ordering };
 use std::sync::{ Arc, Mutex as StdMutex };
 
@@ -22,8 +22,8 @@ use super::handler::*;
 
 include!("msg.rs");
 include!("util.rs");
-include!("dht.rs");
 include!("dial.rs");
+include!("dht.rs");
 include!("connect.rs");
 include!("handle.rs");
 include!("server.rs");

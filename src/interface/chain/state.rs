@@ -1,6 +1,6 @@
 
 
-pub trait State : StoreDB {
+pub trait State : StoreDB + Send {
 
 
     

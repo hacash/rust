@@ -17,8 +17,10 @@ impl HacashNode {
 
 async fn do_event_loop(node: &mut HacashNode)-> RetErr {
 
-    // println!("mk={} node.cnf.node_id = {}", node.mk, hex::encode(node.cnf.node_id));
+    // println!("mk={} node.cnf.node_key = {}", node.mk, hex::encode(node.cnf.node_key));
 
+
+    asleep(15).await;
 
     let mut exp_tkr = new_ticker(1, 4000).await;
     let mut find_tkr = new_ticker(1, 1000).await;

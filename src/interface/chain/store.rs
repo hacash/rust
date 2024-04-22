@@ -1,6 +1,6 @@
 
 
-pub trait StoreDB {
+pub trait StoreDB: Send + Sync {
     fn get_at(&self, key: &[u8]) -> Option<Bytes>;
     fn get(&self,     p: &[u8], k: &dyn Serialize) -> Option<Bytes>;
     fn load(&self,    p: &[u8], k: &dyn Serialize, v: &mut dyn Parse) -> bool { 
@@ -21,7 +21,7 @@ pub trait StoreDB {
 }
 
 
-pub trait Store : StoreDB {
+pub trait Store : StoreDB + Send {
 }
 
 
