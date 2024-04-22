@@ -1,5 +1,33 @@
 
 
+
+/**
+ * insert to dht list
+ * return: insert success
+ */
+fn insert_nearest_to_dht_list(list: &mut Vec<PeerKey>, compare: &PeerKey, least: &PeerKey, insert: &PeerKey) -> bool {
+    if 1 != compare_peer_id_topology_distance(compare, insert, least) {
+        return false // not 
+    }
+    let lenght = list.len();
+    if 0 == lenght {
+        list.push(*insert);
+        return true
+    }
+    let mut istidx = lenght;
+    for i in 0..lenght {
+        let disnum = compare_peer_id_topology_distance(compare, insert, &list[i]);
+        if disnum == 1 {
+            istidx = i;
+            break;
+        }
+    }
+    // insert
+    list.insert(istidx, *insert);
+    return true // ok
+}
+
+
 /**
  * return: maybe drop
  */

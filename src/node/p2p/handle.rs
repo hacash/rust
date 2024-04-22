@@ -66,17 +66,19 @@ async fn do_handle_pmsg(pary1: PeerList, pary2: PeerList, msghdl: Arc<MsgHandler
             
         }else if MSG_PONG == ty {
             // do nothing
+        }else if MSG_CLOSE == ty {
+            // close the connect
+            break // close
         }else{
             // ignore
         }
         // println!("=== Peer {} msg {} === {}", peer.nick(), ty, hex::encode(msg));
         // next
     }
-
     // 
     // println!("--- drop the Peer {}", peer.nick());
     // close the conn
-    peer.disconnect();
+    peer.disconnect().await;
     // remove from list
     if remove_peer_from_dht_list(pary2, peer.clone()) {
         // println!("remove from pary2");

@@ -2,23 +2,22 @@
 
 impl P2PManage {
 
-    pub async fn connect_boot_nodes(& self) -> RetErr {
+    pub async fn connect_boot_nodes(&self) -> RetErr {
 
         print!("[P2P] Connect {} boot nodes", self.cnf.boot_nodes.len());
         for ndip in &self.cnf.boot_nodes {
             print!(", {}", &ndip);
         }
         println!(".");
-        for ndip in &self.cnf.boot_nodes {
-            let addr = ndip.clone();
+        for addr in &self.cnf.boot_nodes {
             if let Err(e) = self.connect_node(addr).await {
-                println!("[P2P Error] Connect to {}: {}", &addr, e);
+                println!("[P2P Error] Connect to {}, {}", &addr, e);
             }
         }
         Ok(())
     }
 
-    pub async fn connect_node(&self, addr: SocketAddr) -> RetErr {
+    pub async fn connect_node(&self, addr: &SocketAddr) -> RetErr {
         let mut conn = errunbox!( TcpStream::connect(addr).await )?;
         let report_me = true;
         self.handle_conn(conn, report_me).await
@@ -51,7 +50,7 @@ impl P2PManage {
         let droped = insert_peer_to_dht_list(list, lmax, mypid, peer);
         if let Some(peer) = droped {
             // disconnect and drop peer
-            peer.disconnect();
+            peer.disconnect().await;
         }
         Ok(())
     }

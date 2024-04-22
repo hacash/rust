@@ -9,9 +9,10 @@ pub async fn tcp_dial_handshake(addr: SocketAddr, outsec: u64) -> Ret<TcpStream>
     Ok(stream)
 }
 
-pub async fn tcp_dial_handshake_read_all(addr: SocketAddr, outsec: u64) -> Ret<Vec<u8>> {
+pub async fn tcp_dial_handshake_send_msg_and_read_all(addr: SocketAddr, msgty: u8, outsec: u64) -> Ret<Vec<u8>> {
     let mut stream = tcp_dial_handshake(addr, outsec).await?;
     let conn = &mut stream;
+    tcp_send_msg(conn, msgty, vec![]).await?;
     // read all and no timeout
     tcp_read(conn, 0, outsec).await
 }

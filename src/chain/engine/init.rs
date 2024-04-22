@@ -37,7 +37,7 @@ fn _do_rebuild(this: &mut BlockEngine) {
         chei
     };
     // build
-    print!("[Engine] Datadir: {}, Rebuild unstable blocks ({})", this.cnf.data_dir, next_height);
+    print!("[Engine] Datadir: {}, rebuild unstable blocks ({})", this.cnf.data_dir, next_height);
     // insert lock
     this.isrlck.lock();
     loop {

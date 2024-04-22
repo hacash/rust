@@ -31,12 +31,25 @@ impl Peer {
         *self.active.lock().unwrap() = SystemTime::now();
     }
 
+    fn take_conn_write(&self) -> Option<OwnedWriteHalf> {
+        self.conn_write.lock().unwrap().take()
+    }
+
     pub async fn disconnect(&self) {
-        // drop conn obj to close
-        if let Some(mut w) = self.conn_write.lock().unwrap().take() {
-            tcp_send(&mut w, &vec![0u8,0,0,0]).await; // send close mark
-            w.forget();
+        // println!("----- call fn disconnect peer: {}", self.nick());
+        let mayconn = self.take_conn_write();
+        if let None = mayconn {
+            return // already closed, do nothing
         }
+        let mut w = mayconn.unwrap();
+        // drop conn obj to close
+        // do close first
+        let close_msg = vec![0u8,0,0,1,MSG_REQUEST_NEAREST_PUBLIC_NODES];
+        tcp_send(&mut w, &close_msg).await; // send close mark
+        // do close two
+        let close_msg = vec![0u8,0,0,1,MSG_CLOSE]; // close
+        tcp_send(&mut w, &close_msg).await; // send close mark
+        w.forget();
     }
 
     pub async fn create_with_msg(mut stream: TcpStream, ty: u8, msg: Vec<u8>, mynodeinfo: Vec<u8>) -> Ret<(Arc<Peer>, OwnedReadHalf)> {

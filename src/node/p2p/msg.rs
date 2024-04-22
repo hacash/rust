@@ -14,6 +14,7 @@ pub const MSG_REQUEST_NEAREST_PUBLIC_NODES: u8 = 202;
 // Message without reply
 pub const MSG_REMIND_ME_IS_PUBLIC: u8 = 151;
 // Customer upper level message
+pub const MSG_CLOSE: u8 = 254; // do close
 pub const MSG_CUSTOMER: u8 = 255;
 
 

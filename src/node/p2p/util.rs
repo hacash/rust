@@ -27,7 +27,7 @@ fn serialize_public_nodes(peerlist: &Vec<Arc<Peer>>, max: usize) -> Vec<u8> {
 }
 
 
-fn parse_public_nodes(bts: &[u8]) -> Vec<(SocketAddr, PeerKey)> {
+fn parse_public_nodes(bts: &[u8]) -> Vec<(PeerKey, SocketAddr)> {
     let sn = 4 + 2 + 16; // ip port key
     let num = bts.len() / sn;
     let mut addr = Vec::with_capacity(num);
@@ -36,10 +36,10 @@ fn parse_public_nodes(bts: &[u8]) -> Vec<(SocketAddr, PeerKey)> {
         let ip: [u8;4] = one[0..4].try_into().unwrap();
         let port: [u8;2] = one[4..6].try_into().unwrap() ;
         let key: [u8;16] = one[6..22].try_into().unwrap() ;
-        addr.push((SocketAddr::new(
+        addr.push((key, SocketAddr::new(
             IpAddr::from(ip), 
             u16::from_be_bytes(port)
-        ), key));
+        )));
     }
     addr
 }
