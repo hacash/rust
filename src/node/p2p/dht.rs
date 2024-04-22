@@ -100,12 +100,15 @@ fn compare_peer_id_topology_distance(compare: &PeerKey, left: &PeerKey, right: &
 }
 
 
-fn calculate_one_byte_topology_distance(dst: u8, src: u8) -> u8 {
+pub fn calculate_one_byte_topology_distance(dst: u8, src: u8) -> u8 {
+    let mut disnum = 0;
     if dst > src {
-        return dst - src
+        disnum = dst - src
     }else if dst < src {
-        return src - dst
+        disnum = src - dst
     }
-    // dst == src
-    return 0
+    if disnum > 128 {
+        disnum = 128 - (disnum - 128);
+    }
+    return disnum
 }

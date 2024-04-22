@@ -21,8 +21,10 @@ impl Peer {
 
     pub fn nick(&self) -> String {
         let mut nick = self.name.clone();
+        let kpx: [u8; 4] = self.key.clone()[0..4].try_into().unwrap();
+        // nick += format!("【 {} 】", kpx[0]).as_str(); return nick; // debug
         if self.is_public {
-            nick += format!("({})", self.addr).as_str();
+            nick += format!("<{}>", self.addr).as_str();
         }
         nick
     }
