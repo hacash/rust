@@ -7,7 +7,8 @@ pub struct Peer {
     pub id: u64,
     pub key: PeerKey,
     pub name: String,
-    pub is_public: bool,
+    pub is_public: bool, // is public IP
+    pub is_cntome: bool, // is connect to me
     pub addr: SocketAddr,
     // will change
     pub active: StdMutex<SystemTime>,
@@ -62,12 +63,14 @@ impl Peer {
         let conn  = &mut stream;
         let mut addr = conn.peer_addr().unwrap();
         let mut is_public = false;
+        let mut is_cntome = false;
         let mut idnamebts: &[u8];
         let mut oginport: u16 = 0;
         if msg.len() < 4 {
             return errf!("msg length too short")
         }
         if MSG_REPORT_PEER == ty {
+            is_cntome = true;
             oginport = u16::from_be_bytes( bufcut!(msg, 2, 4) );
             idnamebts = &msg[4..];
         }else if MSG_ANSWER_PEER == ty {
@@ -86,7 +89,7 @@ impl Peer {
             return  errf!("cannot connect to self")
         }
         // dial to check is public ip
-        if MSG_REPORT_PEER == ty {
+        if !is_public && MSG_REPORT_PEER == ty {
             // to answer mys node info
             // report my node info: mark+port+id+name
             tcp_send_msg(conn, MSG_ANSWER_PEER, mykeyname.clone()).await?;
@@ -114,6 +117,7 @@ impl Peer {
             id: atid,
             key: peerkey,
             name: name,
+            is_cntome: is_cntome,
             is_public: is_public,
             addr: addr,
             active: SystemTime::now().into(),

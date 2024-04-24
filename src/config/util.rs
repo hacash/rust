@@ -42,3 +42,18 @@ fn ini_must_f64(sec: &HashMap<String, Option<String>>, key: &str, dv: f64) -> f6
     }
 }
 
+fn ini_must_bool(sec: &HashMap<String, Option<String>>, key: &str, dv: bool) -> bool {
+    let mut dfv = "false";
+    if dv {
+        dfv = "true";
+    }
+    let val = ini_must(sec, key, dfv);
+    match val.as_str() {
+        "_" => false,
+        "false" => false,
+        "False" => false,
+        "FALSE" => false,
+        "0" => false,
+        _ => true,
+    }
+}

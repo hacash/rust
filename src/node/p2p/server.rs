@@ -2,7 +2,7 @@
 
 impl P2PManage {
 
-    pub async fn start_listen(this: Arc<P2PManage>) -> RetErr {
+    pub async fn server_listen(this: Arc<P2PManage>) -> RetErr {
 
         let port = this.cnf.listen;
         let listener = errunbox!( TcpListener::bind( format!("127.0.0.1:{}", port) ).await )?;

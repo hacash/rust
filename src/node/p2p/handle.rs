@@ -33,14 +33,10 @@ impl P2PManage {
 async fn do_handle_pmsg(pary1: PeerList, pary2: PeerList, msghdl: Arc<MsgHandler>, 
     peer: Arc<Peer>, mut conn_read: OwnedReadHalf
 ) {
-    {   
+    {   // print connect tips
         let ps1 = pary1.lock().unwrap();
         let ps2 = pary2.lock().unwrap();
         println!("[Peer] {} connected, {} public, {} private.", peer.nick(), ps1.len(), ps2.len());
-        /*// test
-        let adrbts = serialize_public_nodes(&ps1, 200);
-        let adrobjs = parse_public_nodes(&adrbts);
-        println!("parse_public_nodes adrobjs = {:?}", adrobjs);*/
     }
     loop {
         let rdres = tcp_read_msg(&mut conn_read, 0).await; // no timoout

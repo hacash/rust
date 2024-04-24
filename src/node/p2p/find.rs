@@ -5,10 +5,8 @@
  */
 impl P2PManage {
 
-    pub fn find_nodes(p2p: Arc<P2PManage>) {
-        tokio::spawn(async move {
-            do_find_nodes(p2p.as_ref()).await
-        });
+    pub async fn find_nodes(&self) {
+        do_find_nodes(self).await;
     }
     
 }
@@ -19,7 +17,7 @@ async fn do_find_nodes(this: &P2PManage) {
     let mut allfindnodes = HashMap::<PeerKey, SocketAddr>::new();
     // search form backbone nodes
     let mut willdropeds = vec![ this.cnf.node_key.clone() ];
-    let peers = this.clone_backbones();
+    let peers = this.backbones();
     for p in peers {
         willdropeds.push(p.key.clone());
         request_public_nodes(p.addr, &mut allfindnodes).await;

@@ -1,5 +1,27 @@
 
 
+/**
+ * remove one from 
+ */
+fn checkout_one_from_dht_list<F>(lklist: PeerList, choose: F) -> Option<Arc<Peer>>
+where
+    F: Fn(&Peer) -> bool,
+{
+    let mut rmid = -1isize;
+    let mut list = lklist.lock().unwrap();
+    for i in 0..list.len() {
+        if choose(&list[i]) {
+            rmid = i as isize;
+            break
+        }
+    }
+    if rmid == -1 {
+        return None // not match
+    }
+    // ok checkout
+    Some(list.remove(rmid as usize))
+}
+
 
 /**
  * insert to dht list

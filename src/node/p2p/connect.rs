@@ -38,16 +38,8 @@ impl P2PManage {
         let (peer, conn_read) = self.try_create_peer(conn, mynodeinfo).await?;
         // loop read peer msg
         self.handle_peer_message(peer.clone(), conn_read).await?;
-        // add to node list
-        let mypid = &self.cnf.node_key;
-        let mut lmax = self.cnf.offshoot_peers;
-        let mut list = self.offshoots.clone();
-        if peer.is_public {
-            // add in backbones
-            lmax = self.cnf.backbone_peers;
-            list = self.backbones.clone();
-        }
-        let droped = insert_peer_to_dht_list(list, lmax, mypid, peer);
+        // insert to node list
+        let droped = self.insert(peer);
         if let Some(peer) = droped {
             // disconnect and drop peer
             peer.disconnect().await;
@@ -69,7 +61,7 @@ impl P2PManage {
             return errf!("ok") // finish close
 
         }else if MSG_REQUEST_NEAREST_PUBLIC_NODES == ty {
-            let peerlist = self.clone_backbones();
+            let peerlist = self.publics();
             let adrbts = serialize_public_nodes(&peerlist, 100); // max 100
             let retbts = vec![vec![adrbts.len() as u8], adrbts].concat(); // + len
             AsyncWriteExt::write_all(conn, &retbts).await;

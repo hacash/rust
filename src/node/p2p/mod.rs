@@ -26,10 +26,13 @@ include!("util.rs");
 include!("dial.rs");
 include!("dht.rs");
 include!("find.rs");
+include!("ping.rs");
 include!("connect.rs");
 include!("handle.rs");
 include!("server.rs");
 include!("p2p.rs");
+include!("start.rs");
+include!("loop.rs");
 
 
 
