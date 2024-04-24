@@ -14,13 +14,8 @@ pub fn create(buf: &[u8]) -> Ret<(Box<dyn Block>, usize)> {
 
 
 pub fn create_pkg(bytes: BytesW4) -> Ret<Box<dyn BlockPkg>> {
-    
     let buf = bytes.as_ref();
     let (blkobj, _) = create(buf)?;
     let hash = blkobj.hash();
-    Ok(Box::new(BlockPackage{
-        hash: hash,
-        data: bytes,
-        objc: blkobj,
-    }))
+    Ok(Box::new(BlockPackage::new_with_data(blkobj, bytes.into_bytes())))
 }

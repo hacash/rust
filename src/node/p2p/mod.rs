@@ -29,6 +29,7 @@ include!("find.rs");
 include!("ping.rs");
 include!("connect.rs");
 include!("handle.rs");
+include!("broadcast.rs");
 include!("server.rs");
 include!("p2p.rs");
 include!("start.rs");

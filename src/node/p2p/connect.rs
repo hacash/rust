@@ -8,6 +8,9 @@ impl P2PManage {
         for ndip in &self.cnf.boot_nodes {
             print!(", {}", &ndip);
         }
+        if !self.cnf.findnodes {
+            print!(", don't search nodes");
+        }
         println!(".");
         for addr in &self.cnf.boot_nodes {
             if let Err(e) = self.connect_node(addr).await {

@@ -9,13 +9,17 @@ StructFieldStruct!{ TxExist,
 // TxPkg
 #[derive(Clone)]
 pub struct TxPackage {
-	pub hash: Hash,
-	pub data: BytesW4,
-    pub objc: Box<dyn Transaction>,
+	time: u64,
+	hash: Hash,
+	data: BytesW4,
+    objc: Box<dyn Transaction>,
 }
 
 impl HashBodyPkg for TxPackage {
 
+    fn time(&self) -> u64 { 
+		self.time
+	}
     fn hash(&self) -> &Hash { 
 		&self.hash
 	}
@@ -33,10 +37,17 @@ impl TxPkg for TxPackage {
 }
 
 impl TxPackage {
-	pub fn new(tx: Box<dyn Transaction>) -> TxPackage {
+	
+	pub fn new(blk: Box<dyn Transaction>) -> TxPackage {
+		let dts = blk.serialize();
+		TxPackage::new_with_data(blk, dts)
+	}
+
+	pub fn new_with_data(tx: Box<dyn Transaction>, data: Vec<u8>) -> TxPackage {
 		TxPackage{
+			time: curtimes(), // SystemTime::now()
 			hash: tx.hash(),
-			data: BytesW4::from_vec_u8(tx.serialize()),
+			data: BytesW4::from_vec_u8(data),
 			objc: tx,
 		}
 	}

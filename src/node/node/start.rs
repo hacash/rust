@@ -6,13 +6,14 @@ impl HacashNode {
     pub fn start(mut self) -> RetErr {
 
         let rt = self.tokiort.take().unwrap();
+        let chrx = self.blktxch.take().unwrap();
         let p2p = self.p2p.clone();
 
         // handle msg
-        rt.spawn_blocking(move ||{
-            self.handle_txblock_arrive();
+        let node = Arc::new(self);
+        rt.spawn_blocking(move||{
+            HacashNode::handle_txblock_arrive(node, chrx);
         });
-        // do_event_loop(this).await
 
         // start p2p loop, blocking
         rt.block_on(async{

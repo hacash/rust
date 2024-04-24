@@ -30,18 +30,15 @@ impl MsgHandler {
     pub async fn on_message(&self, peer: Arc<Peer>, ty: u16, msgbody: Vec<u8>) {
 
         if MSG_TX_SUBMIT == ty {
-            self.blktxch.send(BlockTxMsgStuff::Tx(peer.clone(), msgbody));
+            self.blktxch.send(BlockTxMsgStuff::Tx(peer.clone(), msgbody)).await;
             return
         }
         if MSG_BLOCK_DISCOVER == ty {
-            self.blktxch.send(BlockTxMsgStuff::Block(peer.clone(), msgbody));
+            self.blktxch.send(BlockTxMsgStuff::Block(peer.clone(), msgbody)).await;
             return
         }
 
-
-
         // println!("on_message peer={} ty={}  body={}", peer.nick(), ty, hex::encode(msgbody));
-
     }
 
 

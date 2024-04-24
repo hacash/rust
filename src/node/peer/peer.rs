@@ -13,12 +13,13 @@ pub struct Peer {
     // will change
     pub active: StdMutex<SystemTime>,
     pub conn_write: StdMutex<Option<OwnedWriteHalf>>,
+    // data
+    pub knows: Knowledge,
 }
 
 
 
 impl Peer {
-
 
     pub fn nick(&self) -> String {
         let mut nick = self.name.clone();
@@ -122,6 +123,7 @@ impl Peer {
             addr: addr,
             active: SystemTime::now().into(),
             conn_write: Some(write_half).into(),
+            knows: Knowledge::new(50),
         };
         let pptr = Arc::new(peer);
 

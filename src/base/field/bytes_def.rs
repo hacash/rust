@@ -92,6 +92,10 @@ impl $class {
 
     }
 
+    pub fn into_bytes(mut self) -> Vec<u8> {
+        self.bytes
+    }
+
     pub fn length(&self) -> usize {
         self.len.to_usize()
     }

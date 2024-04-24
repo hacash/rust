@@ -17,11 +17,13 @@ impl P2PManage {
         });
 
         // do once find nodes
-        let p2p = this.clone();
-        tokio::spawn(async move{
-            asleep(15).await;
-            p2p.find_nodes().await
-        });
+        if this.cnf.findnodes {
+            let p2p = this.clone();
+            tokio::spawn(async move{
+                asleep(15).await;
+                p2p.find_nodes().await
+            });
+        }
 
         // event loop
         this.event_loop().await;

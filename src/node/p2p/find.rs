@@ -12,6 +12,29 @@ impl P2PManage {
 }
 
 
+
+async fn do_insert_new_nodes(this: &P2PManage, mearest_addrs: Vec<SocketAddr>, first: &PeerKey) {
+    println!("find {} nearest nodes, try connect... ", mearest_addrs.len());
+    // try connect for each
+    let mut cncount = 0;
+    for addr in &mearest_addrs {
+        if let Err(e) = this.connect_node(addr).await {
+            println!("Fail connect to {}, {}.", addr, e);
+            continue
+        }
+        cncount += 1;
+        if cncount >= 16 {
+            break // end
+        }
+        if let None = find_peer_from_dht_list(this.backbones.clone(), first) {
+            // println!("--------------------let None = find_peer_from_dht_list(this.backbones.clone(), first = {}", hex::encode(first));
+            break // replace all old nodes
+        }
+    }
+    // finish
+}
+
+
 async fn do_find_nodes(this: &P2PManage) {
     print!("[P2P] Search nodes... ");
     let mut allfindnodes = HashMap::<PeerKey, SocketAddr>::new();
@@ -37,6 +60,7 @@ async fn do_find_nodes(this: &P2PManage) {
     }
     // check nearest
     let compare = &willdropeds[0]; // my node key
+    let first = &willdropeds[1]; // first
     let least = &willdropeds[willdropeds.len() - 1]; // tail
     let mut nearest_list: Vec<PeerKey> = Vec::new();
     let mut mearest_addrs: Vec<SocketAddr> = Vec::new();
@@ -45,15 +69,8 @@ async fn do_find_nodes(this: &P2PManage) {
             mearest_addrs.push(allfindnodes[nd.0].clone());
         }
     }
-    println!("find {} nearest nodes, try connect... ", mearest_addrs.len());
-    // try connect for each
-    for addr in &mearest_addrs {
-        if let Err(e) = this.connect_node(addr).await {
-            println!("Fail connect to {}, {}.", addr, e);
-        }
-    }
-    // finish
-    // println!("ok do find nodes {} !!!!!!!!!!!!!!!!!!!", 1);
+    // do insert
+    do_insert_new_nodes(this, mearest_addrs, first).await
 }
 
 

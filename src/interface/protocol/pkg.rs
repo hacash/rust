@@ -1,5 +1,6 @@
 
 pub trait HashBodyPkg {
+    fn time(&self) -> u64 { 0 }
     fn hash(&self) -> &Hash { panic_never_call_this!() }
     fn body(&self) -> &BytesW4 { panic_never_call_this!() }
 }

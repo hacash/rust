@@ -58,13 +58,17 @@ pub async fn tcp_handshake_read_one_msg(conn: &mut (impl AsyncRead + AsyncWrite 
 
 
 pub async fn tcp_send_msg(conn: &mut (impl AsyncWrite + Unpin), msgty: u8, mut msgbody: Vec<u8>) -> RetErr {
+    let bufcon = tcp_create_msg(msgty, msgbody);
+    tcp_send(conn, &bufcon).await
+}
 
-    let msgsize: u32 = 1 + msgbody.len() as u32;
+pub fn tcp_create_msg(msgty: u8, mut body: Vec<u8>) -> Vec<u8> {
+    let msgsize: u32 = 1 + body.len() as u32;
     let mut bufcon = Vec::with_capacity(4 + msgsize as usize);
     bufcon.append(&mut msgsize.to_be_bytes().to_vec());
     bufcon.push(msgty);
-    bufcon.append(&mut msgbody);
-    tcp_send(conn, &bufcon).await
+    bufcon.append(&mut body);
+    bufcon
 }
 
 pub async fn tcp_send(conn: &mut (impl AsyncWrite + Unpin), body: &Vec<u8>) -> RetErr {

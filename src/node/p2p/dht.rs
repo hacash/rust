@@ -54,11 +54,11 @@ fn insert_nearest_to_dht_list(list: &mut Vec<PeerKey>, compare: &PeerKey, least:
  * return: maybe drop
  */
 fn remove_peer_from_dht_list(lklist: PeerList, peer: Arc<Peer>) -> bool {
-    let id = peer.id;
+    let key = peer.key;
     let mut rmid = -1isize;
     let mut list = lklist.lock().unwrap();
     for i in 0..list.len() {
-        if id == list[i].id {
+        if key == list[i].key {
             rmid = i as isize;
             break
         }
@@ -70,6 +70,20 @@ fn remove_peer_from_dht_list(lklist: PeerList, peer: Arc<Peer>) -> bool {
     }
     // not find
     false
+}
+
+/**
+ * find
+ */
+ fn find_peer_from_dht_list(lklist: PeerList, pk: &PeerKey) -> Option<Arc<Peer>> {
+    let mut list = lklist.lock().unwrap();
+    for i in 0..list.len() {
+        if *pk == list[i].key {
+            return Some(list[i].clone())
+        }
+    }
+    // not find
+    None
 }
 
 

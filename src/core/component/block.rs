@@ -6,13 +6,17 @@
 // BlockPkg
 #[derive(Clone)]
 pub struct BlockPackage {
-	pub hash: Hash,
-	pub data: BytesW4,
-    pub objc: Box<dyn Block>,
+	time: u64,
+	hash: Hash,
+	data: BytesW4,
+    objc: Box<dyn Block>,
 }
 
 impl HashBodyPkg for BlockPackage {
 
+    fn time(&self) -> u64 { 
+		self.time
+	}
     fn hash(&self) -> &Hash { 
 		&self.hash
 	}
@@ -31,9 +35,15 @@ impl BlockPkg for BlockPackage {
 
 impl BlockPackage {
 	pub fn new(blk: Box<dyn Block>) -> BlockPackage {
+		let dts = blk.serialize();
+		BlockPackage::new_with_data(blk, dts)
+	}
+
+	pub fn new_with_data(blk: Box<dyn Block>, data: Vec<u8>) -> BlockPackage {
 		BlockPackage{
+			time: curtimes(), // SystemTime::now()
 			hash: blk.hash(),
-			data: BytesW4::from_vec_u8(blk.serialize()),
+			data: BytesW4::from_vec_u8(data),
 			objc: blk,
 		}
 	}

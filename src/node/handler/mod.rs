@@ -1,5 +1,6 @@
 use std::sync::{ Arc };
-use std::sync::mpsc::{self, Receiver, Sender};
+
+use tokio::sync::mpsc::{self, Receiver, Sender};
 
 use super::memtxpool::*;
 use crate::chain::engine::*;

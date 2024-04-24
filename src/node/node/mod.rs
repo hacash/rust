@@ -1,6 +1,5 @@
 use std::thread;
 use std::sync::{Arc, Weak, Mutex};
-use std::sync::mpsc::{self, Receiver, Sender};
 
 // tokio::time::sleep
 
@@ -15,15 +14,20 @@ use tokio::{self,
         oneshot
     }
 };
+use tokio::sync::mpsc::{self, Receiver, Sender};
 
 use crate::sys::*;
 use crate::config::NodeConf;
+use crate::base::field::*;
+use crate::protocol::transaction::{self, *};
+use crate::protocol::block::{self, *};
 
 use crate::interface::chain::*;
 
 use crate::chain::engine::*;
 
 use super::*;
+use super::peer::*;
 use super::p2p::*;
 use super::memtxpool::*;
 use super::handler::*;

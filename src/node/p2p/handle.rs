@@ -38,6 +38,7 @@ async fn do_handle_pmsg(pary1: PeerList, pary2: PeerList, msghdl: Arc<MsgHandler
         let ps2 = pary2.lock().unwrap();
         println!("[Peer] {} connected, {} public, {} private.", peer.nick(), ps1.len(), ps2.len());
     }
+    // run loop
     loop {
         let rdres = tcp_read_msg(&mut conn_read, 0).await; // no timoout
         if let Err(_) = rdres {
@@ -55,7 +56,7 @@ async fn do_handle_pmsg(pary1: PeerList, pary2: PeerList, msghdl: Arc<MsgHandler
             tokio::spawn(async move {
                 msghd1.on_message(prcp, ty, body).await;
             });
-            continue
+            continue // next
         }else if MSG_PING == ty {
             // return pong
             peer.send_p2p_msg(MSG_PONG, vec![]).await;
