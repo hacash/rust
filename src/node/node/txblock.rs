@@ -4,14 +4,14 @@
 
 impl HacashNode {
 
-    fn handle_txblock_arrive(this: Arc<HacashNode>, mut blktxch: Receiver<BlockTxMsgStuff>) {
+    fn handle_txblock_arrive(this: Arc<HacashNode>, mut blktxch: Receiver<BlockTxArrive>) {
         let rt = new_current_thread_tokio_rt();
         // run loop
         rt.block_on(async move {
             loop {
                 match blktxch.recv().await.unwrap() {
-                    BlockTxMsgStuff::Tx(peer, tx) => handle_new_tx(this.clone(), peer, tx).await,
-                    BlockTxMsgStuff::Block(peer, blk) => handle_new_block(this.clone(), peer, blk).await,
+                    BlockTxArrive::Tx(peer, tx) => handle_new_tx(this.clone(), peer, tx).await,
+                    BlockTxArrive::Block(peer, blk) => handle_new_block(this.clone(), peer, blk).await,
                 }
             }
             println!("Hacash node loop end.");
@@ -30,12 +30,11 @@ async fn handle_new_tx(this: Arc<HacashNode>, peer: Arc<Peer>, body: Vec<u8>) {
         return // parse tx error
     }
     let txpkg = txpkg.unwrap();
-    let knowkey: [u8; KNOWLEDGE_SIZE] = txpkg.hash().clone().into_array();
-    peer.knows.add(knowkey.clone());
-    if this.knows.check(&knowkey) {
-        return // alreay know it
+    // tx hash with fee
+    let (already, knowkey) = check_know(&this.knows, &peer.knows, &txpkg.objc().hash_with_fee());
+    if already {
+        return  // alreay know it
     }
-    this.knows.add(knowkey.clone());
 
     // TODO::
 
@@ -57,13 +56,11 @@ async fn handle_new_block(this: Arc<HacashNode>, peer: Arc<Peer>, body: Vec<u8>)
         return // parse tx error
     }
     let blkpkg = blkpkg.unwrap();
-    let knowkey: [u8; KNOWLEDGE_SIZE] = blkpkg.hash().clone().into_array();
-    peer.knows.add(knowkey.clone());
-    if this.knows.check(&knowkey) {
-        return // alreay know it
+    let (already, knowkey) = check_know(&this.knows, &peer.knows, blkpkg.hash());
+    if already {
+        return  // alreay know it
     }
-    this.knows.add(knowkey.clone());
-    
+
     // TODO::
 
     // broadcast
@@ -72,4 +69,17 @@ async fn handle_new_block(this: Arc<HacashNode>, peer: Arc<Peer>, body: Vec<u8>)
         this.p2p.broadcast_unaware(&knowkey, MSG_BLOCK_DISCOVER, blkpkg.body().clone().into_bytes()).await;
         // println!("handle_txblock_arrive Block, peer={} hash={}", peer.nick(), blkpkg.hash());
     });
+}
+
+
+
+// return already know
+fn check_know(mine: &Knowledge, peer: &Knowledge, hxkey: &Hash) -> (bool, KnowKey) {
+    let knowkey: [u8; KNOWLEDGE_SIZE] = hxkey.clone().into_array();
+    peer.add(knowkey.clone());
+    if mine.check(&knowkey) {
+        return (true, knowkey) // alreay know it
+    }
+    mine.add(knowkey.clone());
+    (false, knowkey)
 }

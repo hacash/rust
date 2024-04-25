@@ -8,7 +8,7 @@ pub struct HacashNode {
     p2p: Arc<P2PManage>,
     
     tokiort: Option<TokioRuntime>,
-    blktxch: Option<Receiver<BlockTxMsgStuff>>,
+    blktxch: Option<Receiver<BlockTxArrive>>,
 
     knows: Knowledge,
 }
@@ -19,7 +19,7 @@ impl HacashNode {
     pub fn open(ini: &IniObj, engine: Arc<BlockEngine>) -> HacashNode {
         let mut cnf = NodeConf::new(ini);
 
-        let (tx, rx): (Sender<BlockTxMsgStuff>, Receiver<BlockTxMsgStuff>) = mpsc::channel(4000);
+        let (tx, rx): (Sender<BlockTxArrive>, Receiver<BlockTxArrive>) = mpsc::channel(4000);
 
         let txpool = Arc::new(MemTxPool::new(vec![5000, 100]));
         let msghdl = Arc::new(MsgHandler::new(tx.clone(), engine.clone(), txpool.clone()));

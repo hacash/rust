@@ -1,7 +1,7 @@
 
 
 pub struct MsgHandler {
-    blktxch: Sender<BlockTxMsgStuff>,
+    blktxch: Sender<BlockTxArrive>,
     engine: Arc<BlockEngine>,
     txpool: Arc<MemTxPool>,
 }
@@ -9,7 +9,7 @@ pub struct MsgHandler {
 
 impl MsgHandler {
 
-    pub fn new(blktxch: Sender<BlockTxMsgStuff>, engine: Arc<BlockEngine>, txpool: Arc<MemTxPool>) -> MsgHandler {
+    pub fn new(blktxch: Sender<BlockTxArrive>, engine: Arc<BlockEngine>, txpool: Arc<MemTxPool>) -> MsgHandler {
         MsgHandler{
             blktxch: blktxch,
             engine: engine,
@@ -19,22 +19,21 @@ impl MsgHandler {
 
     pub async fn on_connect(&self, peer: Arc<Peer>) {
         // println!("on_connect peer={}", peer.nick());
-        
     }
     
     pub async fn on_disconnect(&self, peer: Arc<Peer>) {
         // println!("on_disconnect peer={}", peer.nick());
-        
+        // do nothing
     }
     
     pub async fn on_message(&self, peer: Arc<Peer>, ty: u16, msgbody: Vec<u8>) {
 
         if MSG_TX_SUBMIT == ty {
-            self.blktxch.send(BlockTxMsgStuff::Tx(peer.clone(), msgbody)).await;
+            self.blktxch.send(BlockTxArrive::Tx(peer.clone(), msgbody)).await;
             return
         }
         if MSG_BLOCK_DISCOVER == ty {
-            self.blktxch.send(BlockTxMsgStuff::Block(peer.clone(), msgbody)).await;
+            self.blktxch.send(BlockTxArrive::Block(peer.clone(), msgbody)).await;
             return
         }
 
