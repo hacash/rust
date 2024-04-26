@@ -4,7 +4,7 @@ pub fn create(buf: &[u8]) -> Ret<(Box<dyn Block>, usize)> {
     let bts = buf_clip_mvsk!(buf, 1);
     let version = bts[0] as u8;
     match version {
-        1 => {
+        BLOCK_VERSION_1 => {
             let (blk, mvsk) = BlockV1::create(buf)?;
             Ok((Box::new(blk), mvsk))
         }

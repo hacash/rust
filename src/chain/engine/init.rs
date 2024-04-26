@@ -6,7 +6,7 @@ fn load_base_block(mintk: &dyn MintChecker, storef: &BlockStore) -> Box<dyn Bloc
     let rhein = rhei.to_u64();
     if 0 == rhein {
         // genesis block
-        return mintk.genesis()
+        return mintk.genesis_block().into()
     }
     // read block data
     let resblk = load_block_package_by_height(&store, &rhei);

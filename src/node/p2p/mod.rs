@@ -16,6 +16,7 @@ use crate::base::field::*;
 use crate::config::*;
 
 use crate::interface::field::*;
+use crate::interface::node::*;
 
 use super::*;
 use super::peer::*;
@@ -34,6 +35,7 @@ include!("server.rs");
 include!("p2p.rs");
 include!("start.rs");
 include!("loop.rs");
+include!("manage.rs");
 
 
 

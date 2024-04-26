@@ -4,8 +4,13 @@ pub trait EngineRead: Send {
     // fn block(&self, _: &dyn Serialize) -> Option<Box<dyn BlockPkg>> { panic_never_call_this!() }
     // key is hash
     // fn tx(&self, _: &dyn Serialize) -> Option<Box<dyn TxPkg>> { panic_never_call_this!() }
-    fn state(&self) -> &dyn State { panic_never_call_this!() }
-    fn store(&self) -> &dyn Store { panic_never_call_this!() }
+    fn config(&self) -> &EngineConf { panic_never_call_this!() }
+
+    fn state(&self) -> Arc<dyn State> { panic_never_call_this!() }
+    fn store(&self) -> Arc<dyn Store> { panic_never_call_this!() }
+
+    fn latest_block(&self) -> Arc<dyn BlockPkg> { panic_never_call_this!() }
+    fn mint_checker(&self) -> Arc<dyn MintChecker> { panic_never_call_this!() }
 
     // realtime average fee purity
     // fn avgfee(&self) -> u32 { 0 }

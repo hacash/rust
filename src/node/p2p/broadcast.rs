@@ -20,7 +20,7 @@ impl P2PManage {
         let msgbuf = tcp_create_msg(MSG_CUSTOMER, msgbody);
         // send each
         for peer in resps {
-            println!("broadcast_unaware msg={} to peer={}", ty, peer.nick());
+            // println!("broadcast_unaware msg={} to peer={}", ty, peer.nick());
             peer.send(&msgbuf).await;
         }
     }

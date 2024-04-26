@@ -1,11 +1,13 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::collections::{ HashMap };
+use std::io::Write;
 
 // use concat_idents::concat_idents;
 
 pub type Error = String;
 
 include!{"panic.rs"}
+include!{"stdout.rs"}
 include!{"buffer.rs"}
 include!{"string.rs"}
 include!{"error.rs"}

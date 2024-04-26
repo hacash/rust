@@ -48,7 +48,8 @@ dc871532
     let maxhei: usize = 540920;
     // cur hei
     let mut height: usize = 0;
-    let store = CoreStoreDisk::wrap(engine.store());
+    let stoptr = engine.store();
+    let store = CoreStoreDisk::wrap(stoptr.as_ref());
     let last = store.status();
     let lhei = last.last_height.to_usize();
     height = lhei + 1; // next hei
@@ -112,15 +113,13 @@ dc871532
  */
 pub fn engine_test_2(engine: Arc<BlockEngine>) {
 
-
-
     let mut height = 1;
-    let store = CoreStoreDisk::wrap(engine.store());
+    let stoptr = engine.store();
+    let store = CoreStoreDisk::wrap(stoptr.as_ref());
     let last = store.status();
     let lhei = last.last_height.to_u64();
     height = lhei + 1; // next hei
 
-    
     loop {
 
         let url = format!("http://127.0.0.1:33381/query?action=blockdatahex&body=1&id={}", height);

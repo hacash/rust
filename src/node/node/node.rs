@@ -23,7 +23,8 @@ impl HacashNode {
 
         let txpool = Arc::new(MemTxPool::new(vec![5000, 100]));
         let msghdl = Arc::new(MsgHandler::new(tx.clone(), engine.clone(), txpool.clone()));
-        let p2p = P2PManage::new(&cnf, msghdl.clone());
+        let p2p = Arc::new(P2PManage::new(&cnf, msghdl.clone()));
+        msghdl.set_peer_mng(Box::new(PeerMngInst::new(p2p.clone())));
 
         let rt = new_current_thread_tokio_rt();
 
@@ -31,7 +32,7 @@ impl HacashNode {
             cnf: cnf,
             engine: engine,
             txpool: txpool.clone(),
-            p2p: p2p.into(),
+            p2p: p2p,
             tokiort: rt.into(),
             blktxch: rx.into(),
             knows: Knowledge::new(100),

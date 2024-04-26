@@ -1,6 +1,7 @@
 type PeerList = Arc<StdMutex<Vec<Arc<Peer>>>>;
 
 
+#[derive(Clone)]
 pub struct P2PManage {
     cnf: NodeConf,
     msghandler: Arc<MsgHandler>,
@@ -63,4 +64,7 @@ impl P2PManage {
         self.offshoots.lock().unwrap().clone()
     }
 
+    
+
 }
+

@@ -1,6 +1,6 @@
 
 
-
+#[derive(Clone)]
 pub struct BlockMintChecker {
 
 }
@@ -26,11 +26,11 @@ impl MintChecker for BlockMintChecker {
         impl_initialize(self, state)
     } 
 
-    fn genesis(&self) -> Box<dyn BlockPkg> {
-        let gnsblk = genesis_block().clone();
-        // let body = gnsblk.serialize();
-        let pkg = BlockPackage::new(Box::new(gnsblk));
-        Box::new(pkg)
+    fn genesis(&self) -> Arc<dyn BlockPkg> {
+        genesis_block_ptr()
+    }
+    fn genesis_block(&self) -> Box<dyn BlockPkg> {
+        genesis_block_pkg()
     }
 
     fn actions(&self) -> Vec<Box<dyn Action>> {

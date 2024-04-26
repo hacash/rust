@@ -4,7 +4,7 @@ pub struct RollChunk {
 
     pub height: BlockHeight,
     pub hash: Hash,
-    pub block: Box<dyn BlockPkg>,
+    pub block: Arc<dyn BlockPkg>,
     pub state: Arc<ChainState>,
 
     pub childs: Mutex<Vec<Arc<RollChunk>>>,
@@ -19,7 +19,7 @@ impl RollChunk {
         RollChunk{
             height: blkpkg.objc().height().clone(),
             hash: blkpkg.hash().clone(),
-            block: blkpkg,
+            block: blkpkg.into(),
             state: state,
             childs: Vec::new().into(),
             parent: Weak::new(), // none

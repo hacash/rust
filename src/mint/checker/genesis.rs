@@ -3,48 +3,20 @@ use lazy_static::lazy_static;
 
 lazy_static! {
     static ref GENESIS_BLOCK: BlockV1 = create_genesis_block();
+    static ref GENESIS_BLOCK_PKG: Arc<dyn BlockPkg> = Arc::new(BlockPackage::new(Box::new(create_genesis_block())));
 }
-
-
 
 pub fn genesis_block() -> &'static BlockV1 {
-    return &GENESIS_BLOCK
+    &GENESIS_BLOCK
 }
 
-/* 
-use std::mem::MaybeUninit;
-use std::sync::{Mutex};
-
-
-lazy_static! {
-    static ref GENESIS_BLOCK_LOCK: Mutex<i32> = {
-        let mut m = Mutex::new(0);
-        m
-    };
+pub fn genesis_block_pkg() -> Box<dyn BlockPkg>  {
+    Box::new(BlockPackage::new(Box::new(create_genesis_block())))
 }
 
-static mut GENESIS_BLOCK_CACHE: MaybeUninit<BlockV1> = MaybeUninit::uninit();
-
-pub fn genesis_block() -> &'static BlockV1 {
-    let mut hav = GENESIS_BLOCK_LOCK.lock().unwrap();
-    unsafe{
-        if *hav == 1 {
-            return GENESIS_BLOCK_CACHE.assume_init_ref()
-        }
-    }
-    let genesis_block = create_genesis_block();
-    *hav = 1; // mark
-    unsafe{
-        // save
-        GENESIS_BLOCK_CACHE.as_mut_ptr().write(genesis_block);
-        // return
-        return GENESIS_BLOCK_CACHE.assume_init_ref()
-    }
-
+pub fn genesis_block_ptr() -> Arc<dyn BlockPkg>  {
+    GENESIS_BLOCK_PKG.clone()
 }
-*/
-
-
 
 /**
  * create

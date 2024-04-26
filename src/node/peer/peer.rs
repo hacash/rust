@@ -21,6 +21,10 @@ pub struct Peer {
 
 impl Peer {
 
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
     pub fn nick(&self) -> String {
         let mut nick = self.name.clone();
         let kpx: [u8; 4] = self.key.clone()[0..4].try_into().unwrap();

@@ -15,6 +15,7 @@ use crate::interface::vm::*;
 
 use crate::protocol::*;
 
+pub const BLOCK_VERSION_1: u8 = 1;
 
 include!("util.rs");
 include!("origin.rs");
