@@ -1,8 +1,20 @@
+
+use lazy_static::lazy_static;
+
+lazy_static! {
+    static ref GENESIS_BLOCK: BlockV1 = create_genesis_block();
+}
+
+
+
+pub fn genesis_block() -> &'static BlockV1 {
+    return &GENESIS_BLOCK
+}
+
 /* 
 use std::mem::MaybeUninit;
 use std::sync::{Mutex};
 
-use lazy_static::lazy_static;
 
 lazy_static! {
     static ref GENESIS_BLOCK_LOCK: Mutex<i32> = {
@@ -37,7 +49,7 @@ pub fn genesis_block() -> &'static BlockV1 {
 /**
  * create
  */ 
-pub fn create_genesis_block() -> BlockV1 {
+fn create_genesis_block() -> BlockV1 {
     let blktime = Timestamp::from(1549250700);
     let blknoncenum = Fixed4::from_uint(160117829);
     let reward_addr = Address::form_readable(&"1271438866CSDpJUqrnchoJAiGGBFSQhjd".to_string()).unwrap();

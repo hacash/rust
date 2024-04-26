@@ -16,6 +16,9 @@ macro_rules! panic {
     };
 }
 
+#[macro_use]
+extern crate lazy_static; 
+
 /********* mod ********/
 
 mod x16rs;
