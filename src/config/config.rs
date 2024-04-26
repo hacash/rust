@@ -52,7 +52,7 @@ pub fn load_config() -> IniObj {
 
     cnfilestr = cnf_file.canonicalize().unwrap().to_str().unwrap().to_string();
     // println!("{:?} {:?}", args, exedir);
-    println!("[Config] Load: {} in {}.", cnfilestr, sys::ctshow());
+    println!("[Config] Load: {} {}.", cnfilestr, sys::ctshow());
     
     // load file
     ini!(&cnfilestr)

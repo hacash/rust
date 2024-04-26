@@ -2,6 +2,9 @@
 
 impl MsgHandler {
 
+    async fn send_blocks(&self, peer: Arc<Peer>, mut buf: Vec<u8>) {
+    }
+    
     async fn receive_blocks(&self, peer: Arc<Peer>, mut buf: Vec<u8>) {
         if buf.len() < 3 * 8 {
             println!("check data failed.");
@@ -38,6 +41,7 @@ impl MsgHandler {
 // return res msg
 fn try_insert_blocks(engine: Arc<BlockEngine>, start_hei: u64, mut blocks: Vec<u8>) -> String {
     let (blkist, blkch) = std::sync::mpsc::sync_channel(10);
+    // loop to parse
     let handler = std::thread::spawn(move || {
         let mut hei = start_hei;
         let mut blocks = blocks.as_mut_slice();
@@ -69,8 +73,7 @@ fn try_insert_blocks(engine: Arc<BlockEngine>, start_hei: u64, mut blocks: Vec<u
         }
         // drop and close sender
     });
-
-    // loop to got blk
+    // loop to insert
     loop {
         let blk = blkch.recv();
         if blk.is_err() {

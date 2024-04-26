@@ -24,9 +24,9 @@ impl MsgHandler {
             return // is not a same network
         }
         // sync blocks first
-        let start_hei = my_status.latest_height.uint() + 1;
+        let lat_hei = my_status.latest_height.uint();
         if my_status.latest_height == 0 && status.latest_height > 0 {
-
+            let start_hei = lat_hei + 1;
             try_sync_blocks(self, peer, start_hei).await;
             return
         }
@@ -36,7 +36,8 @@ impl MsgHandler {
             if ubh > 255 {
                 ubh = 255
             }
-            send_req_block_hash_msg(peer, ubh as u8, start_hei).await;
+            let diff_hei = lat_hei;
+            send_req_block_hash_msg(peer, ubh as u8, diff_hei).await;
             return
         }
     }

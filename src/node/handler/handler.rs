@@ -47,34 +47,20 @@ impl MsgHandler {
         // do nothing
     }
     
-    pub async fn on_message(&self, peer: Arc<Peer>, ty: u16, msgbody: Vec<u8>) {
-        // println!("on_message peer={} ty={} len={}", peer.nick(), ty, msgbody.len());
+    pub async fn on_message(&self, peer: Arc<Peer>, ty: u16, body: Vec<u8>) {
+        // println!("on_message peer={} ty={} len={}", peer.nick(), ty, body.len());
 
-        if MSG_TX_SUBMIT == ty {
-            self.blktxch.send(BlockTxArrive::Tx(peer.clone(), msgbody)).await;
-            return
-        }
-        if MSG_BLOCK_DISCOVER == ty {
-            self.blktxch.send(BlockTxArrive::Block(peer.clone(), msgbody)).await;
-            return
-        }
-
-        // TODO: other
-
-        if MSG_BLOCK == ty {
-            self.receive_blocks(peer, msgbody).await;
-            return
-        }
-
-        if MSG_REQ_STATUS == ty {
-            self.send_status(peer).await;
-            return
-        }
-
-        if MSG_STATUS == ty {
-            self.receive_status(peer, msgbody).await;
-            return
-        }
+        match ty {
+            MSG_TX_SUBMIT =>      { self.blktxch.send(BlockTxArrive::Tx(peer.clone(), body)).await; },
+            MSG_BLOCK_DISCOVER => { self.blktxch.send(BlockTxArrive::Block(peer.clone(), body)).await; },
+            MSG_BLOCK_HASH =>     { self.receive_hashs(peer, body).await; },
+            MSG_REQ_BLOCK_HASH => { self.send_hashs(peer, body).await; },
+            MSG_BLOCK =>          { self.receive_blocks(peer, body).await; },
+            MSG_REQ_BLOCK =>      { self.send_blocks(peer, body).await; },
+            MSG_REQ_STATUS =>     { self.send_status(peer).await; },
+            MSG_STATUS =>         { self.receive_status(peer, body).await; },
+            _ => /* not find msg type and ignore */ (),
+        };
 
     }
 

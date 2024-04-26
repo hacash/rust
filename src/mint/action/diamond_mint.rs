@@ -19,19 +19,23 @@ pub const DIAMOND_ABOVE_NUMBER_OF_VISUAL_GENE_APPEND_BIDDING_FEE: u32 = 4_1000;
 
 
 /**
- * Action DiamondMint
- */
+* Action DiamondMint
+*/
+StructFieldStruct!{ DiamondMintHead,
+	diamond              : DiamondName    
+	number               : DiamondNumber    
+	prev_hash            : Hash         
+	nonce                : Fixed8        
+	address              : Address    
+}
+
 StructFieldStructSetParseSerializeSize!{
     self, buf, seek, {
         // parse
         let mut skn: usize = seek;
         skn = self.kind.parse(buf, skn)?;
-        skn = self.diamond.parse(buf, skn)?;
-        skn = self.number.parse(buf, skn)?;
-        skn = self.prev_hash.parse(buf, skn)?;
-        skn = self.nonce.parse(buf, skn)?;
-        skn = self.address.parse(buf, skn)?;
-        if self.number.to_u32() > DIAMOND_ABOVE_NUMBER_OF_CREATE_BY_CUSTOM_MESSAGE {
+        skn = self.head.parse(buf, skn)?;
+        if self.head.number.to_u32() > DIAMOND_ABOVE_NUMBER_OF_CREATE_BY_CUSTOM_MESSAGE {
             skn = self.custom_message.parse(buf, skn)?;
         }
         return Ok(skn)
@@ -39,38 +43,25 @@ StructFieldStructSetParseSerializeSize!{
         // serialize
         let mut buf = vec![
             self.kind.serialize(),
-            self.diamond.serialize(),
-            self.number.serialize(),
-            self.prev_hash.serialize(),
-            self.nonce.serialize(),
-            self.address.serialize(),
-        ].concat();
-        if self.number.to_u32() > DIAMOND_ABOVE_NUMBER_OF_CREATE_BY_CUSTOM_MESSAGE {
-            buf = vec![buf, self.custom_message.serialize()].concat();
+            self.head.serialize(),
+        ];
+        if self.head.number.to_u32() > DIAMOND_ABOVE_NUMBER_OF_CREATE_BY_CUSTOM_MESSAGE {
+            buf.push( self.custom_message.serialize() );
         }
-        return buf 
+        return buf.concat();
     }, {
         // size
         let mut sz = self.kind.size()
-            + self.diamond.size()
-            + self.number.size()
-            + self.prev_hash.size()
-            + self.nonce.size()
-            + self.address.size()
-            ;
-        if self.number.to_u32() > DIAMOND_ABOVE_NUMBER_OF_CREATE_BY_CUSTOM_MESSAGE {
+            + self.head.size();
+        if self.head.number.to_u32() > DIAMOND_ABOVE_NUMBER_OF_CREATE_BY_CUSTOM_MESSAGE {
             sz += self.custom_message.size();
         }
         return sz 
     }, 
     DiamondMint, 
     // con
-    kind                 : Uint2
-	diamond              : DiamondName    
-	number               : DiamondNumber    
-	prev_hash            : Hash         
-	nonce                : Fixed8        
-	address              : Address       
+    kind                 : Uint2  
+    head                 : DiamondMintHead
 	// customer message                                   
 	custom_message       : Hash
 }
@@ -82,11 +73,13 @@ impl DiamondMint {
     pub fn with(name: DiamondName, number: DiamondNumber) -> DiamondMint {
         DiamondMint{
             kind: Uint2::from(4),
-            diamond: name,
-            number: number,
-            prev_hash: Hash::new(),
-            nonce: Fixed8::new(),
-            address: Address::new(),
+            head: DiamondMintHead{
+                diamond: name,
+                number: number,
+                prev_hash: Hash::new(),
+                nonce: Fixed8::new(),
+                address: Address::new(),
+            },
             custom_message: Hash::new(),
         }
     }
@@ -102,7 +95,7 @@ ActionDefineWithStruct!{
     ACTLV_TOP_ONLY, // level
     6 + 3 + 32 + 8 + 21 + 32, // gas
     (self, env, state, store), // params
-    { self.number.to_u32() > DIAMOND_ABOVE_NUMBER_OF_BURNING90_PERCENT_TX_FEES }, // burn 90
+    { self.head.number.to_u32() > DIAMOND_ABOVE_NUMBER_OF_BURNING90_PERCENT_TX_FEES }, // burn 90
     [], // req sign
     ActExecRes::wrap(diamond_mint(self, env, state, store))
 }
@@ -120,13 +113,13 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     let pending_height = env.pending_height();
     let pending_hash = env.pending_hash();
 
-    let number = this.number;
+    let number = this.head.number;
     let dianum = number.to_u32();
-    let name = this.diamond;
+    let name = this.head.diamond;
     let namestr = name.to_readable();
-    let prev_hash = this.prev_hash;
-    let nonce = this.nonce;
-    let address = this.address;
+    let prev_hash = this.head.prev_hash;
+    let nonce = this.head.nonce;
+    let address = this.head.address;
     let mut custom_message = Vec::new();
     if dianum > DIAMOND_ABOVE_NUMBER_OF_CREATE_BY_CUSTOM_MESSAGE {
         custom_message = this.custom_message.serialize();
@@ -212,7 +205,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
         belong_height: BlockHeight::from_u64(pending_height),
         belong_hash: pending_hash.clone(),
         prev_hash: prev_hash.clone(),
-        miner_address: this.address.clone(),
+        miner_address: this.head.address.clone(),
         bid_fee: tx_bid_fee.clone(),
         nonce: nonce.clone(),
         average_bid_burn: average_bid_burn,
@@ -224,7 +217,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     // save diamond
     let diaitem = DiamondSto {
         status: DIAMOND_STATUS_NORMAL,
-        address: this.address.clone(),
+        address: this.head.address.clone(),
         prev_engraved_height: BlockHeight::new(), // 0
         inscripts: Inscripts::new() // none
     };
@@ -237,7 +230,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
 
     // add balance
     let mut core_state = CoreState::wrap(sta);
-    hacd_add(&mut core_state, &this.address, &DiamondNumber::from(1))?;
+    hacd_add(&mut core_state, &this.head.address, &DiamondNumber::from(1))?;
 
     // ok
     Ok(())
