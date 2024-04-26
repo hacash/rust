@@ -50,7 +50,14 @@ fn _do_rebuild(this: &mut BlockEngine) {
         let blk = resblk.unwrap();
         print!(" -> {}", blk.objc().height().to_u64());
         // try insert
-        let ier = this.insert_unsafe(blk); // ignore err
+        let mut times = vec![
+            Duration::new(0, 0),
+            Duration::new(0, 0),
+            Duration::new(0, 0),
+            Duration::new(0, 0),
+            Duration::new(0, 0),
+        ];
+        let ier = this.insert_unsafe(blk, &mut times); // ignore err
         if let Err(e) = ier {
             print!("[Error: {}]", e);
         }

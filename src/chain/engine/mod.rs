@@ -16,7 +16,7 @@ use crate::base::util::*;
 use crate::core::db::*;
 use crate::core::state::*;
 use crate::core::component::*;
-use crate::protocol::*;
+use crate::protocol::{self, *};
 
 use crate::mint::checker::*;
 

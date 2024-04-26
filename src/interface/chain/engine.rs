@@ -20,6 +20,7 @@ pub trait Engine : EngineRead + Send {
     // fn init(&self, _: &IniObj) -> Option<Error> { panic_never_call_this!() }
     // fn start(&self) -> Option<Error> { panic_never_call_this!() }
     fn insert(&self, _: Box<dyn BlockPkg>) -> RetErr { panic_never_call_this!() }
+    fn insert_sync(&self, _: u64, _: Vec<u8>) -> RetErr { panic_never_call_this!() }
 }
 
 
