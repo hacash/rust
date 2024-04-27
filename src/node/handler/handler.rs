@@ -21,7 +21,7 @@ impl MsgHandler {
     }
 
     pub fn switch_peer(&self, p: Arc<Peer>) -> Arc<Peer> {
-        self.peermng.lock().unwrap().clone().unwrap().switch_peer(p)
+        self.peermng.lock().unwrap().as_ref().unwrap().switch_peer(p)
     }
 
     pub fn set_peer_mng(&self, mng: Box<dyn PeerManage>) {

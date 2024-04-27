@@ -8,13 +8,23 @@ impl HacashNode {
         let rt = new_current_thread_tokio_rt();
         // run loop
         rt.block_on(async move {
+            let mut closech = { 
+                this.closech.lock().unwrap().take().unwrap()
+            };
             loop {
-                match blktxch.recv().await.unwrap() {
-                    BlockTxArrive::Tx(peer, tx) => handle_new_tx(this.clone(), peer, tx).await,
-                    BlockTxArrive::Block(peer, blk) => handle_new_block(this.clone(), peer, blk).await,
+                tokio::select! {
+                    _ = closech.recv() => {
+                        break
+                    },
+                    msg = blktxch.recv() => {
+                        match msg.unwrap() {
+                            BlockTxArrive::Tx(peer, tx) => handle_new_tx(this.clone(), peer, tx).await,
+                            BlockTxArrive::Block(peer, blk) => handle_new_block(this.clone(), peer, blk).await,
+                        }
+                    }
                 }
             }
-            println!("Hacash node loop end.");
+            // println!("Hacash node txblock arrive loop end.");
         });
 
     }

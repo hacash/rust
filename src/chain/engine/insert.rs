@@ -12,13 +12,12 @@ impl Engine for BlockEngine {
 
     fn insert_sync(&self, start_hei: u64, mut datas: Vec<u8>) -> RetErr {
         self.isrlck.lock();
-        self.insert_sync_unsafe(start_hei, datas)?;
-        // print benchmark time
-        // print!("< {:?}, {:?}, {:?}, {:?}, {:?} >", times[0], times[1], times[2], times[3], times[4]);
-        Ok(())
+        self.insert_sync_unsafe(start_hei, datas)
     }
 
 }
+
+
 
 
 impl BlockEngine {
@@ -93,6 +92,7 @@ impl BlockEngine {
                         break // end
                     }
                 }
+
                 // print!(" {:?}", benchmark);
             });
             // roll store
@@ -178,6 +178,7 @@ impl BlockEngine {
         let mut roll_root = self.klctx.lock().unwrap();
         let status = do_roll( &self.cnf, &mut roll_root, chunk_ptr.clone())?;
         // println!("{:?}", status);
+        // std::thread::sleep(std::time::Duration::from_millis(2)); // test
         do_store(&self.cnf, self.store.as_ref(), &mut roll_root, chunk_ptr, status)?;
         // do store
         Ok(())

@@ -37,6 +37,7 @@ mod mint;
 mod vm;
 mod chain;
 mod node;
+mod server;
 
 
 

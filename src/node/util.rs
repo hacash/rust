@@ -21,3 +21,9 @@ pub async fn new_ticker_at(inst: u64, dura: u64) -> Interval {
     intv
 }
 
+pub fn new_current_thread_tokio_rt() -> tokio::runtime::Runtime {
+    let rt = tokio::runtime::Builder::new_current_thread()
+    .enable_time().enable_io()
+    .build().unwrap();
+    rt
+}

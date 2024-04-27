@@ -5,10 +5,10 @@ impl P2PManage {
     pub async fn start(this: Arc<P2PManage>) -> RetErr {
 
         // start p2p listen
-        let p2p = this.clone();
-        tokio::spawn(async move{
-            P2PManage::server_listen(p2p).await
-        });
+        // let p2p = this.clone();
+        // tokio::spawn(async move{
+        //     P2PManage::server_listen(p2p).await
+        // });
         
         // connect boot nodes
         let p2p = this.clone();
@@ -26,7 +26,8 @@ impl P2PManage {
         }
 
         // event loop
-        this.event_loop().await;
+        // this.event_loop().await;
+        P2PManage::event_loop(this).await;
         Ok(())
     }
 

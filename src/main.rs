@@ -23,6 +23,7 @@ mod mint;
 mod vm;
 mod chain;
 mod node;
+mod server;
 mod tests;
 
 use crate::sys::*;
@@ -78,12 +79,21 @@ fn start_hacash_node(iniobj: sys::IniObj) {
 
     // node
     let mut hnode = HacashNode::open(&iniobj, engptr.clone());
+    let (hnode, msgch) = hnode.init();
 
-    // start node
-    if let Err(e) = hnode.start() {
-        println!("start hacash node error: {}", e);
-    }
+    // handle ctr+c to close
+    let hn2 = hnode.clone();
+    ctrlc::set_handler( move || {
+        let h2 = hn2.clone();
+        HacashNode::close(h2);
+        // println!("received Ctrl+C!");
+    }).expect("Error setting Ctrl-C handler");
 
+    // start
+    HacashNode::start(hnode, msgch);
+
+    // on closed
+    println!("\nHacash node closed.");
 
 
     // test

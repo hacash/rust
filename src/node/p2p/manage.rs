@@ -1,5 +1,5 @@
 
-#[derive(Clone)]
+// #[derive(Clone)]
 pub struct PeerMngInst {
     p2p: Arc<P2PManage>,
 }
