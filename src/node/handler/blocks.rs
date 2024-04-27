@@ -38,13 +38,17 @@ impl MsgHandler {
 }
 
 // return res msg
-fn try_insert_blocks(engine: Arc<BlockEngine>, start_hei: u64, mut blocks: Vec<u8>) -> String {
-
-    engine.insert_sync(start_hei, blocks);
-    
+fn try_insert_blocks(engine: Arc<BlockEngine>, start_hei: u64, mut blocks: Vec<u8>) -> Error {
+    if let Err(e) = engine.insert_sync(start_hei, blocks) {
+        return e.to_string()
+    }
+    // ok
     "ok".to_string()
 }
 
+
+
+/*
 // return res msg
 fn try_insert_blocks_bnk(engine: Arc<BlockEngine>, start_hei: u64, mut blocks: Vec<u8>) -> String {
     let (blkist, blkch) = std::sync::mpsc::sync_channel(10);
@@ -102,3 +106,5 @@ fn try_insert_blocks_bnk(engine: Arc<BlockEngine>, start_hei: u64, mut blocks: V
 fn print_sync_warning(e: String) {
     println!("\n\n[Block Sync Warning] {}\n\n", e);
 }
+
+*/

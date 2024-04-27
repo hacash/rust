@@ -1,6 +1,6 @@
 
 
-static MARK_SYNCING: AtomicBool = AtomicBool::new(false);
+static SYNCING_MARK: AtomicBool = AtomicBool::new(false);
 
 pub struct MsgHandler {
     blktxch: Sender<BlockTxArrive>,
