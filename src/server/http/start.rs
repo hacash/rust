@@ -6,7 +6,8 @@ impl RPCServer {
         if !self.cnf.enable {
             return // disable
         }
-        let rt = new_multi_thread_tokio_rt();
+        let rt = new_tokio_rt(self.cnf.multi_thread);
+        // server listen loop
         rt.block_on(async move {
             server_listen(self).await
         });
