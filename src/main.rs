@@ -34,6 +34,7 @@ use crate::core::account::Account;
 use crate::mint::checker::*;
 use crate::chain::engine::*;
 use crate::node::node::*;
+use crate::server::*;
 
 use crate::tests::*;
 
@@ -80,6 +81,12 @@ fn start_hacash_node(iniobj: sys::IniObj) {
     // node
     let mut hnode = HacashNode::open(&iniobj, engptr.clone());
     let (hnode, msgch) = hnode.init();
+
+    // server
+    let server = DataServer::open(&iniobj, engptr.clone());
+    std::thread::spawn(move||{
+        server.start(); // http rpc 
+    });
 
     // handle ctr+c to close
     let hn2 = hnode.clone();

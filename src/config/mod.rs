@@ -13,5 +13,6 @@ include!("util.rs");
 include!("engine.rs");
 include!("mint.rs");
 include!("node.rs");
+include!("server.rs");
 include!("vm.rs");
 include!("config.rs");
