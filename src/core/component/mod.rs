@@ -5,6 +5,7 @@ use crate::interface::protocol::*;
 #[macro_use]
 use crate::base::lathe::*;
 use crate::base::field::*;
+use crate::protocol::*;
 
 use super::field::*;
 

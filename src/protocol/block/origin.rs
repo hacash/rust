@@ -1,5 +1,5 @@
 
-
+#[derive(PartialEq, Copy, Clone)]
 pub enum BLOCK_ORIGIN {
     UNKNOW,
     SYNC,

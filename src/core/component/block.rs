@@ -10,6 +10,7 @@ pub struct BlockPackage {
 	hash: Hash,
 	data: BytesW4,
     objc: Box<dyn Block>,
+    origin: block::BLOCK_ORIGIN,
 }
 
 impl HashBodyPkg for BlockPackage {
@@ -30,6 +31,9 @@ impl BlockPkg for BlockPackage {
     fn objc(&self) -> &Box<dyn Block> { 
 		&self.objc
 	}
+	fn origin(&self) -> block::BLOCK_ORIGIN {
+		self.origin	
+	}
 	
 }
 
@@ -45,7 +49,13 @@ impl BlockPackage {
 			hash: blk.hash(),
 			data: BytesW4::from_vec_u8(data),
 			objc: blk,
+			origin: block::BLOCK_ORIGIN::UNKNOW,
 		}
 	}
+
+	pub fn set_origin(&mut self, ori: block::BLOCK_ORIGIN) {
+		self.origin	= ori;
+	}
+	
 
 }
