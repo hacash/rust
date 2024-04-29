@@ -2,20 +2,25 @@
 
 #[derive(Clone)]
 pub struct BlockMintChecker {
-
+    cnf: MintConf,
+    difficulty: DifficultyGnr,
 }
 
 impl BlockMintChecker {
-    pub fn create() -> BlockMintChecker {
-        BlockMintChecker{}
+    pub fn new(ini: &IniObj) -> BlockMintChecker {
+        let cnf = NewMintConf(ini);
+        BlockMintChecker{
+            cnf: cnf.clone(),
+            difficulty: DifficultyGnr::new(cnf),
+        }
     }
 }
 
 
 impl MintChecker for BlockMintChecker {
 
-    fn consensus(&self, cbtx: &dyn Block) -> RetErr {
-        impl_consensus(self, cbtx)
+    fn consensus(&self, sto: &dyn Store, prevblk: &dyn Block, curblk: &dyn Block) -> RetErr {
+        impl_consensus(self, sto, prevblk, curblk)
     }
 
     fn coinbase(&self, height: u64, cbtx: &dyn Transaction) -> RetErr {

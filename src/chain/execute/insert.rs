@@ -8,6 +8,7 @@ pub fn do_check_insert(
     cnf: &EngineConf, 
     vmobj: &dyn VM,
     mintk: &dyn MintChecker, 
+    store: &dyn Store,
     prev_state: Arc<ChainState>,
     prev_block: &dyn Block,
     blkpkg: &dyn BlockPkg
@@ -67,11 +68,11 @@ pub fn do_check_insert(
         let mut txttsize = 0usize;
         let mut txttnum = 0usize;
         for tx in alltxs {
-            // coinbase not check time
-            if txttnum > 0 {
+            if txttnum > 0 { // coinbase not check
                 if tx.timestamp().to_u64() > cur_time {
                     return errf!("tx timestamp {} cannot more than now {}", tx.timestamp(), cur_time)
                 }
+                transaction::verify_tx_signature(tx.as_ref())?; // verify signs
             }
             txttsize += tx.size();
             txttnum += 1;
@@ -89,7 +90,7 @@ pub fn do_check_insert(
             return errf!("block mrkl root need {} but got {}", mkroot, mrklrt)
         }
         // check mint consensus & coinbase
-        mintk.consensus(&**block)?;
+        mintk.consensus(store, prev_block, &**block)?;
         // coinbase tx id = 0, if coinbase error
         let coinbase_tx = &*alltxs[0];
         mintk.coinbase(height, coinbase_tx)?;

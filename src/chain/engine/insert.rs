@@ -71,13 +71,13 @@ impl BlockEngine {
             });
             // create sub state
             s.spawn(move || {
-                let mut benchmark = Duration::new(0, 0);
+                // let mut benchmark = Duration::new(0, 0);
                 loop {
                     let blk = crtchout.recv();
                     if blk.is_err() {
                         break // end
                     }
-                    let now = Instant::now();
+                    // let now = Instant::now();
                     let blk = blk.unwrap();
                     let resck = this.exec_state(blk);
                     if resck.is_err() {
@@ -86,14 +86,14 @@ impl BlockEngine {
                         break // end
                     }
                     let chunk_ptr = resck.unwrap();
-                    let now1 = Instant::now();
-                    benchmark += now1.duration_since(now);
+                    // let now1 = Instant::now();
+                    // benchmark += now1.duration_since(now);
                     // next
                     if let Err(_) = istchin.send(chunk_ptr) {
                         break // end
                     }
                 }
-                print!(" {:?}", benchmark);
+                // print!(" {:?}", benchmark);
             });
             // roll store
             // let mut benchmark = Duration::new(0, 0);
@@ -159,6 +159,7 @@ impl BlockEngine {
             &self.cnf, 
             self.vmobj.as_ref(),
             self.mintk.as_ref(),
+            self.store.as_ref(),
             base_chunk.state.clone(),
             base_chunk.block.objc().as_ref(),
             blkpkg.as_ref(),

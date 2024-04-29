@@ -2,7 +2,7 @@
 
 pub trait MintChecker: Send + Sync + dyn_clone::DynClone {
     // check
-    fn consensus(&self, _: &dyn Block) -> RetErr;
+    fn consensus(&self, _: &dyn Store, _: &dyn Block, _: &dyn Block) -> RetErr;
     fn coinbase(&self, _: u64, _: &dyn Transaction) -> RetErr;
     // do
     fn initialize(&self, _: &mut dyn State) -> RetErr;

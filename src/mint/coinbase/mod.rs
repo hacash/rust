@@ -19,5 +19,6 @@ use super::component::*;
 
 
 
+include!("reward.rs");
 include!("channel.rs");
 

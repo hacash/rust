@@ -72,7 +72,7 @@ fn main() {
 fn start_hacash_node(iniobj: sys::IniObj) {
     // println!("startHacashNode ini={:?}", iniobj);
     // mint
-    let mint_checker = Box::new(BlockMintChecker::create());
+    let mint_checker = Box::new(BlockMintChecker::new(&iniobj));
 
     // engine
     let engine = BlockEngine::open(&iniobj, mint_checker);

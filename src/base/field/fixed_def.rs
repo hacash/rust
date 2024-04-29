@@ -262,6 +262,10 @@ impl $class {
         self.bytes
     }
 
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.bytes
+    }
+
     pub fn is_zero(&self) -> bool {
         return ! self.is_not_zero()
     }

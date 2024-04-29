@@ -48,6 +48,10 @@ impl BlockRead for BlockV1 {
         &self.intro.head.timestamp
     }
 
+    fn difficulty(&self) -> &Uint4 {
+        &self.intro.meta.difficulty
+    }
+
     fn prevhash(&self) -> &Hash {
         &self.intro.head.prevhash
     }

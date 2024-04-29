@@ -117,6 +117,16 @@ impl TransactionRead for $class {
         }
         gfee
     } 
+
+    fn req_sign(&self) -> HashSet<Address> {
+        let mut addrs = HashSet::from([self.address().clone()]);
+        for act in self.actions() {
+            for adr in act.as_ext().req_sign() {
+                addrs.insert(adr);
+            }
+        }
+        addrs
+    }
     
 }
 
