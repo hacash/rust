@@ -19,9 +19,6 @@ use tokio::sync::mpsc::{self, Receiver, Sender};
 use crate::sys::*;
 use crate::config::NodeConf;
 use crate::base::field::*;
-use crate::protocol::transaction::{self, *};
-use crate::protocol::block::{self, *};
-
 use crate::interface::chain::*;
 
 use crate::chain::engine::*;

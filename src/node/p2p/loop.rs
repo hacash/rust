@@ -9,12 +9,13 @@ impl P2PManage {
         let mut boostndes_tkr = new_ticker(54*5).await; // 5mins boost public nodes form offshoots table
 
         let mut server_listener = this.server().await;
-        let mut closech = { 
-            this.closech.lock().unwrap().take().unwrap()
-        };
+        let mut closech = this.closer.signal();
 
         loop {
             tokio::select! {
+                _ = closech.recv() => {
+                    break
+                }
                 _ = reconnect_tkr.tick() => {
                     let no_nodes = this.backbones().len() < 2;
                     if no_nodes && this.cnf.findnodes {
@@ -40,9 +41,6 @@ impl P2PManage {
                         tobj.handle_conn(client, false).await // not report me
                     });
                 },
-                _ = closech.recv() => {
-                    break
-                }
                 else => break
             }
         }

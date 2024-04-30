@@ -11,6 +11,9 @@ use crate::core::component::*;
 use crate::core::state::*;
 use crate::base::combo::*;
 use crate::chain::engine::*;
+use crate::protocol::transaction::{self, *};
+use crate::protocol::block::{self, *};
+
 
 use crate::interface::field::*;
 use crate::interface::node::*;
@@ -27,6 +30,8 @@ include!("handler.rs");
 include!("status.rs");
 include!("blocks.rs");
 include!("hashs.rs");
+include!("start.rs");
+include!("txblock.rs");
 
 
 

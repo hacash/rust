@@ -9,24 +9,19 @@ pub struct P2PManage {
     backbones: PeerList, // 4
     offshoots: PeerList, // 200
     // close mark
-    closech: StdMutex<Option<mpsc::Receiver<bool>>>,
-    closechtx: mpsc::Sender<bool>,
+    closer: Closer,
 }
 
 impl P2PManage {
 
     pub fn new(cnf: &NodeConf, msghl: Arc<MsgHandler>) -> P2PManage {
-
-        let (closetx, closerx) = mpsc::channel(5);
-
         P2PManage {
             cnf: cnf.clone(),
             msghandler: msghl,
             backbones: StdMutex::new(vec![]).into(),
             offshoots: StdMutex::new(vec![]).into(),
             // closech: StdMutex::new(Some(closerx)),
-            closech: Some(closerx).into(),
-            closechtx: closetx,
+            closer: Closer::new(),
         }
     }
 
@@ -79,11 +74,9 @@ impl P2PManage {
             p.disconnect().await
         }
     }
-    
-    pub fn close(this: Arc<P2PManage>) {
-        new_current_thread_tokio_rt().block_on(async move {
-            this.closechtx.send(true).await; // close
-        });
+
+    pub fn close(&self) {
+        self.closer.close();
     }
 
 }

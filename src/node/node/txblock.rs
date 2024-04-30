@@ -1,6 +1,7 @@
-/**
-* Tx Block Arrive Msg
-*/
+/*
+
+Tx Block Arrive Msg
+
 
 impl HacashNode {
 
@@ -93,3 +94,5 @@ fn check_know(mine: &Knowledge, peer: &Knowledge, hxkey: &Hash) -> (bool, KnowKe
     mine.add(knowkey.clone());
     (false, knowkey)
 }
+
+*/

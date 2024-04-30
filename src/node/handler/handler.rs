@@ -3,30 +3,43 @@
 static SYNCING_MARK: AtomicBool = AtomicBool::new(false);
 
 pub struct MsgHandler {
-    blktxch: Sender<BlockTxArrive>,
     engine: Arc<BlockEngine>,
     txpool: Arc<MemTxPool>,
-    peermng: StdMutex<Option<Box<dyn PeerManage>>>,
+    p2pmng: StdMutex<Option<Box<dyn PeerManage>>>,
+
+    blktx: Sender<BlockTxArrive>,
+    blktxch: StdMutex<Option<Receiver<BlockTxArrive>>>,
+
+    knows: Knowledge,
+    closer: Closer,
 }
 
 impl MsgHandler {
 
-    pub fn new(blktxch: Sender<BlockTxArrive>, engine: Arc<BlockEngine>, txpool: Arc<MemTxPool>) -> MsgHandler {
+    pub fn new(engine: Arc<BlockEngine>, txpool: Arc<MemTxPool>) -> MsgHandler {
+        let (tx, rx): (Sender<BlockTxArrive>, Receiver<BlockTxArrive>) = mpsc::channel(4000);
         MsgHandler{
-            blktxch: blktxch,
             engine: engine,
             txpool: txpool,
-            peermng: None.into(),
+            p2pmng: None.into(),
+            blktx: tx,
+            blktxch: Some(rx).into(),
+            knows: Knowledge::new(100),
+            closer: Closer::new(),
         }
     }
 
     pub fn switch_peer(&self, p: Arc<Peer>) -> Arc<Peer> {
-        self.peermng.lock().unwrap().as_ref().unwrap().switch_peer(p)
+        self.p2pmng.lock().unwrap().as_ref().unwrap().switch_peer(p)
     }
 
-    pub fn set_peer_mng(&self, mng: Box<dyn PeerManage>) {
-        let mut mymng = self.peermng.lock().unwrap();
+    pub fn set_p2p_mng(&self, mng: Box<dyn PeerManage>) {
+        let mut mymng = self.p2pmng.lock().unwrap();
         *mymng = Some(mng);
+    }
+
+    pub fn close(&self) {
+        self.closer.close();
     }
 
 }
@@ -51,8 +64,8 @@ impl MsgHandler {
         // println!("on_message peer={} ty={} len={}", peer.nick(), ty, body.len());
 
         match ty {
-            MSG_TX_SUBMIT =>      { self.blktxch.send(BlockTxArrive::Tx(peer.clone(), body)).await; },
-            MSG_BLOCK_DISCOVER => { self.blktxch.send(BlockTxArrive::Block(peer.clone(), body)).await; },
+            MSG_TX_SUBMIT =>      { self.blktx.send(BlockTxArrive::Tx(peer.clone(), body)).await; },
+            MSG_BLOCK_DISCOVER => { self.blktx.send(BlockTxArrive::Block(peer.clone(), body)).await; },
             MSG_BLOCK_HASH =>     { self.receive_hashs(peer, body).await; },
             MSG_REQ_BLOCK_HASH => { self.send_hashs(peer, body).await; },
             MSG_BLOCK =>          { self.receive_blocks(peer, body).await; },

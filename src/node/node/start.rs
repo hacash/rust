@@ -2,16 +2,8 @@
 
 impl HacashNode {
 
-
-    
     // 
-    pub fn init(mut self) -> (Arc<HacashNode>, Receiver<BlockTxArrive>) {
-        let chrx = self.blktxch.take().unwrap();
-        ( Arc::new(self), chrx)
-    }
-
-    // 
-    pub fn start(this: Arc<HacashNode>, chrx: Receiver<BlockTxArrive> ) -> RetErr {
+    pub fn start(this: Arc<HacashNode> ) -> RetErr {
 
         let rt = new_current_thread_tokio_rt();
         let p2p = this.p2p.clone();
@@ -19,7 +11,8 @@ impl HacashNode {
         // handle msg
         let hn2 = this.clone();
         rt.spawn_blocking(move||{
-            HacashNode::handle_txblock_arrive(hn2, chrx);
+            
+            // HacashNode::handle_txblock_arrive(hn2, chrx);
         });
 
         // start p2p loop, blocking

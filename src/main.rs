@@ -79,8 +79,7 @@ fn start_hacash_node(iniobj: sys::IniObj) {
     let engptr: Arc<BlockEngine> = Arc::new(engine);
 
     // node
-    let mut hnode = HacashNode::open(&iniobj, engptr.clone());
-    let (hnode, msgch) = hnode.init();
+    let mut hnode = Arc::new(HacashNode::open(&iniobj, engptr.clone()));
 
     // server
     let server = DataServer::open(&iniobj, engptr.clone());
@@ -91,13 +90,11 @@ fn start_hacash_node(iniobj: sys::IniObj) {
     // handle ctr+c to close
     let hn2 = hnode.clone();
     ctrlc::set_handler( move || {
-        let h2 = hn2.clone();
-        HacashNode::close(h2);
-        // println!("received Ctrl+C!");
-    }).expect("Error setting Ctrl-C handler");
+        hn2.close();
+    });
 
     // start
-    HacashNode::start(hnode, msgch);
+    HacashNode::start(hnode);
 
     // on closed
     println!("\nHacash node closed.");

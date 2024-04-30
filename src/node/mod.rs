@@ -1,6 +1,7 @@
 
 
 include!("util.rs");
+include!("closer.rs");
 
 pub mod memtxpool;
 pub mod peer;
