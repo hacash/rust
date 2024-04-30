@@ -31,38 +31,26 @@ StructFieldStructSetParse!{ self, buf, seek, {
 
 /********************/
 
+macro_rules! block_intro_fn_mount{
+    ($fname:ident, $rty:ty) => (
+        fn $fname(&self) -> &$rty {
+            self.intro.$fname()
+        }
+    )
+}
 
 impl BlockRead for BlockV1 {
 
     fn hash(&self) -> Hash {
-        let intro = self.intro.serialize();
-        let hx = x16rs::block_hash(self.height().to_u64(), intro);
-        Hash::must(&hx[..])
+        self.intro.hash()
     }
 
-    fn height(&self) -> &BlockHeight {
-        &self.intro.head.height
-    }
-
-    fn timestamp(&self) -> &Timestamp {
-        &self.intro.head.timestamp
-    }
-
-    fn difficulty(&self) -> &Uint4 {
-        &self.intro.meta.difficulty
-    }
-
-    fn prevhash(&self) -> &Hash {
-        &self.intro.head.prevhash
-    }
-
-    fn mrklroot(&self) -> &Hash {
-        &self.intro.head.mrklroot
-    }
-    
-    fn transaction_count(&self) -> &Uint4 {
-        self.intro.transaction_count()
-    }
+    block_intro_fn_mount!{height, BlockHeight}
+    block_intro_fn_mount!{timestamp, Timestamp}
+    block_intro_fn_mount!{difficulty, Uint4}
+    block_intro_fn_mount!{prevhash, Hash}
+    block_intro_fn_mount!{mrklroot, Hash}
+    block_intro_fn_mount!{transaction_count, Uint4}
 
     fn transaction_hash_list(&self, hash_with_fee: bool) -> Vec<Hash> {
         let mut list = vec![];
@@ -89,6 +77,10 @@ impl BlockRead for BlockV1 {
 
 
 impl Block for BlockV1 {
+
+    fn as_read(&self) -> &dyn BlockRead { 
+        self
+    }
 
     fn update_mrklroot(&mut self) {
         let hash_with_fee = true;

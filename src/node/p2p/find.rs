@@ -14,12 +14,17 @@ impl P2PManage {
 
 
 async fn do_insert_new_nodes(this: &P2PManage, mearest_addrs: Vec<SocketAddr>, first: &PeerKey) {
-    println!("find {} nearest nodes, try connect... ", mearest_addrs.len());
+    let nodelen = mearest_addrs.len();
+    if nodelen == 0 {
+        println!("not find any nearest.");
+        return
+    }
+    println!("find {} nearest nodes, try connect...", nodelen);
     // try connect for each
     let mut cncount = 0;
     for addr in &mearest_addrs {
         if let Err(e) = this.connect_node(addr).await {
-            println!("Fail connect to {}, {}.", addr, e);
+            println!("failed connect to {}, {}.", addr, e);
             continue
         }
         cncount += 1;
@@ -36,7 +41,7 @@ async fn do_insert_new_nodes(this: &P2PManage, mearest_addrs: Vec<SocketAddr>, f
 
 
 async fn do_find_nodes(this: &P2PManage) {
-    print!("[P2P] Search nodes... ");
+    print!("[P2P] Searching nodes...");
     let mut allfindnodes = HashMap::<PeerKey, SocketAddr>::new();
     // search form backbone nodes
     let mut willdropeds = vec![ this.cnf.node_key.clone() ];

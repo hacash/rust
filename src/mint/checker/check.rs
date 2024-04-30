@@ -18,8 +18,11 @@ impl BlockMintChecker {
 
 
 impl MintChecker for BlockMintChecker {
+    fn config(&self) -> &MintConf {
+        &self.cnf
+    }
 
-    fn consensus(&self, sto: &dyn Store, prevblk: &dyn Block, curblk: &dyn Block) -> RetErr {
+    fn consensus(&self, sto: &dyn Store, prevblk: &dyn BlockRead, curblk: &dyn BlockRead) -> RetErr {
         impl_consensus(self, sto, prevblk, curblk)
     }
 

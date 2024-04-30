@@ -18,6 +18,7 @@ use crate::protocol::block::{self, *};
 use crate::interface::field::*;
 use crate::interface::node::*;
 use crate::interface::chain::*;
+use crate::interface::protocol::*;
 
 use super::*;
 use super::peer::*;

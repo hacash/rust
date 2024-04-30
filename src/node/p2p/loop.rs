@@ -3,7 +3,7 @@
 impl P2PManage {
 
     pub async fn event_loop(this: Arc<P2PManage>) -> RetErr {
-        let mut reconnect_tkr = new_ticker(51*15).await; // 15mins check reconnect
+        let mut reconnect_tkr = new_ticker(51*33).await; // 30mins check reconnect
         let mut findnodes_tkr = new_ticker(52*60*4).await; // 4hour find nodes or boot
         let mut checkpeer_tkr = new_ticker(53*3).await; // 3mins ping all no active nodes
         let mut boostndes_tkr = new_ticker(54*5).await; // 5mins boost public nodes form offshoots table

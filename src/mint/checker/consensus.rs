@@ -1,5 +1,5 @@
 
-fn impl_consensus(this: &BlockMintChecker, sto: &dyn Store, prevblk: &dyn Block, curblk: &dyn Block) -> RetErr {
+fn impl_consensus(this: &BlockMintChecker, sto: &dyn Store, prevblk: &dyn BlockRead, curblk: &dyn BlockRead) -> RetErr {
     let curhei = curblk.height().uint(); // u64
     if curhei < 288*200 {
         return Ok(()) // not check, compatible history code

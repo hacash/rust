@@ -43,10 +43,38 @@ StructFieldStruct!{ BlockHeadMeta,
 }
 
 
-impl BlockHeadMeta {
-	pub fn transaction_count(&self) -> &Uint4 {
+impl BlockRead for BlockHeadMeta {
+
+    fn hash(&self) -> Hash {
+        let intro = vec![ self.head.serialize(), self.meta.serialize() ].concat();
+        let hx = x16rs::block_hash(self.height().to_u64(), intro);
+        Hash::must(&hx[..])
+    }
+
+    fn height(&self) -> &BlockHeight {
+        &self.head.height
+    }
+
+    fn timestamp(&self) -> &Timestamp {
+        &self.head.timestamp
+    }
+
+	fn difficulty(&self) -> &Uint4 {
+        &self.meta.difficulty
+	}
+    fn prevhash(&self) -> &Hash {
+        &self.head.prevhash
+    }
+
+    fn mrklroot(&self) -> &Hash {
+        &self.head.mrklroot
+    }
+
+	fn transaction_count(&self) -> &Uint4 {
 		self.head.transaction_count()
 	}
+    
+
 }
 
 

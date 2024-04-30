@@ -90,7 +90,7 @@ pub fn do_check_insert(
             return errf!("block mrkl root need {} but got {}", mkroot, mrklrt)
         }
         // check mint consensus & coinbase
-        mintk.consensus(store, prev_block, &**block)?;
+        mintk.consensus(store, prev_block.as_read(), block.as_read())?;
         // coinbase tx id = 0, if coinbase error
         let coinbase_tx = &*alltxs[0];
         mintk.coinbase(height, coinbase_tx)?;

@@ -36,8 +36,8 @@ fn _do_rebuild(this: &mut BlockEngine) {
         let chei = this.klctx.lock().unwrap().sroot.height.to_u64();
         chei
     };
-    // build
-    print!("[Engine] Datadir: {}, \n         Rebuild unstable blocks ({})", this.cnf.data_dir, next_height);
+    // build unstable blocks 
+    print!("[Engine] Datadir: {}, rebuild ({})", this.cnf.data_dir, next_height);
     // insert lock
     this.isrlck.lock();
     loop {
@@ -48,7 +48,7 @@ fn _do_rebuild(this: &mut BlockEngine) {
             return // end finish
         }
         let blk = resblk.unwrap();
-        print!(" -> {}", blk.objc().height().to_u64());
+        print!("➢ {}", blk.objc().height().to_u64());
         // try insert
         let ier = this.insert_unsafe(blk); // ignore err
         if let Err(e) = ier {
