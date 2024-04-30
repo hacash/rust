@@ -53,10 +53,10 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>)
     if blkhei <= lathei + 1 {
         // do insert  ◆ ◇ ⊙ ■ □ △ ▽ ❏ ❐ ❑ ❒  ▐ ░ ▒ ▓ ▔ ▕ ■ □ ▢ ▣ ▤ ▥ ▦ ▧ ▨ ▩ ▪ ▫    
         let hxtail = &blkhx.as_bytes()[24..];
-        let txs = latest.objc().transaction_count().uint() - 1;
-        let blkts = &timeshow(latest.objc().timestamp().uint())[10..];
-        print!("❏  discover block {} …{} {} txs {} time at {} inserting...", 
-            blkhei, hex::encode(hxtail), txs, blkts, &ctshow()[10..]);
+        let txs = blkhead.transaction_count().uint() - 1;
+        let blkts = &timeshow(blkhead.timestamp().uint())[11..];
+        print!("❏  discover block {} …{} txs {} time {} inserting at {} ... ", 
+            blkhei, hex::encode(hxtail), txs, blkts, &ctshow()[11..]);
         let bodycp = body.clone();
         let engicp = this.engine.clone();
         std::thread::spawn(move||{
