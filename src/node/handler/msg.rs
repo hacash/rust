@@ -35,7 +35,19 @@ StructFieldStruct!{ HandshakeStatus,
 
 // msg send
 
-async fn send_req_block_msg(peer: Arc<Peer>, starthei: u64) {
+async fn get_status_try_sync_blocks(hdl: &MsgHandler, peer: Arc<Peer>, starthei: u64) {
+    let prevdo = hdl.doing_sync.load(Ordering::Relaxed);
+    if prevdo + 10 > curtimes() {
+        return // 10secs only do once sync
+    }
+    // do sync
+    send_req_block_msg(hdl, peer, starthei).await;
+}
+
+
+async fn send_req_block_msg(hdl: &MsgHandler, peer: Arc<Peer>, starthei: u64) {
+    hdl.doing_sync.store(curtimes(), Ordering::Relaxed);
+    // do
     let hei = Uint8::from(starthei);
     peer.send_msg(MSG_REQ_BLOCK, hei.serialize()).await;
     flush!("sync blocks from {} {}...", peer.name(), starthei);

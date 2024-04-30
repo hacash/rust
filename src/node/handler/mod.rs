@@ -1,5 +1,5 @@
 use std::sync::{ Mutex as StdMutex, Arc };
-use std::sync::atomic::{Ordering, AtomicBool};
+use std::sync::atomic::{Ordering, AtomicU64};
 
 use tokio::sync::mpsc::{self, Receiver, Sender};
 

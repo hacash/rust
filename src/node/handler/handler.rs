@@ -1,7 +1,4 @@
 
-
-static SYNCING_MARK: AtomicBool = AtomicBool::new(false);
-
 pub struct MsgHandler {
     engine: Arc<BlockEngine>,
     txpool: Arc<MemTxPool>,
@@ -10,6 +7,7 @@ pub struct MsgHandler {
     blktx: Sender<BlockTxArrive>,
     blktxch: StdMutex<Option<Receiver<BlockTxArrive>>>,
 
+    doing_sync: AtomicU64,
     knows: Knowledge,
     closer: Closer,
 }
@@ -24,6 +22,7 @@ impl MsgHandler {
             p2pmng: None.into(),
             blktx: tx,
             blktxch: Some(rx).into(),
+            doing_sync: AtomicU64::new(0),
             knows: Knowledge::new(100),
             closer: Closer::new(),
         }
@@ -56,7 +55,7 @@ impl MsgHandler {
     }
     
     pub async fn on_disconnect(&self, peer: Arc<Peer>) {
-        // println!("on_disconnect peer={}", peer.nick());
+        // println!("- on disconnect peer = {}", peer.nick());
         // do nothing
     }
     

@@ -71,7 +71,7 @@ impl MsgHandler {
         }
         // sync more blocks
         let peer = self.switch_peer(peer);
-        send_req_block_msg(peer, end_hei+1).await
+        send_req_block_msg(self, peer, end_hei+1).await
     }
 
 

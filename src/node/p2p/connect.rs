@@ -43,10 +43,7 @@ impl P2PManage {
         self.handle_peer_message(peer.clone(), conn_read).await?;
         // insert to node list
         let droped = self.insert(peer);
-        if let Some(peer) = droped {
-            // disconnect and drop peer
-            peer.disconnect().await;
-        }
+        self.delay_close_peer(droped, 15).await; // delay 15 secs to close
         Ok(())
     }
 
@@ -88,6 +85,24 @@ impl P2PManage {
         nodeinfo.splice(20..20+PEER_KEY_SIZE, namebt.into_bytes());
         // ok
         nodeinfo.to_vec()
+    }
+
+
+    async fn delay_close_peer(&self, peer: Option<Arc<Peer>>, delay: u64) {
+        if peer.is_none() {
+            return
+        }
+        let peer = peer.unwrap();
+        // disconnect and drop peer
+        if delay == 0 {
+            peer.disconnect().await;
+            return // close immediately
+        }
+        // set delay to close
+        tokio::spawn(async move{
+            asleep(delay).await;
+            peer.disconnect().await;
+        });
     }
 
 }

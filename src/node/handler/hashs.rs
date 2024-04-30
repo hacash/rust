@@ -77,7 +77,7 @@ impl MsgHandler {
             let hx = Fixed32::cons( bufcut!(hashs, hi, hi+32) );
             if hx == myhx {
                 // sync blocks from next height
-                try_sync_blocks(self, peer, hei + 1).await;
+                get_status_try_sync_blocks(self, peer, hei + 1).await;
                 return // to sync new blocks
             }
             // next

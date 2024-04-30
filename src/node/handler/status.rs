@@ -27,7 +27,7 @@ impl MsgHandler {
         let lat_hei = my_status.latest_height.uint();
         if my_status.latest_height == 0 && status.latest_height > 0 {
             let start_hei = lat_hei + 1;
-            try_sync_blocks(self, peer, start_hei).await;
+            get_status_try_sync_blocks(self, peer, start_hei).await;
             return
         }
         // check hash fork and sync new blocks
@@ -42,10 +42,6 @@ impl MsgHandler {
         }
     }
 
-}
-
-async fn try_sync_blocks(hdl: &MsgHandler, peer: Arc<Peer>, starthei: u64) {
-    send_req_block_msg(peer, starthei).await;
 }
 
 fn create_status(hdl: &MsgHandler) -> HandshakeStatus {
