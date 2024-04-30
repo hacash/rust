@@ -136,7 +136,7 @@ impl Transaction for $class {
     }
 }
 
-impl TxExec for  $class {
+impl TxExec for $class {
 
     fn execute(&self, blkhei: u64, sta: &mut dyn State) -> RetErr {
         // check BlockHeight more than 20w trs.Fee.Size() must less than 6 bytes.
@@ -156,12 +156,10 @@ impl TxExec for  $class {
         if exhei > 0 { // have tx !!!
             // handle hacash block chain bug start
             let bugtx = Hash::from_hex(b"f22deb27dd2893397c2bc203ddc9bc9034e455fe630d8ee310e8b5ecc6dc5628");
-            if exhei == 63448 && txhx == bugtx {
-                // pass the BUG
-            }else{
+            if exhei != 63448 || txhx != bugtx {
                 return errf!("tx {} already exist in height {}", txhx, exhei)
             }
-            // handle bug end
+            // pass the BUG
         }
         // save exist mark
         exiobj.height = BlockHeight::from(blkhei);

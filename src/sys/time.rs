@@ -1,5 +1,6 @@
-use chrono::{DateTime, Local};
+use chrono::{DateTime, Local, TimeZone};
 
+pub const TIME_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 
 pub fn curtimes() -> u64 {
     SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as u64
@@ -7,5 +8,11 @@ pub fn curtimes() -> u64 {
 
 
 pub fn ctshow() -> String {
-    Local::now().format("%Y-%m-%d %H:%M:%S").to_string()
+    Local::now().format(TIME_FORMAT).to_string()
 }
+
+pub fn timeshow(t: u64) -> String {
+    Local.timestamp_opt(t as i64, 0).unwrap().format(TIME_FORMAT).to_string()
+}
+
+
