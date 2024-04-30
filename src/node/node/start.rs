@@ -7,12 +7,14 @@ impl HacashNode {
 
         let rt = new_current_thread_tokio_rt();
         let p2p = this.p2p.clone();
+        let hdl = this.msghdl.clone();
 
         // handle msg
-        let hn2 = this.clone();
-        rt.spawn_blocking(move||{
-            
-            // HacashNode::handle_txblock_arrive(hn2, chrx);
+        std::thread::spawn(move||{
+            let rt = new_current_thread_tokio_rt();
+            rt.block_on(async move {
+                MsgHandler::start(hdl).await
+            });
         });
 
         // start p2p loop, blocking

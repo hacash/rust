@@ -3,6 +3,45 @@
 impl MsgHandler {
 
     async fn send_blocks(&self, peer: Arc<Peer>, mut buf: Vec<u8>) {
+        if buf.len() != 8 {
+            return // error len
+        }
+        let starthei = u64::from_be_bytes( bufcut!(buf, 0, 8) );
+        let latest = self.engine.latest_block();
+        let lathei = latest.objc().height().uint();
+	    let maxsendsize = 1024 * 1024 * 20usize; // max 20MB
+	    let maxsendnum = 10000usize; // max 10000
+        let mut totalsize = 0;
+        let mut totalnum = 0;
+        let mut endhei = 0;
+        // load data
+        let stoptr = self.engine.store();
+        let store = CoreStoreDisk::wrap(stoptr.as_ref());
+        let mut blkdtsary = vec![];
+        for hei in starthei ..= lathei {
+            let blkdts = store.blockdatabyptr(&BlockHeight::from(hei));
+            if blkdts.is_none() {
+                return // not find block hash by height
+            }
+            let dts = blkdts.unwrap().into_bytes();
+            totalsize += dts.len();
+            totalnum += 1;
+            endhei = hei;
+            blkdtsary.push( dts );
+            if totalnum >= maxsendnum || totalsize >= maxsendsize {
+                break // chunk finish
+            }
+        }
+        let resblkdts = blkdtsary.concat();
+        // ret
+        let msgbody = vec![
+            lathei.to_be_bytes().to_vec(),
+            starthei.to_be_bytes().to_vec(),
+            endhei.to_be_bytes().to_vec(),
+            resblkdts,
+        ].concat();
+        // return blocks to peer
+        peer.send_msg(MSG_BLOCK, msgbody).await;
     }
     
     async fn receive_blocks(&self, peer: Arc<Peer>, mut buf: Vec<u8>) {

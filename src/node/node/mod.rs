@@ -37,6 +37,5 @@ use super::handler::*;
 include!("util.rs");
 include!("node.rs");
 include!("start.rs");
-include!("txblock.rs");
 
 

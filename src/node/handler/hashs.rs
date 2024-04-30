@@ -3,8 +3,38 @@
 impl MsgHandler {
 
     async fn send_hashs(&self, peer: Arc<Peer>, mut buf: Vec<u8>) {
-
-
+        if buf.len() != 1+8 {
+            return // error len
+        }
+        let hnum = buf[0] as u64;
+        if hnum > 80 {
+            return // max 80
+        }
+        let endhei = u64::from_be_bytes( bufcut!(buf, 1, 9) );
+        // req
+        let latest = self.engine.latest_block();
+        let lathei = latest.objc().height().uint();
+        if endhei > lathei {
+            return
+        }
+        let mut starthei = endhei - hnum;
+        if hnum >= endhei {
+            starthei = 1;
+        }
+        let stoptr = self.engine.store();
+        let store = CoreStoreDisk::wrap(stoptr.as_ref());
+        // load
+        let mut reshxs = Vec::with_capacity((hnum + 8) as usize);
+        reshxs.push( buf[1..9].to_vec() ); // endhei
+        for hei in (starthei..=endhei).rev() {
+            let curhx = store.blockptr(&BlockHeight::from(hei));
+            if curhx.is_none() {
+                return // not find block hash by height
+            }
+            reshxs.push( curhx.unwrap().to_vec() );
+        }
+        // return hashs to peer
+        peer.send_msg(MSG_BLOCK_HASH, reshxs.concat()).await;
     }
 
     async fn receive_hashs(&self, peer: Arc<Peer>, mut buf: Vec<u8>) {

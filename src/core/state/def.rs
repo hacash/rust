@@ -13,6 +13,18 @@ defineChainStateOperationInstance!{
     )
 }
 
+impl CoreStoreDisk<'_> {
+    pub fn blockdatabyptr(&self, hei: &BlockHeight) -> Option<BytesW4> {
+        let hx = self.blockptr(hei);
+        if let None = hx {
+            return None // not find
+        }
+        self.blockdata(&hx.unwrap())
+    }
+}
+
+
+
 
 
 /**
