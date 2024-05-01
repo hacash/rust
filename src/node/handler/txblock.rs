@@ -47,7 +47,7 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>)
     }
     let mintckr = this.engine.mint_checker();
     let stoptr = this.engine.store();
-    if let Err(_) = mintckr.consensus(stoptr.as_ref(), latest.objc().as_read(), &blkhead) {
+    if let Err(_) = mintckr.prepare(stoptr.as_ref(), &blkhead) {
         return  // difficulty check fail
     }
     if blkhei <= lathei + 1 {
@@ -55,7 +55,7 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>)
         let hxtail = &blkhx.as_bytes()[24..];
         let txs = blkhead.transaction_count().uint() - 1;
         let blkts = &timeshow(blkhead.timestamp().uint())[11..];
-        print!("❏  discover block {} …{} txs {} time {} inserting at {} ... ", 
+        print!("❏  discover block {} …{} txs{:2} time {} inserting at {} ... ", 
             blkhei, hex::encode(hxtail), txs, blkts, &ctshow()[11..]);
         let bodycp = body.clone();
         let engicp = this.engine.clone();
@@ -74,6 +74,7 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>)
     }else{
         // req sync
         send_req_block_hash_msg(peer, (heispan+1) as u8, lathei).await;
+        return // not broadcast
     }
     // broadcast new block
     let p2p = this.p2pmng.lock().unwrap();

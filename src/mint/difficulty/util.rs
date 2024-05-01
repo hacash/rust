@@ -1,6 +1,9 @@
 const HASH_WIDTH: usize = 32;
 const BITS_WIDTH: usize = HASH_WIDTH * 8;
 
+/******************/
+
+
 pub fn biguint_to_u32(bn: &BigUint) -> u32 {
     let hx = biguint_to_hash(bn);
     hash_to_u32(&hx)
@@ -56,6 +59,23 @@ pub fn hash_to_u32(hx: &[u8; HASH_WIDTH]) -> u32 {
 }
 
 /******************/
+
+pub fn hash_big_than(src: &[u8], tar: &[u8]) -> bool {
+    let mut sz = src.len();
+    if sz > tar.len() {
+        sz = tar.len();
+    }
+    for i in 0..sz {
+        if src[i] > tar[i] {
+            return true
+        }else if src[i] < tar[i] {
+            return false
+        }
+    }
+    // equal
+    false
+
+}
 
 fn left_zero(buf: &[u8]) -> usize {
     let mut lzo = 0usize;

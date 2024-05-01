@@ -1,4 +1,26 @@
 
+fn impl_prepare(this: &BlockMintChecker, sto: &dyn Store, curblk: &dyn BlockRead) -> RetErr {
+    let curhei = curblk.height().uint(); // u64
+    if curhei < 288*200 {
+        return Ok(()) // not check, compatible history code
+    }
+    let blkspan = this.cnf.difficulty_adjust_blocks;
+    if curhei % blkspan == 0 {
+        return Ok(()) // not check, difficulty update
+    }
+    // check
+    let (_, diffhx) = this.difficulty.req_cycle_block(curhei, sto);
+    let cblkhx = curblk.hash();
+    if hash_big_than(cblkhx.as_ref(), &diffhx) {
+        return errf!("block {} PoW difficulty check failed need less than {} but got {}", 
+            curhei, hex::encode(diffhx),  hex::encode(cblkhx))
+    }
+    // check success
+    Ok(())
+}
+
+
+
 fn impl_consensus(this: &BlockMintChecker, sto: &dyn Store, prevblk: &dyn BlockRead, curblk: &dyn BlockRead) -> RetErr {
     let curhei = curblk.height().uint(); // u64
     if curhei < 288*200 {

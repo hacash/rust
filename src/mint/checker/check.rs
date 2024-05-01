@@ -22,6 +22,10 @@ impl MintChecker for BlockMintChecker {
         &self.cnf
     }
 
+    fn prepare(&self, sto: &dyn Store, curblk: &dyn BlockRead) -> RetErr {
+        impl_prepare(self, sto, curblk)
+    }
+
     fn consensus(&self, sto: &dyn Store, prevblk: &dyn BlockRead, curblk: &dyn BlockRead) -> RetErr {
         impl_consensus(self, sto, prevblk, curblk)
     }

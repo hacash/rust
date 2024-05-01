@@ -2,7 +2,7 @@
 #[derive(Clone)]
 pub struct DifficultyGnr {
     cnf: MintConf,
-    block_times: Arc<Mutex<HashMap<u64,u64>>>, // height => time sec 
+    block_caches: Arc<Mutex<HashMap<u64,(u64,[u8; HASH_WIDTH])>>>, // height => (time, diffhx) 
 }
 
 impl DifficultyGnr {
@@ -10,7 +10,7 @@ impl DifficultyGnr {
     pub fn new(cnf: MintConf) -> DifficultyGnr {
         DifficultyGnr {
             cnf: cnf,
-            block_times: Arc::default(),
+            block_caches: Arc::default(),
         }
     }
 
@@ -22,13 +22,16 @@ impl DifficultyGnr {
 
 impl DifficultyGnr {
 
-    pub fn req_cycle_time(&self, hei: u64, sto: &dyn Store) -> u64 {
+    pub fn req_cycle_block(&self, hei: u64, sto: &dyn Store) -> (u64, [u8; HASH_WIDTH]) {
         let cylnum = self.cnf.difficulty_adjust_blocks;
         if hei < cylnum { // 288
-            return genesis_block().timestamp().uint()
+            let cyltime = genesis_block().timestamp().uint();
+            let diffcty = genesis_block().difficulty().uint();
+            let diffhx = u32_to_hash(diffcty);
+            return (cyltime, diffhx)
         }
         let cylhei = hei / cylnum * cylnum;
-        let mut cache = self.block_times.lock().unwrap();
+        let mut cache = self.block_caches.lock().unwrap();
         if let Some(blk_time) = cache.get(&cylhei) {
             return *blk_time // find in cache
         }
@@ -39,13 +42,16 @@ impl DifficultyGnr {
         let mut intro = BlockIntro::new();
         intro.parse(blkdts.as_ref(), 0).unwrap();
         // get time
-        let cyltime = intro.head.timestamp.uint();
-        cache.insert(cylhei, cyltime);
+        let cyltime = intro.timestamp().uint();
+        let diffcty = intro.difficulty().uint();
+        let diffhx = u32_to_hash(diffcty);
+        let ccitem = (cyltime, diffhx);
+        cache.insert(cylhei, ccitem);
         if cache.len() as u64 > cylnum {
             cache.clear(); // clear
         }
         // ok
-        cyltime
+        ccitem
     }
 
 }

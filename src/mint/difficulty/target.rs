@@ -17,7 +17,8 @@ impl DifficultyGnr {
         // count time
         let blk_span = self.cnf.each_block_target_time;
         let target_time_span = cylnum * blk_span; // 288 * 300
-        let mut real_time_span = blk_span + prevblkt - self.req_cycle_time(hei - cylnum, sto); // +300: 287+1block
+        let (prevcltime, _) = self.req_cycle_block(hei - cylnum, sto);
+        let mut real_time_span = blk_span + prevblkt - prevcltime; // +300: 287+1block
         if hei < 288*450 {
             real_time_span -= blk_span; // -300 = 287block, compatible history code
         }
