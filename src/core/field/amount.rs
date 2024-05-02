@@ -294,7 +294,7 @@ impl Amount {
         // println!("{} {}", bignum.to_string(), sign==Minus);
         amt.byte = nunbts;
         // check
-        amount_check_data_len!(amt, "to_fin_string");
+        amount_check_data_len!(amt, "to_string");
         Ok(amt)
     }
 
@@ -387,13 +387,13 @@ impl Amount {
 // to string 
 impl Amount {
 
-    pub fn to_fin_string(&self) -> String {
-        ("ㄜ".to_owned() + self.to_string().as_str()).to_string()
-    }
     pub fn to_string(&self) -> String {
+        ("ㄜ".to_owned() + self.to_fin_string().as_str()).to_string()
+    }
+    
+    pub fn to_fin_string(&self) -> String {
         let (s1, s2, s3) = self.to_strings();
         format!("{}{}:{}", s1, s2, s3)
-        
     }
 
     pub fn to_strings(&self) -> (String, String, String) {
@@ -415,6 +415,27 @@ impl Amount {
         match usemei {
             true => self.to_mei_string_unsafe(),
             false => self.to_fin_string(),
+        }
+    }
+
+    pub fn to_unit_string(&self, unit_str: &str) -> String {
+        let mut unit = 0u8;
+        if let Ok(u) = unit_str.parse::<u8>() {
+            unit = u;
+        }else{
+            unit = match unit_str {
+                "mei"  => 248,
+                "zhu"  => 240,
+                "shuo" => 232,
+                "ai"   => 224,
+                "miao" => 216,
+                _ => 0,
+            }
+        }
+        if unit > 0 {
+            self.to_unit_unsafe(unit).to_string()
+        }else{
+            self.to_fin_string()
         }
     }
 

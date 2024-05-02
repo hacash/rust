@@ -47,10 +47,12 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>)
     }
     let mintckr = this.engine.mint_checker();
     let stoptr = this.engine.store();
-    if let Err(_) = mintckr.prepare(stoptr.as_ref(), &blkhead) {
-        return  // difficulty check fail
-    }
+    // may insert
     if blkhei <= lathei + 1 {
+        // prepare check
+        if let Err(_) = mintckr.prepare(stoptr.as_ref(), &blkhead) {
+            return  // difficulty check fail
+        }
         // do insert  ◆ ◇ ⊙ ■ □ △ ▽ ❏ ❐ ❑ ❒  ▐ ░ ▒ ▓ ▔ ▕ ■ □ ▢ ▣ ▤ ▥ ▦ ▧ ▨ ▩ ▪ ▫    
         let hxtail = &blkhx.as_bytes()[24..];
         let txs = blkhead.transaction_count().uint() - 1;
