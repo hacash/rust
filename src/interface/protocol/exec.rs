@@ -14,7 +14,7 @@ pub trait ExecEnv {
     fn pending_hash(&self) -> &Hash { panic_never_call_this!() }
     fn main_address(&self) -> &Address { panic_never_call_this!() }
     fn tx_fee(&self) -> &Amount { panic_never_call_this!() }
-    fn check_signature(&self, adr: &Address) -> RetErr { errf!("check {} signature error", adr.to_readable()) }
+    fn check_signature(&self, adr: &Address) -> RetErr { errf!("check {} signature error", adr.readable()) }
     // fn address_list(&self) -> &[Address] { &[] }
     fn call_depth(&self) -> u32 { 0 }
 }

@@ -33,6 +33,9 @@ impl P2PManage {
                 },
                 _ = boostndes_tkr.tick() => {
                     this.boost_public();
+                    if this.backbones().len() == 0 {
+                        this.connect_boot_nodes().await; // connect boots
+                    }
                 },
                 client = server_listener.accept() => {
                     let (client, _) = errunbox!( client )?;

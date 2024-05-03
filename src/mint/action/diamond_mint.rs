@@ -116,7 +116,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     let number = this.head.number;
     let dianum = number.to_u32();
     let name = this.head.diamond;
-    let namestr = name.to_readable();
+    let namestr = name.readable();
     let prev_hash = this.head.prev_hash;
     let nonce = this.head.nonce;
     let address = this.head.address;
@@ -167,7 +167,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     }
     let dianame = Fixed6::cons(dianame.unwrap());
     if name != dianame {
-        return errf!("diamond name need {} but got {}", dianame.to_readable(), namestr)
+        return errf!("diamond name need {} but got {}", dianame.readable(), namestr)
     }
 
     // exist

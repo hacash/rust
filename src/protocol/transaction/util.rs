@@ -30,5 +30,5 @@ fn verify_one_sign(hash: &Hash, addr: &Address, signs: &Vec<Sign>) -> RetErr {
             }
         }
     }
-    errf!("{} verify signature failed", addr.to_readable())
+    errf!("{} verify signature failed", addr.readable())
 }

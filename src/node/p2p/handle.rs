@@ -58,9 +58,8 @@ async fn do_handle_pmsg(pary1: PeerList, pary2: PeerList, msghdl: Arc<MsgHandler
             });
             continue // next
         }else if MSG_PING == ty {
-            // return pong
+            // replay pong
             peer.send_p2p_msg(MSG_PONG, vec![]).await;
-            
         }else if MSG_PONG == ty {
             // do nothing
         }else if MSG_CLOSE == ty {

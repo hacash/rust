@@ -38,7 +38,7 @@ fnSatoshiOperateCommon!(sat_sub, addr, sat, oldsat, {
     // check
     if *oldsat < *sat {
 		return errf!("do sat_sub error: address {} balance {} not enough, need {}", 
-            addr.to_readable(), oldsat, sat)
+            addr.readable(), oldsat, sat)
     }
     // do sub
     *oldsat - *sat
@@ -70,7 +70,7 @@ pub fn sat_check(state: &mut CoreState, addr: &Address, sat: &Satoshi) -> Ret<Sa
             return Ok(usrsat)
         }
     }
-    errf!("address {} satoshi not enough", addr.to_readable())
+    errf!("address {} satoshi not enough", addr.readable())
 }
 
 

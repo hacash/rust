@@ -12,7 +12,7 @@ pub struct $class {
 
 impl fmt::Display for $class{
     fn fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
-        write!(f,"{}",self.to_hex())
+        write!(f,"{}",self.hex())
     }
 }
 
@@ -168,7 +168,7 @@ impl Field for $class {
 
 impl FieldHex for $class {
 
-    fn to_hex(&self) -> String {
+    fn hex(&self) -> String {
         hex::encode(self.bytes)
     }
 
@@ -222,7 +222,7 @@ impl FieldFloat for $class {
 
 impl FieldReadable for $class {
     
-    fn to_readable(&self) -> String {
+    fn readable(&self) -> String {
         bytes_to_readable_string(&self.bytes[..])
     }
     

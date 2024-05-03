@@ -22,7 +22,7 @@ pub fn check_diamond_status(state: &mut MintState, addr_from: &Address, hacd_nam
         return errf!("diamond {} has been mortgaged and cannot be transferred", hacd_name.to_string())
     }
     if *addr_from != diaitem.address {
-        return errf!("diamond {} not belong to address {}", hacd_name.to_string(), addr_from.to_readable())
+        return errf!("diamond {} not belong to address {}", hacd_name.to_string(), addr_from.readable())
     }
     // ok
     Ok(diaitem)
@@ -51,7 +51,7 @@ pub fn engraved_one_diamond(pending_height: u64, state: &mut MintState, store: &
         return errf!("maximum inscriptions for one diamond is 200")
     }
 
-    let diaslt = must_have!(format!("diamond {}", diamond.to_readable()), store.diamond_smelt(&diamond));
+    let diaslt = must_have!(format!("diamond {}", diamond.readable()), store.diamond_smelt(&diamond));
 
     // cost
     let mut cost = Amount::new(); // zero

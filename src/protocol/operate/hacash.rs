@@ -19,7 +19,7 @@ pub fn $func_name(state: &mut CoreState, $addr: &Address, $amt: &Amount) -> Ret<
     /* -------- */
     if newamt.size() > 12 {
 		return errf!("address {} amount {} size {} over 12 can not to store", 
-        $addr.to_readable(), newamt.size(), newamt.to_fin_string())
+        $addr.readable(), newamt.size(), newamt.to_fin_string())
     }
     // save
     userbls.hacash = newamt.clone();
@@ -43,7 +43,7 @@ fnHacashOperateCommon!(hac_sub, addr, amt, oldhac, {
     // check
     if oldhac < *amt {
 		return Err(format!("do hac_sub error: address {} balance {} not enough, need {}", 
-            addr.to_readable(), oldhac.to_fin_string(), amt.to_fin_string()))
+            addr.readable(), oldhac.to_fin_string(), amt.to_fin_string()))
     }
     // do sub
     oldhac.sub( amt ) ?
@@ -67,7 +67,7 @@ pub fn hac_transfer(env: &dyn ExecEnv, stadb: &mut dyn State, addr_from: &Addres
     
 
 	// after 200000 height, the amount transferred to self is not allowed to be greater than the available balance!
-    // println!("hac_transfer hac_sub from {} to {} amount {}", addr_from.to_readable(), addr_to.to_readable(), amt.to_fin_string());
+    // println!("hac_transfer hac_sub from {} to {} amount {}", addr_from.readable(), addr_to.readable(), amt.to_fin_string());
     hac_sub(&mut state, addr_from, amt)?;
     hac_add(&mut state, addr_to, amt)?;
     // ok
@@ -80,12 +80,12 @@ pub fn hac_check(state: &mut CoreState, addr: &Address, amt: &Amount) -> Ret<Amo
         return errf!("check amount is cannot empty")
     }
     if let Some(bls) = state.balance( addr ) {
-        // println!("address {} balance {}", addr.to_readable(), bls.hacash.to_fin_string() );
+        // println!("address {} balance {}", addr.readable(), bls.hacash.to_fin_string() );
         if bls.hacash >= *amt {
             return Ok(bls.hacash)
         }
     }
-    errf!("address {} balance not enough need {}", addr.to_readable(), amt.to_fin_string() )
+    errf!("address {} balance not enough need {}", addr.readable(), amt.to_fin_string() )
 }
 
 

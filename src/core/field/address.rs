@@ -28,7 +28,7 @@ impl Address {
         Ok(address)
     }
     
-    pub fn to_readable(&self) -> String {
+    pub fn readable(&self) -> String {
         let btcon = self.serialize();
         let bts: [u8; ADDRESS_SIZE] = btcon.try_into().unwrap();
         Account::to_readable(&bts)

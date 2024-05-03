@@ -4,7 +4,11 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     Router::new().route("/", get(console))
 
     // query
-    .route(&query("balances"), get(balances))
+    .route(&query("balance"), get(balance))
+    .route(&query("coin_transfer"), get(scan_coin_transfer))
+
+    // create
+    .route(&create("account"), get(account))
 
     // submit
     // ...
@@ -19,6 +23,9 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
 // paths
 fn query(p: &str) -> String {
     "/query/".to_owned() + p
+}
+fn create(p: &str) -> String {
+    "/create/".to_owned() + p
 }
 fn submit(p: &str) -> String {
     "/submit/".to_owned() + p

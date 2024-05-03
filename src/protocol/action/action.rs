@@ -7,6 +7,7 @@ pubFnRegActionCreates!{
 
     HacTransfer
     HacFromTransfer
+    HacFromToTransfer
 
 }
 

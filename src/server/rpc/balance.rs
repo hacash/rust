@@ -1,14 +1,13 @@
 
 
 defineQueryObject!{ Q8364,
-    address_list, String, s!(""),
-    unit, Option<String>, None,
+    address, String, s!(""),
 }
 
-async fn balances(State(ctx): State<ApiCtx>, q: Query<Q8364>) -> impl IntoResponse  {
+async fn balance(State(ctx): State<ApiCtx>, q: Query<Q8364>) -> impl IntoResponse  {
     ctx_state!(ctx, state);
     let unit = q_unit!(q);
-    let ads = q.address_list.replace(" ","").replace("\n","");
+    let ads = q.address.replace(" ","").replace("\n","");
     let addrs: Vec<_> = ads.split(",").collect();
     let adrsz = addrs.len();
     if adrsz == 0 || (adrsz==1 && addrs[0].len()==0) {

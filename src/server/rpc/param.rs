@@ -14,16 +14,39 @@ macro_rules! ctx_store{
     )
 }
 
+#[derive(Clone, Debug)]
+struct CoinKind {
+    hacash: bool,
+    satoshi: bool,
+    diamond: bool,
+}
+impl CoinKind {
+    fn new(mut s: String) -> CoinKind {
+        let s = s.to_lowercase();
+        CoinKind {
+            hacash: s.contains("h"),
+            satoshi: s.contains("s"),
+            diamond: s.contains("d"),
+        }
+    }
+}
+
+macro_rules! q_coinkind{
+    ( $q: ident ) => (
+        CoinKind::new( q_must!($q, coinkind, s!("hsd")) )
+    )
+}
+
 macro_rules! q_unit{
-    ( $p: ident ) => (
-        q_must!($p, unit, s!("fin"))
+    ( $q: ident ) => (
+        q_must!($q, unit, s!("fin"))
     )
 }
 
 macro_rules! q_must{
-    ( $p: ident, $k: ident, $dv: expr ) => (
+    ( $q: ident, $k: ident, $dv: expr ) => (
         {
-            if let Some(v) = $p.$k.clone() {
+            if let Some(v) = $q.$k.clone() {
                 v
             }else  {
                 $dv
@@ -40,6 +63,8 @@ macro_rules! defineQueryObject{
             $(
                 $item: $ty,
             )+
+            unit: Option<String>,
+            coinkind: Option<String>,
         }
 
         impl Default for $name {
@@ -48,6 +73,8 @@ macro_rules! defineQueryObject{
                     $(
                         $item: $dv,
                     )+
+                    unit: None,
+                    coinkind: None,
                 }
             }
         }

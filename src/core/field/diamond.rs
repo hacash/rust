@@ -66,7 +66,7 @@ impl DiamondNameListMax200 {
         // check name
         for v in &self.lists {
             if ! DiamondName::is_valid(v.as_ref()) {
-                return errf!("diamond name {} is not valid", v.to_readable())
+                return errf!("diamond name {} is not valid", v.readable())
             }
         }
         // success

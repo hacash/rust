@@ -36,10 +36,12 @@ impl P2PManage {
 */
 async fn do_check_active(peers: Vec<Arc<Peer>>) {
     let now = SystemTime::now();
+    // println!("do_check_active num = {}", peers.len());
     for peer in peers {
         let active = { peer.active.lock().unwrap().clone() };
         if now - secs(60*20) > active { // 20min
             // disconnect unactive peers
+            // println!("disconnect unactive peers {}", peer.nick());
             peer.disconnect().await;
         } 
     }

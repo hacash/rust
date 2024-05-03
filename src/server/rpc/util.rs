@@ -23,3 +23,25 @@ fn api_data_list(jsdts: Vec<Value>) -> (HeaderMap, String){
     let list = jsdts.iter().map(|a|a.to_string()).collect::<Vec<String>>().join(",");
     (json_headers(), format!(r#"{{"ret":0,"list":[{}]}}"#, list))
 }
+
+fn api_data(jsdts: HashMap<&'static str, Value>) -> (HeaderMap, String){
+    let resjson = jsdts.iter().map(|(k,v)|
+        format!(r#""{}":{}"#, k, v.to_string())
+    ).collect::<Vec<String>>().join(",");
+    (json_headers(), format!(r#"{{"ret":0,{}}}"#, resjson))
+}
+
+/**************************/
+
+
+macro_rules! jsondata{
+    ( $( $key: expr, $dv: expr),+ ) => (
+        {
+            let mut data = HashMap::<&'static str, Value>::new();
+            $(
+                data.insert($key, json!($dv));
+            )+
+            data
+        }
+    )
+}

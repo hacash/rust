@@ -81,7 +81,7 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>)
     // broadcast new block
     let p2p = this.p2pmng.lock().unwrap();
     let p2p = p2p.as_ref().unwrap();
-    p2p.broadcast_message(1/*delay*/, knowkey, MSG_BLOCK_DISCOVER, body);
+    p2p.broadcast_message(0/*not delay*/, knowkey, MSG_BLOCK_DISCOVER, body);
 }
 
 

@@ -89,7 +89,7 @@ impl Peer {
             return errf!("msg length too short")
         }
         let peerkey = bufcut!(idnamebts, 0, PEER_KEY_SIZE);
-        let name = Fixed16::cons( bufcut!(idnamebts, PEER_KEY_SIZE, PEER_KEY_SIZE*2) ).to_readable().replace(" ", "");
+        let name = Fixed16::cons( bufcut!(idnamebts, PEER_KEY_SIZE, PEER_KEY_SIZE*2) ).readable().replace(" ", "");
         if peerkey == mykeyname[0..PEER_KEY_SIZE] {
             return  errf!("cannot connect to self")
         }

@@ -11,7 +11,7 @@ pub trait Field : Serialize + Parse {
 }
 
 pub trait FieldHex : Field {
-    fn to_hex(&self) -> String { panic_never_call_this!(); }
+    fn hex(&self) -> String { panic_never_call_this!(); }
     fn from_hex(_: &[u8]) -> Self where Self: Sized { panic_never_call_this!(); } // maybe panic!
     fn create_by_hex(_: &[u8]) -> Ret<(Self, usize)> where Self: Sized { panic_never_call_this!(); }
 }
@@ -45,7 +45,7 @@ pub trait FieldFloat : Field {
 }
 
 pub trait FieldReadable : Field {
-    fn to_readable(&self) -> String;
+    fn readable(&self) -> String;
     fn from_readable(_: &[u8]) -> Self where Self: Sized { panic_never_call_this!(); } // panic
     fn create_by_readable(_: &[u8]) -> Ret<(Self, usize)> where Self: Sized { panic_never_call_this!(); }
 }

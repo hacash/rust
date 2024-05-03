@@ -167,7 +167,7 @@ impl TxExec for $class {
         // sub fee
         let feeadr = self.address();
         let amt = self.fee();    
-        // println!("tx execute pay fee from {} amount {}", feeadr.to_readable(), amt.to_fin_string());
+        // println!("tx execute pay fee from {} amount {}", feeadr.readable(), amt.to_fin_string());
         operate::hac_sub(&mut state, feeadr, amt)?;
         Ok(())
     }

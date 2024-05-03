@@ -35,7 +35,7 @@ fnDiamondOperateCommon!(hacd_sub, addr, hacd, oldhacd, {
     // check
     if oldhacd.uint() < hacd.uint() {
 		return errf!("do hacd_sub error: address {} diamond {} not enough, need {}", 
-            addr.to_readable(), oldhacd.uint(), hacd.uint())
+            addr.readable(), oldhacd.uint(), hacd.uint())
     }
     // do sub
     *oldhacd - *hacd
