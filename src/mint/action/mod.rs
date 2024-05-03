@@ -21,6 +21,7 @@ use super::operate::*;
 
 
 include!("util.rs");
+include!("satoshi.rs");
 include!("diamond.rs");
 include!("diamond_mint.rs");
 include!("diamond_insc.rs");

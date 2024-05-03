@@ -32,26 +32,27 @@ impl CoinKind {
 }
 
 macro_rules! q_coinkind{
-    ( $q: ident ) => (
-        CoinKind::new( q_must!($q, coinkind, s!("hsd")) )
+    ( $q: ident, $k: ident ) => (
+        q_must!($q, $k, s!("hsd"));
+        let $k = CoinKind::new( $k );
     )
 }
 
 macro_rules! q_unit{
-    ( $q: ident ) => (
-        q_must!($q, unit, s!("fin"))
+    ( $q: ident, $k: ident ) => (
+        q_must!($q, $k, s!("fin"));
     )
 }
 
 macro_rules! q_must{
     ( $q: ident, $k: ident, $dv: expr ) => (
-        {
+        let mut $k = {
             if let Some(v) = $q.$k.clone() {
                 v
             }else  {
                 $dv
             }
-        }
+        };
     )
 }
 

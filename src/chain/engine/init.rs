@@ -48,7 +48,7 @@ fn _do_rebuild(this: &mut BlockEngine) {
             return // end finish
         }
         let blk = resblk.unwrap();
-        print!("➢ {}", blk.objc().height().to_u64());
+        print!("➢{}", blk.objc().height().to_u64());
         // try insert
         let ier = this.insert_unsafe(blk); // ignore err
         if let Err(e) = ier {

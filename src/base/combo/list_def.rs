@@ -95,13 +95,13 @@ impl $class {
 		&self.$value
 	}
 
-	pub fn push(&mut self, v: $value_type) -> Option<Error> {
+	pub fn push(&mut self, v: $value_type) -> RetErr {
         if self.$count.to_usize() + 1 > <$count_type>::max() as usize {
-            return Some(s!("append size overflow"))
+            return errf!("append size overflow")
         }
 		self.$count += 1u8;
         self.$value.push(v);
-        None
+        Ok(())
 	}
 
 	pub fn pop(&mut self) -> Option<$value_type> {
@@ -114,6 +114,10 @@ impl $class {
             }
         }
 	}
+
+	pub fn as_mut(&mut self) -> &mut Vec<$value_type> {
+	    &mut self.$value
+    }
 
 }
 

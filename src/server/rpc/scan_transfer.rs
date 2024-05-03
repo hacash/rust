@@ -6,9 +6,8 @@ defineQueryObject!{ Q4538,
 
 async fn scan_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q4538>) -> impl IntoResponse {
     ctx_store!(ctx, store);
-    let unit = q_unit!(q);
-    let kind = q_coinkind!(q);
-    // println!("q_coinkind = {:?}", kind);
+    q_unit!(q, unit);
+    q_coinkind!(q, coinkind);
     let blkpkg = ctx.load_block(&store, q.height);
     if let Err(e) = blkpkg {
         return  api_error(&e)
@@ -28,7 +27,7 @@ async fn scan_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q4538>) -> impl 
     let dtlistptr = dtlist.as_array_mut().unwrap();
     // scan actions
     for act in tartrs.actions()  {
-        append_transfer_scan(&unit, &kind, dtlistptr, act.as_ref());
+        append_transfer_scan(&unit, &coinkind, dtlistptr, act.as_ref());
     }
     // ok
     let mut data = jsondata!{
@@ -62,24 +61,68 @@ macro_rules! transfer_scan_action_item{
 fn append_transfer_scan(unit: &str, ck: &CoinKind, transfers: &mut Vec<Value>, a: &dyn VMAction) {
     let act = a.as_ext();
     let akd = act.kind();
-    // HAC transfer
+
+    // HacTransfer // 1
     transfer_scan_action_item!(akd, a, transfers, act, 
         HacTransfer, ck.hacash, json!({
         "to": act.to.readable(),
         "hacash": act.amt.to_unit_string(unit),
     }));
-    // HAC from transfer
+    // HacFromTransfer // 13
     transfer_scan_action_item!(akd, a, transfers, act, 
         HacFromTransfer, ck.hacash, json!({
         "from": act.from.readable(),
         "hacash": act.amt.to_unit_string(unit),
     }));
-    // HAC from to transfer
+    // HacFromToTransfer // 14
     transfer_scan_action_item!(akd, a, transfers, act, 
         HacFromToTransfer, ck.hacash, json!({
         "from": act.from.readable(),
         "to": act.to.readable(),
         "hacash": act.amt.to_unit_string(unit),
+    }));
+
+    // DiamondTransfer          // 5 
+    transfer_scan_action_item!(akd, a, transfers, act, 
+        DiamondTransfer, ck.diamond, json!({
+        "to": act.to.readable(),
+        "diamond": 1usize,
+        "diamonds": act.diamond.readable(),
+    }));
+    // DiamondFromToTransfer    // 6
+    transfer_scan_action_item!(akd, a, transfers, act, 
+        DiamondFromToTransfer, ck.diamond, json!({
+        "from": act.from.readable(),
+        "to": act.to.readable(),
+        "diamond": act.diamonds.count().uint(),
+        "diamonds": act.diamonds.readable(),
+    }));
+    // DiamondMultipleTransfer  // 7
+    transfer_scan_action_item!(akd, a, transfers, act, 
+        DiamondMultipleTransfer, ck.diamond, json!({
+        "to": act.to.readable(),
+        "diamond": act.diamonds.count().uint(),
+        "diamonds": act.diamonds.readable(),
+    }));
+
+    // SatoshiTransfer // 8
+    transfer_scan_action_item!(akd, a, transfers, act, 
+        SatoshiTransfer, ck.satoshi, json!({
+        "to": act.to.readable(),
+        "satoshi": act.satoshi.uint(),
+    }));
+    // SatoshiFromToTransfer // 11
+    transfer_scan_action_item!(akd, a, transfers, act, 
+        SatoshiFromToTransfer, ck.satoshi, json!({
+        "from": act.from.readable(),
+        "to": act.to.readable(),
+        "satoshi": act.satoshi.uint(),
+    }));
+    // SatoshiFromTransfer // 28
+    transfer_scan_action_item!(akd, a, transfers, act, 
+        SatoshiFromTransfer, ck.satoshi, json!({
+        "from": act.from.readable(),
+        "satoshi": act.satoshi.uint(),
     }));
 
 

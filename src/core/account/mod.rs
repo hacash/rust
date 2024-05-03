@@ -10,6 +10,7 @@ use crate::x16rs::{ sha2, ripemd160 };
 const ADDRESS_SIZE: usize = 21;
 
 
+#[derive(Clone, PartialEq)]
 pub struct Account {
     secret_key: SecretKey,
     public_key: PublicKey,

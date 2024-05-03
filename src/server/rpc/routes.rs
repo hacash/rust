@@ -9,6 +9,8 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
 
     // create
     .route(&create("account"), get(account))
+    .route(&create("coin_transfer"), get(create_coin_transfer))
+    
 
     // submit
     // ...

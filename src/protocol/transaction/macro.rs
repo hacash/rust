@@ -49,6 +49,18 @@ StructFieldStruct!{ $class,
 
 impl $class {
 
+    pub fn build(addr: Address, fee: Amount) -> $class {
+        $class{
+            ty: Uint1::from($tyid),
+            timestamp: Timestamp::from(curtimes()),
+            address: addr,
+            fee: fee,
+            actions: DynListVMAction::new(),
+            signs: SignListW2::new(),
+            ano_mark: Uint2::new(),
+        }
+    }
+
     fn hash_ex(&self, adfe: Vec<u8>) -> Hash {
         let stuff = vec![
             self.ty.serialize(),
@@ -134,6 +146,41 @@ impl Transaction for $class {
     fn as_read(&self) -> &dyn TransactionRead {
         self
     }
+    fn fill_sign(&mut self, acc: &Account) -> RetErr {
+        let mut fhx = self.hash();
+        if acc.address() == self.address.as_bytes() {
+            fhx = self.hash_with_fee();
+        }
+        // do sign
+        let apbk = acc.public_key().serialize_compressed();
+        let signobj = Sign{
+            publickey: Fixed33::cons( apbk ),
+            signature: Fixed64::cons( acc.do_sign(&fhx) ),
+        };
+        // insert
+        let plen = self.signs.count().uint() as usize;
+        let mut istid = plen;
+        let sglist = self.signs.list();
+        for i in 0..plen {
+            let pbk = sglist[i].publickey.as_bytes();
+            if apbk == pbk {
+                istid = i;
+                break
+            }
+        }
+        // append
+        if istid == plen {
+            return self.signs.push(signobj)
+        }
+        // replace
+        self.signs.as_mut()[istid] = signobj;
+        Ok(())
+    }
+    fn push_action(&mut self, act: Box<dyn VMAction>) -> RetErr {
+        self.actions.push(act)
+    }
+
+
 }
 
 impl TxExec for $class {

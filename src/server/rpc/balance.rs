@@ -6,7 +6,7 @@ defineQueryObject!{ Q8364,
 
 async fn balance(State(ctx): State<ApiCtx>, q: Query<Q8364>) -> impl IntoResponse  {
     ctx_state!(ctx, state);
-    let unit = q_unit!(q);
+    q_unit!(q, unit);
     let ads = q.address.replace(" ","").replace("\n","");
     let addrs: Vec<_> = ads.split(",").collect();
     let adrsz = addrs.len();

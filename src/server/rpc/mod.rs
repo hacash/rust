@@ -16,6 +16,7 @@ use crate::core::field::*;
 use crate::core::component::*;
 use crate::core::state::{ CoreStateDisk, CoreStoreDisk };
 use crate::protocol::block::{ self, * };
+use crate::protocol::transaction::*;
 use crate::protocol::action::*;
 use crate::mint::action::*;
 
@@ -32,6 +33,7 @@ include!("console.rs");
 include!("balance.rs");
 include!("account.rs");
 include!("scan_transfer.rs");
+include!("create_transfer.rs");
 
 
 

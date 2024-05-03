@@ -5,7 +5,7 @@ defineQueryObject!{ Q8936,
 }
 
 async fn account(State(ctx): State<ApiCtx>, q: Query<Q8936>) -> impl IntoResponse  {
-    let quantity = q_must!(q, quantity, 1);
+    q_must!(q, quantity, 1);
     if quantity == 0 {
         return api_error("quantity error")
     }

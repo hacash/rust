@@ -73,4 +73,31 @@ impl DiamondNameListMax200 {
         Ok(reallen as u8)
     }
 
+    pub fn readable(&self) -> String {
+        self.lists.iter().map(|a|a.readable()).collect::<Vec<_>>().join(",")
+    }
+
+    pub fn from_string(stuff: &String) -> Ret<DiamondNameListMax200> {
+        let s = stuff.replace(" ","").replace("\n","").replace("|","").replace(",","");
+        if s.len() == 0 {
+            return errf!("diamond list empty")
+        }
+        if s.len() % 6 != 0 {
+            return errf!("diamond list format error")
+        }
+        let num = s.len() / 6;
+        if num > 200  {
+            return errf!("diamond list max 200 overflow")
+        }
+        let mut obj = DiamondNameListMax200::new();
+        let bs = s.as_bytes();
+        for i in 0 .. num {
+            let x = i*6;
+            let name = DiamondName::cons( bufcut!(bs, x, x+6) );
+            obj.push(name);
+        }
+        obj.check()?;
+        Ok(obj)
+    }
+
 }

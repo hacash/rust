@@ -31,8 +31,8 @@ pub trait Transaction : TransactionRead + TxExec + Send + Sync {
 
     // fn verify_all_need_signs(&self) -> Option<Error> { panic_never_call_this!() }
     // fn verify_target_signs(&self, _: &HashSet<Address>) -> Option<Error> { panic_never_call_this!() }
-    fn fill_sign(&mut self,_: &Account) -> Option<Error> { panic_never_call_this!() }
-    fn push_action(&mut self, _: Box<dyn Action>) -> Option<Error> { panic_never_call_this!() }
+    fn fill_sign(&mut self,_: &Account) -> RetErr { panic_never_call_this!() }
+    fn push_action(&mut self, _: Box<dyn VMAction>) -> RetErr { panic_never_call_this!() }
 
 }
 

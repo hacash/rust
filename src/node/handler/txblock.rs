@@ -57,7 +57,7 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>)
         let hxtail = &blkhx.as_bytes()[24..];
         let txs = blkhead.transaction_count().uint() - 1;
         let blkts = &timeshow(blkhead.timestamp().uint())[11..];
-        print!("❏  discover block {} …{} txs{:2} time {} inserting at {} ... ", 
+        print!("❏ discover block {} …{} txs{:2} time {} inserting at {} ... ", 
             blkhei, hex::encode(hxtail), txs, blkts, &ctshow()[11..]);
         let bodycp = body.clone();
         let engicp = this.engine.clone();

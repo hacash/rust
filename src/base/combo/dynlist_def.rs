@@ -83,9 +83,13 @@ impl Field for $class {
 
 impl $class {
 
-	pub fn push(&mut self, v: Box<dyn $dynty>) {
+	pub fn push(&mut self, v: Box<dyn $dynty>) -> RetErr {
+        if self.count >= <$lenty>::max() {
+            return errf!("list length overflow");
+        }
 		self.count += 1u8;
         self.vlist.push(v);
+        Ok(())
 	}
 
 	pub fn pop(&mut self) -> Option<Box<dyn $dynty>> {
