@@ -194,7 +194,7 @@ impl FieldBytes for $class {
         self.serialize()
     }
 
-    fn from_vec_u8(&mut self, buf: &Vec<u8>) -> Option<Error> {
+    fn from_vec(&mut self, buf: &Vec<u8>) -> Option<Error> {
         self.parse(buf, 0).err()
     }
 

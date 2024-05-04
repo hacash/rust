@@ -2,9 +2,8 @@
 
 pub trait State : StoreDB + Send {
 
-
     
-
+    // fn fork_sub(&self) -> Box<dyn State>;
     // fn load(&self, data: &Bytes, v: &mut dyn Parse) -> RetErr { panic_never_call_this!() }
 
     // if not find return false

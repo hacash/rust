@@ -23,7 +23,7 @@ impl MsgHandler {
             if blkdts.is_none() {
                 return // not find block hash by height
             }
-            let dts = blkdts.unwrap().into_bytes();
+            let dts = blkdts.unwrap().into_vec();
             totalsize += dts.len();
             totalnum += 1;
             endhei = hei;

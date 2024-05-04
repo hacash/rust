@@ -11,5 +11,6 @@ use crate::core::field::*;
 
 include!("txpool.rs");
 include!("handler.rs");
+include!("node.rs");
 
 

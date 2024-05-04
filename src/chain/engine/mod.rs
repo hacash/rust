@@ -13,6 +13,7 @@ use crate::interface::vm::*;
 use crate::config::*;
 use crate::base::field::*;
 use crate::base::util::*;
+use crate::core::field::*;
 use crate::core::db::*;
 use crate::core::state::*;
 use crate::core::component::*;

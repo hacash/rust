@@ -27,7 +27,10 @@ async fn server_listen(mut ser: RPCServer) {
     let listener = listener.unwrap();
     println!("[RPC Server] Listening on http://{addr}");
     // 
-    let app = rpc::routes(ApiCtx::new(ser.engine.clone()));
+    let app = rpc::routes(ApiCtx::new(
+        ser.engine.clone(),
+        ser.hcshnd.clone(),
+    ));
     if let Err(e) = axum::serve(listener, app).await {
         println!("{e}");
     }

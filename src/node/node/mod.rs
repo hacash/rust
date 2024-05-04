@@ -20,7 +20,10 @@ use crate::sys::*;
 use crate::config::NodeConf;
 use crate::base::field::*;
 use crate::interface::chain::*;
+use crate::interface::protocol::*;
+use crate::interface::node::*;
 
+use crate::core::state::*;
 use crate::chain::engine::*;
 
 use super::*;
@@ -37,5 +40,6 @@ use super::handler::*;
 include!("util.rs");
 include!("node.rs");
 include!("start.rs");
+include!("hnode.rs");
 
 

@@ -11,6 +11,9 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     .route(&create("account"), get(account))
     .route(&create("coin_transfer"), get(create_coin_transfer))
     
+    // submit
+    .route(&submit("transaction"), post(submit_transaction))
+    .route(&submit("block"), post(submit_block))
 
     // submit
     // ...
@@ -31,4 +34,7 @@ fn create(p: &str) -> String {
 }
 fn submit(p: &str) -> String {
     "/submit/".to_owned() + p
+}
+fn operate(p: &str) -> String {
+    "/operate/".to_owned() + p
 }

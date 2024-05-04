@@ -17,5 +17,5 @@ pub fn create_pkg(bytes: BytesW4) -> Ret<Box<dyn BlockPkg>> {
     let buf = bytes.as_ref();
     let (blkobj, _) = create(buf)?;
     let hash = blkobj.hash();
-    Ok(Box::new(BlockPackage::new_with_data(blkobj, bytes.into_bytes())))
+    Ok(Box::new(BlockPackage::new_with_data(blkobj, bytes.into_vec())))
 }

@@ -1,16 +1,19 @@
 
 
-async fn handle_new_tx(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>) {
+async fn handle_new_tx(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: Vec<u8>) {
     // println!("1111111 handle_txblock_arrive Tx, peer={} len={}", peer.nick(), body.clone().len());
     // parse
-    let txpkg = transaction::create_pkg(BytesW4::from_vec_u8(body));
+    let txpkg = transaction::create_pkg(BytesW4::from_vec(body));
     if let Err(e) = txpkg {
         return // parse tx error
     }
     let txpkg = txpkg.unwrap();
     // tx hash with fee
     let hxfe = txpkg.objc().hash_with_fee();
-    let (already, knowkey) = check_know(&this.knows, &peer.knows, &hxfe);
+    let (already, knowkey) = check_know(&this.knows, &hxfe);
+    if let Some(pr) = peer {
+        pr.knows.add(knowkey.clone());
+    }
     if already {
         return  // alreay know it
     }
@@ -21,12 +24,12 @@ async fn handle_new_tx(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>) {
     // broadcast
     let p2p = this.p2pmng.lock().unwrap();
     let p2p = p2p.as_ref().unwrap();
-    p2p.broadcast_message(1/*delay*/, knowkey, MSG_TX_SUBMIT, txpkg.body().clone().into_bytes());
+    p2p.broadcast_message(1/*delay*/, knowkey, MSG_TX_SUBMIT, txpkg.body().clone().into_vec());
 
 }
 
 
-async fn handle_new_block(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>) {
+async fn handle_new_block(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: Vec<u8>) {
     // println!("222222222222 handle_txblock_arrive Block, peer={} len={}", peer.nick(), body.clone().len());
     let mut blkhead = BlockIntro::new();
     if let Err(_) = blkhead.parse(&body, 0) {
@@ -34,7 +37,10 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>)
     }
     let blkhei = blkhead.height().uint();
     let blkhx = blkhead.hash();
-    let (already, knowkey) = check_know(&this.knows, &peer.knows, &blkhx);
+    let (already, knowkey) = check_know(&this.knows, &blkhx);
+    if let Some(ref pr) = peer {
+        pr.clone().knows.add(knowkey.clone());
+    }
     if already {
         return  // alreay know it
     }
@@ -63,7 +69,7 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>)
         let engicp = this.engine.clone();
         std::thread::spawn(move||{
             // create block
-            let blkpkg = block::create_pkg(BytesW4::from_vec_u8(bodycp));
+            let blkpkg = block::create_pkg(BytesW4::from_vec(bodycp));
             if let Err(e) = blkpkg {
                 return // parse error
             }
@@ -75,7 +81,9 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>)
         });
     }else{
         // req sync
-        send_req_block_hash_msg(peer, (heispan+1) as u8, lathei).await;
+        if let Some(ref pr) = peer {
+            send_req_block_hash_msg(pr.clone(), (heispan+1) as u8, lathei).await;
+        }
         return // not broadcast
     }
     // broadcast new block
@@ -87,9 +95,8 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Arc<Peer>, body: Vec<u8>)
 
 
 // return already know
-fn check_know(mine: &Knowledge, peer: &Knowledge, hxkey: &Hash) -> (bool, KnowKey) {
+fn check_know(mine: &Knowledge, hxkey: &Hash) -> (bool, KnowKey) {
     let knowkey: [u8; KNOWLEDGE_SIZE] = hxkey.clone().into_array();
-    peer.add(knowkey.clone());
     if mine.check(&knowkey) {
         return (true, knowkey) // alreay know it
     }

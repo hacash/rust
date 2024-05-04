@@ -31,7 +31,7 @@ pub fn create_pkg(bytes: BytesW4) -> Ret<Box<dyn TxPkg>> {
     let buf = bytes.as_ref();
     let (txobj, _) = create(buf)?;
     let hash = txobj.hash();
-    Ok(Box::new(TxPackage::new_with_data(txobj, bytes.into_bytes())))
+    Ok(Box::new(TxPackage::new_with_data(txobj, bytes.into_vec())))
 }
 
 

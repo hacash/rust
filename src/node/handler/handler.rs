@@ -37,6 +37,14 @@ impl MsgHandler {
         *mymng = Some(mng);
     }
 
+    pub async fn submit_transaction(&self, body: Vec<u8>) {
+        self.blktx.send(BlockTxArrive::Tx(None, body)).await;
+    }
+
+    pub async fn submit_block(&self, body: Vec<u8>) {
+        self.blktx.send(BlockTxArrive::Block(None, body)).await;
+    }
+
     pub fn close(&self) {
         self.closer.close();
     }
@@ -63,8 +71,8 @@ impl MsgHandler {
         // println!("on_message peer={} ty={} len={}", peer.nick(), ty, body.len());
 
         match ty {
-            MSG_TX_SUBMIT =>      { self.blktx.send(BlockTxArrive::Tx(peer.clone(), body)).await; },
-            MSG_BLOCK_DISCOVER => { self.blktx.send(BlockTxArrive::Block(peer.clone(), body)).await; },
+            MSG_TX_SUBMIT =>      { self.blktx.send(BlockTxArrive::Tx(Some(peer.clone()), body)).await; },
+            MSG_BLOCK_DISCOVER => { self.blktx.send(BlockTxArrive::Block(Some(peer.clone()), body)).await; },
             MSG_BLOCK_HASH =>     { self.receive_hashs(peer, body).await; },
             MSG_REQ_BLOCK_HASH => { self.send_hashs(peer, body).await; },
             MSG_BLOCK =>          { self.receive_blocks(peer, body).await; },

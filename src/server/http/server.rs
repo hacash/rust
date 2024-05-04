@@ -3,15 +3,17 @@
 pub struct RPCServer {
     cnf: ServerConf,
     engine: ChainEngine,
+    hcshnd: ChainNode,
 }
 
 
 impl RPCServer {
-    pub fn open(iniobj: &IniObj, engine: ChainEngine) -> RPCServer {
+    pub fn open(iniobj: &IniObj, eng: ChainEngine, nd: ChainNode) -> RPCServer {
         let cnf = NewServerConf(iniobj);
         RPCServer{
             cnf: cnf,
-            engine: engine,
+            engine: eng,
+            hcshnd: nd,
         }
     }
 

@@ -65,8 +65,8 @@ impl StoreDB for ChainState {
 
 }
 
-
 impl State for ChainState {
+
 }
 
 
@@ -85,8 +85,5 @@ impl ChainState {
         impl_flush_disk(self)
     }
 
-    pub fn merge_copy(&self, src: &dyn State) -> RetErr {
-        Ok(())
-    }
 }
 

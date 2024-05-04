@@ -68,7 +68,7 @@ dc871532
         ptl += 4;
         let bsz = Uint4::from_bytes(ptrs[ptl..ptl+4].try_into().unwrap()).to_usize();
         // println!("height {} ost {} size {}", height, ost, bsz);
-        let blkdts = BytesW4::from_vec_u8(bytes[ost .. ost+bsz].to_vec());
+        let blkdts = BytesW4::from_vec(bytes[ost .. ost+bsz].to_vec());
         ostleft = ost;
         // println!("hei {} blkdts {}", height, hex::encode(&blkdts));
         // create
@@ -132,7 +132,7 @@ pub fn engine_test_2(engine: Arc<BlockEngine>) {
         // println!("Status: {} {}", res.status_code(), res.reason());
         // println!("create block {} {}", height, hex::encode(blkdts.to_vec()));
         // let blkdts = b"";
-        let blkdts = BytesW4::from_vec_u8(blkdts.to_vec());
+        let blkdts = BytesW4::from_vec(blkdts.to_vec());
         let pkg = match protocol::block::create_pkg(blkdts) {
             Err(e) => {
                 println!("create_pkg() height {} error: {}", height, e);

@@ -16,8 +16,8 @@ pub const MSG_BLOCK_DISCOVER:      u16 = 8; // new block arrived
 // msg stuff
 
 pub enum BlockTxArrive {
-    Block(Arc<Peer>, Vec<u8>),
-    Tx(Arc<Peer>, Vec<u8>),
+    Block(Option<Arc<Peer>>, Vec<u8>),
+    Tx(Option<Arc<Peer>>, Vec<u8>),
 }
 
 

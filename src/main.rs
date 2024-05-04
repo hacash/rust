@@ -83,7 +83,7 @@ fn start_hacash_node(iniobj: sys::IniObj) {
     let mut hnode = Arc::new(HacashNode::open(&iniobj, engptr.clone()));
 
     // server
-    let server = DataServer::open(&iniobj, engptr.clone());
+    let server = DataServer::open(&iniobj, engptr.clone(), hnode.clone());
     std::thread::spawn(move||{
         server.start(); // http rpc 
     });

@@ -84,7 +84,7 @@ impl Field for $class {
 
 impl $class {
 
-    pub fn from_vec_u8(v: Vec<u8>) -> $class {
+    pub fn from_vec(v: Vec<u8>) -> $class {
         $class{
             len: <$lenty>::from_uint(v.len() as u64),
             bytes: v,
@@ -92,7 +92,7 @@ impl $class {
 
     }
 
-    pub fn into_bytes(mut self) -> Vec<u8> {
+    pub fn into_vec(mut self) -> Vec<u8> {
         self.bytes
     }
 

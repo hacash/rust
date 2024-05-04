@@ -47,7 +47,7 @@ impl TxPackage {
 		TxPackage{
 			time: curtimes(), // SystemTime::now()
 			hash: tx.hash(),
-			data: BytesW4::from_vec_u8(data),
+			data: BytesW4::from_vec(data),
 			objc: tx,
 		}
 	}

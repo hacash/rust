@@ -69,13 +69,13 @@ impl BlockEngine {
         engine
     }
 
-    pub fn start(&mut self) -> RetErr {
 
-
-        Ok(())
+    pub fn get_latest_height(&self) -> BlockHeight {
+        self.klctx.lock().unwrap().last_height()
     }
 
-    pub fn get_latest_state(&self) -> Option<Arc<dyn State>> {
+
+    pub fn get_latest_state(&self) -> Option<Arc<ChainState>> {
         let ctx = self.klctx.try_lock();
         if let Err(_) = ctx {
             return None // state busy !!!
@@ -90,6 +90,21 @@ impl BlockEngine {
         // base
         Some(ctx.sroot.state.clone())
     }
+
+    pub fn try_execute_tx(&self, tx: &dyn Transaction) -> RetErr {
+        let sta = self.get_latest_state();
+        if let None = sta {
+            return errf!("block engine not yet")
+        }
+        let mut sub_state = fork_sub_state(sta.unwrap());
+        let height = self.get_latest_height().uint() + 1; // next height
+        let blkhash = Hash::cons([0u8; 32]); // empty hash
+        // exec
+        exec_tx_actions(height, blkhash, self.vmobj.as_ref(), &mut sub_state, tx.as_read())?;
+        tx.execute(height, &mut sub_state)
+    } 
+
+
 }
 
 
