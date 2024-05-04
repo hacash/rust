@@ -8,7 +8,7 @@ async fn scan_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q4538>) -> impl 
     ctx_store!(ctx, store);
     q_unit!(q, unit);
     q_coinkind!(q, coinkind);
-    let blkpkg = ctx.load_block(&store, q.height);
+    let blkpkg = ctx.load_block(&store, &q.height.to_string());
     if let Err(e) = blkpkg {
         return  api_error(&e)
     }
@@ -36,7 +36,7 @@ async fn scan_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q4538>) -> impl 
         "tx_timestamp", tartrs.timestamp().uint(),
         "block_timestamp", blkobj.timestamp().uint(),
         "address", tartrs.address().readable(),
-        "transfers", dtlist
+        "transfers", dtlist,
     };
     api_data(data)
 }

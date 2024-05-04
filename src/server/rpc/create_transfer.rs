@@ -134,7 +134,7 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
         "hash", trsobj.hash().hex(),
         "hash_with_fee", trsobj.hash_with_fee().hex(),
         "timestamp", trsobj.timestamp().uint(),
-        "body", hex::encode(trsobj.serialize())
+        "body", hex::encode(trsobj.serialize()),
     };
     api_data(data)
 }

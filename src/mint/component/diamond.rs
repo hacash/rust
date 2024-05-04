@@ -14,6 +14,19 @@ pub const DIAMOND_STATUS_LENDING_TO_USER       : Uint1 = Uint1::from(3);
 	count, Uint1, lists, BytesW1
 );
 
+impl Inscripts {
+	pub fn array(&self) -> Vec<String> {
+		let mut resv = Vec::with_capacity(self.lists.len());
+		for li in &self.lists {
+			let rdstr = bytes_try_to_readable_string(li.as_ref());
+			resv.push(match rdstr {
+				None => hex::encode(li.as_ref()),
+				Some(s) => s,
+			});
+		}
+		resv
+	}
+}
 
 
 /**

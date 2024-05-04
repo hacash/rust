@@ -2,15 +2,29 @@
 
 macro_rules! ctx_state{
     ($ctx:expr, $state:ident) => (
-        let _s_db = $ctx.engine.state();
-        let $state = CoreStateDisk::wrap(_s_db.as_ref());
+        let _s1_db = $ctx.engine.state();
+        let $state = CoreStateDisk::wrap(_s1_db.as_ref());
     )
 }
 
 macro_rules! ctx_store{
     ($ctx:expr, $store:ident) => (
-        let _s_db = $ctx.engine.store();
-        let $store = CoreStoreDisk::wrap(_s_db.as_ref());
+        let _s2_db = $ctx.engine.store();
+        let $store = CoreStoreDisk::wrap(_s2_db.as_ref());
+    )
+}
+
+macro_rules! ctx_mintstate{
+    ($ctx:expr, $mintstate:ident) => (
+        let _s3_db = $ctx.engine.state();
+        let $mintstate = MintStateDisk::wrap(_s3_db.as_ref());
+    )
+}
+
+macro_rules! ctx_mintstore{
+    ($ctx:expr, $mintstore:ident) => (
+        let _s4_db = $ctx.engine.store();
+        let $mintstore = MintStoreDisk::wrap(_s4_db.as_ref());
     )
 }
 

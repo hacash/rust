@@ -4,7 +4,10 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     Router::new().route("/", get(console))
 
     // query
+    .route(&query("latest"), get(latest))
     .route(&query("balance"), get(balance))
+    .route(&query("diamond"), get(diamond))
+    .route(&query("block_intro"), get(block_intro))
     .route(&query("coin_transfer"), get(scan_coin_transfer))
 
     // create

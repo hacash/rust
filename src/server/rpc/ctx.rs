@@ -23,17 +23,33 @@ impl ApiCtx {
         }
     }
 
-    // load block from cache or disk
-    pub fn load_block(&self, store: &CoreStoreDisk, height: u64) -> Ret<Arc<dyn BlockPkg>> {
+    // load block from cache or disk, key = height or hash
+    pub fn load_block(&self, store: &CoreStoreDisk, key: &String) -> Ret<Arc<dyn BlockPkg>> {
+        let mut hash = Hash::cons([0u8; 32]);
+        let mut height = BlockHeight::from(0);
+        if key.len() == 64 {
+            if let Ok(hx) = hex::decode(key) {
+                hash = Hash::cons(hx.try_into().unwrap());
+            }
+        }else{
+            if let Ok(num) = key.parse::<u64>() {
+                height = BlockHeight::from(num);
+            }
+        }
         // check cache
         let mut list = self.blocks.lock().unwrap();
         for blk in list.iter() {
-            if height == blk.objc().height().uint() {
+            if height == blk.objc().height().uint() || hash == *blk.hash() {
                 return Ok(blk.clone())
             }
         }
         // read from disk
-        let blkdts = store.blockdatabyptr(&BlockHeight::from(height));
+        let mut blkdts;
+        if height.uint() > 0 {
+            blkdts = store.blockdatabyptr(&height);
+        }else{
+            blkdts = store.blockdata(&hash);
+        }
         if let None = blkdts {
             return errf!("block not find")
         }

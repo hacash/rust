@@ -23,6 +23,7 @@ use crate::protocol::transaction::{ self, * };
 use crate::protocol::action::*;
 use crate::node::node::HacashNode;
 use crate::mint::action::*;
+use crate::mint::state::{ MintStateDisk, MintStoreDisk };
 
 use crate::interface::field::*;
 use crate::interface::protocol::*;
@@ -35,10 +36,16 @@ include!("util.rs");
 include!("param.rs");
 include!("routes.rs");
 include!("console.rs");
+
+include!("latest.rs");
 include!("balance.rs");
-include!("account.rs");
+include!("diamond.rs");
+include!("block_intro.rs");
 include!("scan_transfer.rs");
+
+include!("create_account.rs");
 include!("create_transfer.rs");
+
 include!("submit_transaction.rs");
 include!("submit_block.rs");
 

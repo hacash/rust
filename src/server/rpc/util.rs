@@ -35,7 +35,7 @@ fn api_data(jsdts: HashMap<&'static str, Value>) -> (HeaderMap, String){
 
 
 macro_rules! jsondata{
-    ( $( $key: expr, $dv: expr),+ ) => (
+    ( $( $key: expr, $dv: expr,)+ ) => (
         {
             let mut data = HashMap::<&'static str, Value>::new();
             $(

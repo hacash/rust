@@ -31,6 +31,18 @@ pub fn bytes_from_readable_string(stuff: &[u8], len: usize) -> Result<Vec<u8>, E
     Ok(bts)
 }
 
+pub fn bytes_try_to_readable_string(bts: &[u8]) -> Option<String> {
+    let mut ss: Vec<u8> = Vec::with_capacity(bts.len());
+    for a in bts {
+        if *a<32 || *a>126 {
+            return None // cannot read
+        }
+        ss.push(*a);
+    }
+    let resstr = String::from_utf8(ss).ok().unwrap();
+    Some(resstr.trim_end().to_string())
+}
+
 
 pub fn check_readable_string(bts: &[u8]) -> bool {
     for a in bts {
