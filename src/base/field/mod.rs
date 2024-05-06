@@ -26,5 +26,5 @@ include!("fixed_def.rs");
 include!("fixed.rs");
 include!("bytes_def.rs");
 include!("bytes.rs");
-include!("uintautow.rs");
+include!("autou64.rs");
 include!("empty.rs");

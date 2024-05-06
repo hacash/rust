@@ -6,6 +6,75 @@ fn tdat() -> Box<dyn Action> {
     Box::new(obj)
 }
 
+
+pub fn main_test736428456983476824() {
+
+    /*
+    let mut hxds = [255u8; 32];
+    for i in 0..8 {
+        for x in 1..=255 {
+            hxds[i] -= 1;
+            println!("{} - {}", hex::encode(&hxds), crate::mint::difficulty::hash_to_rateshow(&hxds, 300));
+        }
+    }
+    */
+
+    /*
+    let mut numv = 0u64;
+    let step = 125;
+    loop {
+        let av = AutoU64::from(numv);
+        let avbts = av.to_bytes();
+        let a2 = AutoU64::from_bytes(&avbts);
+        if av != a2 || avbts != a2.to_bytes() || a2 != numv {
+            println!("{} - {} - {} - {} - {}", numv, av, hex::encode(&avbts), a2, hex::encode(a2.to_bytes()));
+            break
+        }
+        // next
+        if numv + step >= u64::MAX {
+            println!("{} - {} - {} - {} - {}", numv, av, hex::encode(&avbts), a2, hex::encode(a2.to_bytes()));
+            break
+        }
+        numv += step;
+        if numv / step % 1000000 == 0 {
+            println!("{}", numv);
+        }
+        // if numv >= 200 + 16*256*256*256  {
+        //     break
+        // }
+    }
+    */
+
+    let numvs = [
+        AUTOU64XLIST[0] - 1,
+        AUTOU64XLIST[0] - 0,
+        AUTOU64XLIST[1] - 1,
+        AUTOU64XLIST[1] - 0,
+        AUTOU64XLIST[2] - 1,
+        AUTOU64XLIST[2] - 0,
+        AUTOU64XLIST[3] - 1,
+        AUTOU64XLIST[3] - 0,
+        AUTOU64XLIST[4] - 1,
+        AUTOU64XLIST[4] - 0,
+        AUTOU64XLIST[5] - 1,
+        AUTOU64XLIST[5] - 0,
+        AUTOU64XLIST[6] - 1,
+        AUTOU64XLIST[6] - 0,
+        AUTOU64XLIST[7] - 1,
+        AUTOU64XLIST[7] - 0,
+    ];
+    for numv in numvs {
+        let av = AutoU64::from(numv);
+        let avbts = av.to_bytes();
+        let a2 = AutoU64::from_bytes(&avbts);
+        println!("{} - {} - {} - {} - {}", numv, av, hex::encode(&avbts), a2, hex::encode(a2.to_bytes()));
+        if av != a2 || avbts != a2.to_bytes() || a2 != numv {
+            panic_never_call_this!();
+        }
+    }
+
+}
+
 pub fn main_test_vecspeed387425983() {
 
     let mut datas = vec![];

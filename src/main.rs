@@ -27,7 +27,7 @@ mod server;
 mod tests;
 
 use crate::sys::*;
-use crate::base::field::Hash;
+use crate::base::field::*;
 use crate::interface::field::*;
 use crate::interface::chain::*;
 use crate::core::account::Account;
@@ -58,6 +58,8 @@ fn main() {
 
     // main_test8327459283();
     // main_test_vecspeed387425983();
+
+    // main_test736428456983476824();
 
     let inicnf = config::load_config();
     // deal datadir

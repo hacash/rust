@@ -13,12 +13,12 @@ pub fn $func_name(state: &mut CoreState, $addr: &Address, $sat: &Satoshi) -> Ret
     } else {
         userbls = Balance::new(); // empty
     }
-    let $oldsat = &userbls.satoshi.value();
+    let $oldsat = &userbls.satoshi.to_satoshi();
     /* -------- */
     let newsat = $newsatblock;// operate
     /* -------- */
     // save
-    userbls.satoshi = SatoshiOptional::must(newsat.clone());
+    userbls.satoshi = SatoshiAuto::from_satoshi( &newsat );
     state.set_balance($addr, &userbls);
     Ok(newsat)
 }
@@ -65,7 +65,7 @@ pub fn sat_check(state: &mut CoreState, addr: &Address, sat: &Satoshi) -> Ret<Sa
         return errf!("check satoshi is cannot empty")
     }
     if let Some(bls) = state.balance( addr ) {
-        let usrsat = bls.satoshi.value();
+        let usrsat = bls.satoshi.to_satoshi();
         if usrsat >= *sat {
             return Ok(usrsat)
         }

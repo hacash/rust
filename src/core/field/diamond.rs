@@ -34,10 +34,19 @@ impl DiamondName {
     }
 }
 
-// ******** DiamondNumberOptional ********
+// ******** DiamondNumberOptional and Auto ********
 
+pub type DiamondNumberAuto = AutoU64;
 StructFieldOptional!{ DiamondNumberOptional, 
     diamond_number, DiamondNumber
+}
+impl DiamondNumberAuto {
+	pub fn to_diamond(&self) -> DiamondNumber {
+		DiamondNumber::from( self.uint() as u32 )
+	}
+	pub fn from_diamond(dia: &DiamondNumber) -> DiamondNumberAuto {
+		DiamondNumberAuto::from( dia.uint() as u64 )
+	}
 }
 
 /**

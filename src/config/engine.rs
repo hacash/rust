@@ -9,7 +9,6 @@ pub struct EngineConf {
     pub store_data_dir: Box<Path>, // block data
     pub state_data_dir: Box<Path>, // chain state
     pub ctrkv_data_dir: Box<Path>, // contract kv storage
-
 }
 
 
@@ -21,7 +20,7 @@ impl EngineConf {
         let data_dir = get_datadir(ini);
     
         let mut cnf = EngineConf{
-            max_block_txs: 999,
+            max_block_txs: 1000,
             max_block_size: 1024*1024*1, // 1MB
             unstable_block: 4, // 4 block
             fast_sync: false,

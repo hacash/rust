@@ -3,10 +3,18 @@
 pub type Satoshi = Uint8;
 impl Satoshi {}
 
-// SatoshiOptional
-
+// Satoshi
+pub type SatoshiAuto = AutoU64;
 StructFieldOptional!{ SatoshiOptional,
     satoshi, Satoshi
+}
+impl SatoshiAuto {
+	pub fn to_satoshi(&self) -> Satoshi {
+		Satoshi::from( self.uint() )
+	}
+	pub fn from_satoshi(sat: &Satoshi) -> SatoshiAuto {
+		SatoshiAuto::from( sat.uint() )
+	}
 }
 
 

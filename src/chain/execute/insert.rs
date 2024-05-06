@@ -58,7 +58,7 @@ pub fn do_check_insert(
         if txcount < 1 {
             return err!("block txs cannot empty, need coinbase tx")
         }
-        if txcount > cnf.max_block_txs { // may 999
+        if txcount > cnf.max_block_txs { // may 1000
             return errf!("block txs cannot more than {}", cnf.max_block_txs)
         }
         if txcount != txhxs.len() {
@@ -68,14 +68,17 @@ pub fn do_check_insert(
         let mut txttsize = 0usize;
         let mut txttnum = 0usize;
         for tx in alltxs {
-            if txttnum > 0 { // coinbase not check
-                if tx.timestamp().to_u64() > cur_time {
-                    return errf!("tx timestamp {} cannot more than now {}", tx.timestamp(), cur_time)
-                }
-                transaction::verify_tx_signature(tx.as_ref())?; // verify signs
-            }
-            txttsize += tx.size();
             txttnum += 1;
+            txttsize += tx.size();
+            if txttnum <= 1 { // coinbase not check
+                continue
+            }
+            // check time
+            if tx.timestamp().to_u64() > cur_time {
+                return errf!("tx timestamp {} cannot more than now {}", tx.timestamp(), cur_time)
+            }
+            // verify signs
+            transaction::verify_tx_signature(tx.as_ref())?; 
         }
         if txttnum != txcount {
             return errf!("block tx count need {} but got {}", txcount, txttnum)        

@@ -10,12 +10,12 @@ pub fn $func_name(state: &mut CoreState, $addr: &Address, $hacd: &DiamondNumber)
     } else {
         userbls = Balance::new(); // empty
     }
-    let $oldhacd = &userbls.diamond.value();
+    let $oldhacd = &userbls.diamond.to_diamond();
     /* -------- */
     let newhacd = $newhacdblock;// operate
     /* -------- */
     // save
-    userbls.diamond = DiamondNumberOptional::must(newhacd.clone());
+    userbls.diamond = DiamondNumberAuto::from_diamond( &newhacd );
     state.set_balance($addr, &userbls);
     Ok(newhacd)
 }
@@ -33,7 +33,7 @@ fnDiamondOperateCommon!(hacd_add, addr, hacd, oldhacd, {
 
 fnDiamondOperateCommon!(hacd_sub, addr, hacd, oldhacd, {  
     // check
-    if oldhacd.uint() < hacd.uint() {
+    if oldhacd.uint() < hacd.uint().into() {
 		return errf!("do hacd_sub error: address {} diamond {} not enough, need {}", 
             addr.readable(), oldhacd.uint(), hacd.uint())
     }
