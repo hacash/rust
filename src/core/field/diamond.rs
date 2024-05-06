@@ -86,6 +86,10 @@ impl DiamondNameListMax200 {
         self.lists.iter().map(|a|a.readable()).collect::<Vec<_>>().join(",")
     }
 
+    pub fn form(&self) -> Vec<u8> {
+        self.lists.iter().map(|a|a.serialize()).collect::<Vec<_>>().concat()
+    }
+
     pub fn from_string(stuff: &String) -> Ret<DiamondNameListMax200> {
         let s = stuff.replace(" ","").replace("\n","").replace("|","").replace(",","");
         if s.len() == 0 {

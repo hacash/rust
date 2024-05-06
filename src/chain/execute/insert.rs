@@ -113,7 +113,7 @@ pub fn do_check_insert(
     let mut execn = 0;
     for tx in alltxs {
         if execn > 0 { // except coinbase tx
-            exec_tx_actions(height, blkhash, vmobj, &mut sub_state, tx.as_read())?;
+            exec_tx_actions(!not_fast_sync, height, blkhash, vmobj, &mut sub_state, tx.as_read())?;
             alltxfee = alltxfee.add(&tx.fee_got())?; // fee_miner_received
         }
         // deduct tx fee after exec all actions

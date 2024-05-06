@@ -1,5 +1,6 @@
 
 pub struct ExecEnvObj {
+    fastsync: bool,
     pdhei: u64,
     pdhash: Hash,
     mainaddr: Address,
@@ -10,6 +11,7 @@ pub struct ExecEnvObj {
 impl ExecEnvObj {
     pub fn new(pdhei: u64, tx: &dyn TransactionRead) -> ExecEnvObj {
         ExecEnvObj{
+            fastsync: false,
             pdhei: pdhei,
             pdhash: Hash::new(),
             mainaddr: tx.address().clone(),
@@ -38,5 +40,8 @@ impl ExecEnv for ExecEnvObj {
     }
     fn call_depth(&self) -> u32 {
         0
+    }
+    fn fast_sync(&self) -> bool {
+        self.fastsync
     }
 }

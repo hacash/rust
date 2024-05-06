@@ -100,7 +100,7 @@ impl BlockEngine {
         let height = self.get_latest_height().uint() + 1; // next height
         let blkhash = Hash::cons([0u8; 32]); // empty hash
         // exec
-        exec_tx_actions(height, blkhash, self.vmobj.as_ref(), &mut sub_state, tx.as_read())?;
+        exec_tx_actions(false, height, blkhash, self.vmobj.as_ref(), &mut sub_state, tx.as_read())?;
         tx.execute(height, &mut sub_state)
     } 
 

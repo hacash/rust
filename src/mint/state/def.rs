@@ -26,7 +26,8 @@ defineChainStateOperationInstance!{
     (
         &[1, 21], diamond_ptr   , DiamondNumber    , DiamondName
         &[1, 22], diamond       , DiamondName      , DiamondSto
-        &[1, 23], channel       , ChannelId        , ChannelSto
+        &[1, 23], diamond_owned , Address          , DiamondOwnedForm
+        &[1, 24], channel       , ChannelId        , ChannelSto
     )
 }
 

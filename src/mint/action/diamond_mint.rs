@@ -124,56 +124,60 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     if dianum > DIAMOND_ABOVE_NUMBER_OF_CREATE_BY_CUSTOM_MESSAGE {
         custom_message = this.custom_message.serialize();
     }
+    // check mine
+    let (sha3hx, mediumhx, diahx) = x16rs::mine_diamond(dianum, &prev_hash, &nonce, &address, &custom_message);
 
-    // check
-    if pending_hash.is_not_zero() && pending_height % 5 != 0 {
-        return errf!("diamond must be contained in block height are highly divisible by 5")
-    }
-    // number
-    let prevdia = state.latest_diamond();
-    let neednextnumber = 1 + prevdia.number.to_u32();
-    if dianum != neednextnumber {
-        return errf!("diamond number need {} but got {}", neednextnumber, dianum)
-    }
-    // prev hash
-    if dianum > 1 && prevdia.belong_hash != prev_hash {
-        return errf!("diamond prev hash need {} but got {}", prevdia.belong_hash, prev_hash)
-    }
+    let not_fast_sync = false == env.fast_sync();
+    if not_fast_sync {
 
-    // latest
-    let latest_diamond = state.latest_diamond();
-    let latestdianum = latest_diamond.number.to_u32();
-    if dianum != 1 + latestdianum {
-        return errf!("latest diamond number need {} but got {}", dianum - 1, latestdianum)
-    }
+        // check
+        if pending_hash.is_not_zero() && pending_height % 5 != 0 {
+            return errf!("diamond must be contained in block height are highly divisible by 5")
+        }
+        // number
+        let prevdia = state.latest_diamond();
+        let neednextnumber = 1 + prevdia.number.to_u32();
+        if dianum != neednextnumber {
+            return errf!("diamond number need {} but got {}", neednextnumber, dianum)
+        }
+        // prev hash
+        if dianum > 1 && prevdia.belong_hash != prev_hash {
+            return errf!("diamond prev hash need {} but got {}", prevdia.belong_hash, prev_hash)
+        }
 
-    // mine
-    let (sha3hx, mediumhx, diahx) = x16rs::mine_diamond(dianum, 
-        &prev_hash, &nonce, &address, &custom_message);
-    // difficulty
-    let diffok = x16rs::check_diamond_difficulty(dianum, &sha3hx, &mediumhx);
-    if ! diffok {
-        return errf!("diamond difficulty not match")
-    }
+        // latest
+        let latest_diamond = state.latest_diamond();
+        let latestdianum = latest_diamond.number.to_u32();
+        if dianum != 1 + latestdianum {
+            return errf!("latest diamond number need {} but got {}", dianum - 1, latestdianum)
+        }
 
-    // name
-    let (diaok, dianame) = x16rs::check_diamond_hash_result(diahx);
-    if ! diaok {
-        let dhx = match String::from_utf8(diahx.to_vec()) {
-            Err(_) => hex::encode(diahx),
-            Ok(d) => d
-        };
-        return errf!("diamond hash result {} not a valid diamond name", dhx)
-    }
-    let dianame = Fixed6::cons(dianame.unwrap());
-    if name != dianame {
-        return errf!("diamond name need {} but got {}", dianame.readable(), namestr)
-    }
+        // difficulty
+        let diffok = x16rs::check_diamond_difficulty(dianum, &sha3hx, &mediumhx);
+        if ! diffok {
+            return errf!("diamond difficulty not match")
+        }
 
-    // exist
-    let hav = state.diamond(&name);
-    if let Some(_) = hav {
-        return errf!("diamond {} already exist", namestr)
+        // name
+        let (diaok, dianame) = x16rs::check_diamond_hash_result(diahx);
+        if ! diaok {
+            let dhx = match String::from_utf8(diahx.to_vec()) {
+                Err(_) => hex::encode(diahx),
+                Ok(d) => d
+            };
+            return errf!("diamond hash result {} not a valid diamond name", dhx)
+        }
+        let dianame = Fixed6::cons(dianame.unwrap());
+        if name != dianame {
+            return errf!("diamond name need {} but got {}", dianame.readable(), namestr)
+        }
+
+        // exist
+        let hav = state.diamond(&name);
+        if let Some(_) = hav {
+            return errf!("diamond {} already exist", namestr)
+        }
+
     }
 
     // tx fee
@@ -190,7 +194,6 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
         let burn = tx_bid_fee.clone().sub(&sub)?; // 90%
         ttcount.hacd_bid_burn_zhu = Uint8::from_u64(burn.to_zhu_unsafe() as u64);
     }
-
 
     // visual_gene
     let visual_gene = calculate_diamond_visual_gene(dianum, &mediumhx, &diahx, &pending_hash, &tx_bid_fee);

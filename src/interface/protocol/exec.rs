@@ -17,6 +17,7 @@ pub trait ExecEnv {
     fn check_signature(&self, adr: &Address) -> RetErr { errf!("check {} signature error", adr.readable()) }
     // fn address_list(&self) -> &[Address] { &[] }
     fn call_depth(&self) -> u32 { 0 }
+    fn fast_sync(&self) -> bool { false }
 }
 
 pub trait ActExec {
