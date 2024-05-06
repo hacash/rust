@@ -1,3 +1,4 @@
+use crate::mint::component::DiamondOwnedForm;
 
 
 defineQueryObject!{ Q8364,
@@ -6,6 +7,7 @@ defineQueryObject!{ Q8364,
 
 async fn balance(State(ctx): State<ApiCtx>, q: Query<Q8364>) -> impl IntoResponse  {
     ctx_state!(ctx, state);
+    ctx_mintstate!(ctx, mintstate);
     q_unit!(q, unit);
     let ads = q.address.replace(" ","").replace("\n","");
     let addrs: Vec<_> = ads.split(",").collect();
@@ -23,15 +25,24 @@ async fn balance(State(ctx): State<ApiCtx>, q: Query<Q8364>) -> impl IntoRespons
             return api_error(&format!("address {} format error", a))
         }
         let adr = adr.unwrap();
+        // balance
         let mut bls = state.balance(&adr);
         if let None = bls {
             bls = Some(Balance::new());
         }
         let bls = bls.unwrap();
+        // dianames
+        let mut diaowned = mintstate.diamond_owned(&adr);
+        if let None = diaowned {
+            diaowned = Some(DiamondOwnedForm::new());
+        }
+        let diaowned = diaowned.unwrap();
+        
         resbls.push(json!({
             "hacash": bls.hacash.to_unit_string(&unit),
             "diamond": bls.diamond.uint(),
             "satoshi": bls.satoshi.uint(),
+            "diamonds": diaowned.readable(),
         }));
     }
     // ok

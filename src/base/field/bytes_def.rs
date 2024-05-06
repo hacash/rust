@@ -6,8 +6,8 @@ macro_rules! StructFieldBytes{
 
 #[derive(Debug, Clone, Eq)]
 pub struct $class {
-    len: $lenty,
-    bytes: Vec<u8>,
+    pub count: $lenty,
+    pub bytes: Vec<u8>,
 }
 
 impl PartialEq for $class {
@@ -38,16 +38,16 @@ impl Serialize for $class {
     fn serialize(&self) -> Vec<u8> {
         let lv = self.size();
         let mut res = Vec::with_capacity(lv);
-        if self.len.to_usize() != self.bytes.len() {
+        if self.count.to_usize() != self.bytes.len() {
             panic!("size not match.")
         }
-        res.append(&mut self.len.serialize());
+        res.append(&mut self.count.serialize());
         res.append(&mut self.bytes.clone());
         res
     }
 
     fn size(&self) -> usize {
-        self.len.size() + self.len.to_usize()
+        self.count.size() + self.count.to_usize()
     }
 
 }
@@ -57,8 +57,8 @@ impl Parse for $class {
 
     fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
         let (obj, sk) = <$lenty>::create(&buf[seek..]) ?;
-        self.len = obj;
-        let conlen = self.len.to_usize();
+        self.count = obj;
+        let conlen = self.count.to_usize();
         let nsk = seek + sk;
         let bts = buf_clip_mvsk!(buf[nsk..], conlen);
         self.bytes = bts.to_vec();
@@ -72,7 +72,7 @@ impl Field for $class {
     fn new() -> $class {
         let sz = <$lenty>::from(0);
         $class{
-            len: sz,
+            count: sz,
             bytes: Vec::new(),
         }
     }
@@ -86,7 +86,7 @@ impl $class {
 
     pub fn from_vec(v: Vec<u8>) -> $class {
         $class{
-            len: <$lenty>::from_uint(v.len() as u64),
+            count: <$lenty>::from_uint(v.len() as u64),
             bytes: v,
         }
 
@@ -97,26 +97,22 @@ impl $class {
     }
 
     pub fn length(&self) -> usize {
-        self.len.to_usize()
+        self.count.to_usize()
     }
 
-    pub fn push(&mut self, a: u8) -> Option<Error> {
+    pub fn push(&mut self, a: u8) -> RetErr {
         if self.bytes.len() + 1 > $size_max {
-            return Some(s!("append size overflow"))
+            return errf!("append size overflow")
         }
-        self.len += 1u8;
+        self.count += 1u8;
         self.bytes.push(a);
-        None
+        Ok(())
     }
 
-    pub fn concat(&mut self, tar: &[u8]) -> Option<Error> {
-        let apsz = tar.len();
-        if self.bytes.len() + apsz > $size_max {
-            return Some(s!("concat size overflow"))
-        }
-        self.len += apsz as u64;
-        self.bytes = [self.bytes.clone(), tar.to_vec()].concat();
-        None
+    pub fn append(&mut self, tar: &mut Vec<u8>) -> RetErr {
+        self.count += tar.len() as u64;
+        self.bytes.append(tar);
+        Ok(())
     }
 
 }

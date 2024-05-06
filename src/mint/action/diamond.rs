@@ -21,6 +21,9 @@ fn diamond_transfer(this: &DiamondTransfer, env: &dyn ExecEnv, sta: &mut dyn Sta
     // move
     let mut state = MintState::wrap(sta);
     hacd_move_one_diamond(&mut state, from, &this.to, &this.diamond)?;
+    let mut list = DiamondNameListMax200::new();
+    list.push(this.diamond);
+    diamond_owned_move(&mut state, from, &this.to, &list)?;
     drop(state);
     // transfer
     let mut core_state = CoreState::wrap(sta);
@@ -61,6 +64,7 @@ fn diamond_from_to_transfer(this: &DiamondFromToTransfer, env: &dyn ExecEnv, sta
     for dianame in this.diamonds.list() {
         hacd_move_one_diamond(&mut state, &this.from, &this.to, &dianame)?; // move one
     }
+    diamond_owned_move(&mut state, &this.from, &this.to, &this.diamonds)?;
     drop(state);
     // transfer
     let mut core_state = CoreState::wrap(sta);
@@ -101,6 +105,7 @@ fn diamond_multiple_transfer(this: &DiamondMultipleTransfer, env: &dyn ExecEnv, 
     for dianame in this.diamonds.list() {
         hacd_move_one_diamond(&mut state, from, &this.to, &dianame)?; // move one
     }
+    diamond_owned_move(&mut state, from, &this.to, &this.diamonds)?;
     drop(state);
     // transfer
     let mut core_state = CoreState::wrap(sta);

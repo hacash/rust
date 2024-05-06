@@ -79,9 +79,11 @@ impl BlockEngine {
                     }
                     // let now = Instant::now();
                     let blk = blk.unwrap();
+                    let hei = blk.objc().height().uint();
                     let resck = this.exec_state(blk);
                     if resck.is_err() {
-                        let err = sync_warning(format!("exec state error: {}", resck.err().unwrap()));
+                        let err = sync_warning(format!("height {} exec state error: {}", 
+                            hei, resck.err().unwrap()));
                         errchin2.send(err);
                         break // end
                     }

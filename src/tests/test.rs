@@ -10,6 +10,23 @@ fn tdat() -> Box<dyn Action> {
 pub fn main_test736428456983476824() {
 
     /*
+
+    let mut list = DiamondNameListMax200::new();
+    list.push(DiamondName::from_readable(b"AAABBB"));
+    list.push(DiamondName::from_readable(b"WWWTTT"));
+    list.push(DiamondName::from_readable(b"HYYNTW"));
+
+    println!("{}", list.readable());
+
+   let mut form = DiamondOwnedForm::new();
+   form.push(&list);
+   form.drop_one(&DiamondName::from_readable(b"WWWTTT"));
+
+   println!("{}", form.readable());
+
+   */
+
+    /*
     let mut hxds = [255u8; 32];
     for i in 0..8 {
         for x in 1..=255 {

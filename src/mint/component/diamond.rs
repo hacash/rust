@@ -66,34 +66,114 @@ StructFieldStruct!{ DiamondOwnedForm,
 	names : BytesW4
 }
 impl DiamondOwnedForm {
+
+	pub fn readable(&self) -> String {
+		String::from_utf8_lossy( self.names.as_ref() ).to_string()
+	}
+	
+	pub fn push_one(&mut self, dian: &DiamondName) {
+		let mut bytes = dian.serialize();
+		self.names.append(&mut bytes);
+	}
+
+	pub fn drop_one(&mut self, dian: &DiamondName) -> RetErr {
+		let mut list = DiamondNameListMax200::new();
+		list.push(dian.clone());
+		self.drop(&list)
+	}
+
 	pub fn push(&mut self, dian: &DiamondNameListMax200) {
-		let bytes = dian.form();
-		self.names.push(bytes);
+		let mut bytes = dian.form();
+		self.names.append(&mut bytes);
 	}
 
 	pub fn drop(&mut self, dian: &DiamondNameListMax200) -> RetErr {
-		let dstlen = self.names.len() / 6;
-		let srclen = dian.count() as usize;
-		let dialist = dian.list();
-		let formdat = self.names.as_ref();
-		let mut leftx = 0;
-		let mut findidxs = vec![];
+
+		/*
+		let dstlen = self.names.length() / 6;
+		let mut oldlist = HashSet::with_capacity(dstlen);
 		for i in 0..dstlen {
-			let dia = formdat[i*6..i*6+6];
-			for x in leftx..srclen {
-				if dia = dialist[x] {
-					leftx += 1;
-					findidxs.push(i);
-				}
+			let rg = i*6 .. i*6+6;
+			let dia = DiamondName::cons(self.names.bytes[rg].try_into().unwrap());
+			oldlist.insert(dia);
+		}
+		let dplist = dian.hashset();
+		let newlist: HashSet<_> = oldlist.difference(&dplist).collect(); // oldlist - dplist
+		let resbts = newlist.iter().map(|a|a.serialize()).collect::<Vec<_>>().concat();
+		self.names = BytesW4::from_vec(resbts);
+		Ok(())
+		*/
+
+
+		let prvlen = self.names.length();
+		let mut dstlen = self.names.length() / 6;
+		let srclen = dian.count().to_usize();
+		let dialist = dian.list();
+		let mut splicergs: Vec<Range<usize>> = Vec::with_capacity(srclen);
+		for x in dialist {
+			for i in 0..dstlen {
+				let rg = i*6 .. i*6+6;
+				let dia = &self.names.bytes[rg.clone()];
+				if dia == x.as_ref() {
+					self.names.bytes.splice(rg, vec![]);
+					dstlen -= 1;
+					break // this find end
+				} 
 			}
 		}
-		if findidxs.len() != dian.count() {
-			return errf!("drop error")
+		// check 
+		if prvlen - self.names.bytes.len() != srclen * 6 {
+			return errf!("drop {} not match", srclen)
 		}
-		// remove
+		// sub length
+		self.names.count -= srclen * 6;
+		Ok(())
+
+
+		/*
+		let prvlen = self.names.length();
+		let mut dstlen = self.names.length() / 6;
+		let srclen = dian.count().to_usize();
+		let dialist = dian.list();
+		let mut splicergs: Vec<Range<usize>> = Vec::with_capacity(srclen);
+		for x in dialist {
+			for i in 0..dstlen {
+				let rg = i*6 .. i*6+6;
+				let dia = &self.names.bytes[rg.clone()];
+				if dia == x.as_ref() {
+					let ol = splicergs.len();
+					if ol > 0 && splicergs[ol-1].end == rg.start {
+						splicergs[ol-1] = (splicergs[ol-1].start) .. (rg.end);
+					}else if ol > 0 && splicergs[ol-1].start == rg.end {
+							splicergs[ol-1] = (rg.start) .. (splicergs[ol-1].end);
+					}else{
+						splicergs.push(rg);
+					}
+					// dstlen -= 1;
+					break // this find end
+				} 
+			}
+		}
+		splicergs.sort_by(|a, b| a.start.cmp(&b.start));
+		let mut sbrg = 0;
+		for rg in &splicergs {
+			let sp = rg.end - rg.start;
+			let nrg = (rg.start-sbrg) .. (rg.end-sbrg);
+			self.names.bytes.splice(nrg, vec![]);
+			sbrg += sp;
+		}
+		// check 
+		if prvlen - self.names.bytes.len() != srclen * 6 {
+			println!("splicergs = {:?}", splicergs);
+			return errf!("drop {} not match", srclen)
+		}
+		// sub length
+		self.names.count -= srclen * 6;
+		Ok(())
+		*/
 		
 	}
-	
+
 }
 
 

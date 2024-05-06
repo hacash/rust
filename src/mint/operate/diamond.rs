@@ -70,3 +70,36 @@ pub fn engraved_one_diamond(pending_height: u64, state: &mut MintState, store: &
 	Ok(cost)
 }
 
+/**
+* diamond owned push or drop
+*/
+pub fn diamond_owned_push_one(state: &mut MintState, address: &Address, name: &DiamondName) {
+    let mut owned = state.diamond_owned(address);
+    if let None = owned {
+        owned = Some(DiamondOwnedForm::new());
+    }
+    let mut owned = owned.unwrap();
+    owned.push_one(name);
+    state.set_diamond_owned(address, &owned);
+}
+
+pub fn diamond_owned_move(state: &mut MintState, from: &Address, to: &Address, list: &DiamondNameListMax200) -> RetErr {
+    // do drop
+    let mut from_owned = state.diamond_owned(from);
+    if let None = from_owned {
+        return errf!("from diamonds not find")
+    }
+    let mut from_owned = from_owned.unwrap();
+    from_owned.drop(list)?;
+    state.set_diamond_owned(from, &from_owned);
+    // do push
+    let mut to_owned = state.diamond_owned(to);
+    if let None = to_owned {
+        to_owned = Some(DiamondOwnedForm::new());
+    }
+    let mut to_owned = to_owned.unwrap();
+    to_owned.push(list);
+    state.set_diamond_owned(to, &to_owned);
+    Ok(())
+}
+

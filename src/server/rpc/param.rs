@@ -33,6 +33,7 @@ struct CoinKind {
     hacash: bool,
     satoshi: bool,
     diamond: bool,
+    diamonds: bool,
 }
 impl CoinKind {
     fn new(mut s: String) -> CoinKind {
@@ -41,6 +42,7 @@ impl CoinKind {
             hacash: s.contains("h"),
             satoshi: s.contains("s"),
             diamond: s.contains("d"),
+            diamonds: s.contains("n"),
         }
     }
 }

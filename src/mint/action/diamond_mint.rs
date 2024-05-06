@@ -227,6 +227,9 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     state.set_diamond(&name, &diaitem);
     state.set_diamond_ptr(&number, &name);
 
+    // add diamond belong
+    diamond_owned_push_one(&mut state, &address, &name);
+    
     // save count
     state.set_total_count(&ttcount);
     drop(state);
@@ -234,6 +237,9 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     // add balance
     let mut core_state = CoreState::wrap(sta);
     hacd_add(&mut core_state, &this.head.address, &DiamondNumber::from(1))?;
+
+
+
 
     // ok
     Ok(())

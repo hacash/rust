@@ -90,6 +90,10 @@ impl DiamondNameListMax200 {
         self.lists.iter().map(|a|a.serialize()).collect::<Vec<_>>().concat()
     }
 
+    pub fn hashset(&self) -> HashSet<DiamondName> {
+        self.lists.iter().map(|a|a.clone()).collect::<HashSet<_>>()
+    }
+
     pub fn from_string(stuff: &String) -> Ret<DiamondNameListMax200> {
         let s = stuff.replace(" ","").replace("\n","").replace("|","").replace(",","");
         if s.len() == 0 {
