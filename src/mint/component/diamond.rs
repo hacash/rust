@@ -76,7 +76,7 @@ impl DiamondOwnedForm {
 		self.names.append(&mut bytes);
 	}
 
-	pub fn drop_one(&mut self, dian: &DiamondName) -> RetErr {
+	pub fn drop_one(&mut self, dian: &DiamondName) -> Ret<usize> {
 		let mut list = DiamondNameListMax200::default();
 		list.push(dian.clone());
 		self.drop(&list)
@@ -87,7 +87,8 @@ impl DiamondOwnedForm {
 		self.names.append(&mut bytes);
 	}
 
-	pub fn drop(&mut self, dian: &DiamondNameListMax200) -> RetErr {
+	// return balance quantity
+	pub fn drop(&mut self, dian: &DiamondNameListMax200) -> Ret<usize> {
 
 		let l = DiamondName::width();
 		let srclen = dian.count().to_usize();
@@ -119,7 +120,7 @@ impl DiamondOwnedForm {
 		}
 		self.names.bytes = self.names.bytes.split_off(rmleft);
 		self.names.count -= srclen * l;
-		Ok(())
+		Ok(self.names.count.to_usize())
 
 
 		/*

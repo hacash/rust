@@ -83,11 +83,15 @@ pub fn diamond_owned_move(state: &mut MintState, from: &Address, to: &Address, l
     // do drop
     let mut from_owned = state.diamond_owned(from);
     if let None = from_owned {
-        return errf!("from diamonds not find")
+        return errf!("from diamond owned form not find")
     }
     let mut from_owned = from_owned.unwrap();
-    from_owned.drop(list)?;
-    state.set_diamond_owned(from, &from_owned);
+    let blsnum = from_owned.drop(list)?;
+    if blsnum > 0 {
+        state.set_diamond_owned(from, &from_owned);
+    }else{
+        state.del_diamond_owned(from);
+    }
     // do push
     let mut to_owned = state.diamond_owned(to).unwrap_or_default();
     to_owned.push(list);
