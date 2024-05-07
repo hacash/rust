@@ -81,6 +81,15 @@ impl DiamondNameListMax200 {
         // success
         Ok(reallen as u8)
     }
+    
+    pub fn contains(&self, x: &[u8]) -> bool {
+        for v in &self.lists {
+            if x == v.as_ref() {
+                return true
+            }
+        }
+        false // not find
+    }
 
     pub fn readable(&self) -> String {
         self.lists.iter().map(|a|a.readable()).collect::<Vec<_>>().join(",")

@@ -4,12 +4,7 @@ macro_rules! fnDiamondOperateCommon{
     ($func_name: ident, $addr:ident, $hacd:ident, $oldhacd:ident, $newhacdblock:block) => (
 
 pub fn $func_name(state: &mut CoreState, $addr: &Address, $hacd: &DiamondNumber) -> Ret<DiamondNumber> {
-    let mut userbls;
-    if let Some(b) = state.balance( $addr ) {
-        userbls = b;
-    } else {
-        userbls = Balance::default(); // empty
-    }
+    let mut userbls = state.balance( $addr ).unwrap_or_default();
     let $oldhacd = &userbls.diamond.to_diamond();
     /* -------- */
     let newhacd = $newhacdblock;// operate

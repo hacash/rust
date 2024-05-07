@@ -7,12 +7,7 @@ pub fn $func_name(state: &mut CoreState, $addr: &Address, $amt: &Amount) -> Ret<
     if ! $amt.is_positive() {
 		return Err(format!("amount {} value is not positive", $amt.to_fin_string()))
     }
-    let mut userbls;
-    if let Some(b) = state.balance( $addr ) {
-        userbls = b;
-    } else {
-        userbls = Balance::default(); // empty
-    }
+    let mut userbls = state.balance( $addr ).unwrap_or_default();
     let $oldhac = userbls.hacash;
     /* -------- */
     let newamt = $newamtblock;// operate

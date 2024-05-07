@@ -6,13 +6,8 @@ macro_rules! fnSatoshiOperateCommon{
 pub fn $func_name(state: &mut CoreState, $addr: &Address, $sat: &Satoshi) -> Ret<Satoshi> {
     if $sat.uint() == 0 {
 		return errf!("satoshi value cannot zore")
-    }
-    let mut userbls;
-    if let Some(b) = state.balance( $addr ){
-        userbls = b;
-    } else {
-        userbls = Balance::default(); // empty
-    }
+    }    
+    let mut userbls = state.balance( $addr ).unwrap_or_default();
     let $oldsat = &userbls.satoshi.to_satoshi();
     /* -------- */
     let newsat = $newsatblock;// operate

@@ -89,6 +89,77 @@ impl DiamondOwnedForm {
 
 	pub fn drop(&mut self, dian: &DiamondNameListMax200) -> RetErr {
 
+		let l = DiamondName::width();
+		let srclen = dian.count().to_usize();
+		let mut dianset = dian.hashset();
+		let dstsz = self.names.length();
+		let dstlen = dstsz / l;
+		let mut rmleft = 0;
+		for i in 0..dstlen {
+			let x = i*l;
+			let y = x+l;
+			let dia = DiamondName::cons(self.names.bytes[x..y].try_into().unwrap());
+			if dianset.contains(&dia) {
+				dianset.remove(&dia);
+				if x == rmleft {
+					// drop head, do nohing
+				}else{
+					let cvd = rmleft .. rmleft+l;
+					self.names.bytes.copy_within(cvd, x);
+				}
+				rmleft += l;
+			}
+			if dianset.is_empty() {
+				break // all finish
+			}
+		}
+		if rmleft/l != srclen {
+			println!("rmleft/l={}, srclen={}, dstlen={}", rmleft/l, srclen, dstlen);
+			return errf!("drop {} not match", srclen)
+		}
+		self.names.bytes = self.names.bytes.split_off(rmleft);
+		self.names.count -= srclen * l;
+		Ok(())
+
+
+		/*
+		let l = DiamondName::width();
+		let srclen = dian.count().to_usize();
+		let dstsz = self.names.length();
+		let dstlen = dstsz / l;
+		let mut tcnum = dstsz;
+		let mut findn = 0;
+		// println!("{:?}", (0..dstlen).rev());
+		for i in (0..dstlen).rev() {
+			let x = i*l;
+			let y = x+l;
+			let dia = &self.names.bytes[x..y];
+			if dian.contains(dia) {
+				// println!("i={}, x={}, tcnum={}", i, x, tcnum);
+				if y == tcnum {
+					// drop tail, do nohing
+				}else{
+					// replace delete posi
+					let cvd = tcnum-l .. tcnum;
+					self.names.bytes.copy_within(cvd, x);
+				}
+				tcnum -= l;
+				findn += 1;
+			}
+			if findn >= srclen {
+				break // finish
+			}
+		}
+		if tcnum/l + srclen != dstlen {
+			// println!("tcnum/l={}, srclen={}, dstlen={}", tcnum/l, srclen, dstlen);
+			return errf!("drop {} not match", srclen)
+		}
+		self.names.bytes.truncate(tcnum);
+		self.names.count -= srclen * l;
+		Ok(())
+		*/
+
+
 		/*
 		let dstlen = self.names.length() / 6;
 		let mut oldlist = HashSet::with_capacity(dstlen);
@@ -104,7 +175,7 @@ impl DiamondOwnedForm {
 		Ok(())
 		*/
 
-
+		/*
 		let prvlen = self.names.length();
 		let mut dstlen = self.names.length() / 6;
 		let srclen = dian.count().to_usize();
@@ -128,7 +199,7 @@ impl DiamondOwnedForm {
 		// sub length
 		self.names.count -= srclen * 6;
 		Ok(())
-
+		*/
 
 		/*
 		let prvlen = self.names.length();
@@ -159,18 +230,20 @@ impl DiamondOwnedForm {
 		for rg in &splicergs {
 			let sp = rg.end - rg.start;
 			let nrg = (rg.start-sbrg) .. (rg.end-sbrg);
+
 			self.names.bytes.splice(nrg, vec![]);
+			
 			sbrg += sp;
 		}
 		// check 
 		if prvlen - self.names.bytes.len() != srclen * 6 {
-			println!("splicergs = {:?}", splicergs);
 			return errf!("drop {} not match", srclen)
 		}
 		// sub length
 		self.names.count -= srclen * 6;
 		Ok(())
 		*/
+		
 		
 	}
 
