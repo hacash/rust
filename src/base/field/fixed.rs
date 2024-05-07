@@ -55,7 +55,7 @@ impl Bool {
     }
 
     pub fn from_bool(v: bool) -> Bool {
-        let mut var = Bool::new();
+        let mut var = Bool::default();
         var.set(v);
         var
     }

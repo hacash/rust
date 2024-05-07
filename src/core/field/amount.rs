@@ -17,7 +17,7 @@ macro_rules! amount_check_data_len{
     )
 }
 
-#[derive(Clone, Eq)]
+#[derive(Default, Clone, Eq)]
 pub struct Amount {
 	unit: u8,
 	dist: i8,
@@ -85,14 +85,6 @@ impl Div<i32> for Amount {
 // impl Copy for Amount {}
 
 impl Field for Amount {
-
-    fn new() -> Amount {
-        Amount{
-            unit: 0,
-            dist: 0,
-            byte: Vec::new(),
-        }
-    }
 
     // must & create function
     fnFieldMustCreate!(Amount);
@@ -176,7 +168,7 @@ impl Amount {
     }
 
     pub fn from_i64(num: i64, unit: u8) -> Result<Amount, String> {
-        let mut amt = Amount::new();
+        let mut amt = Amount::default();
         if num == 0 {
             return Ok(amt);
         }
@@ -225,7 +217,7 @@ impl Amount {
         let mayerr = ||{
             Err(format!("Amount.from_mei_string_unsafe `{}` format error.", v))
         };
-        // let mut amt = Amount::new();
+        // let mut amt = Amount::default();
         let nums: Vec<&str> = v.as_str().trim().split(".").collect();
         if 1 == nums.len() {
             // int
@@ -268,7 +260,7 @@ impl Amount {
         let unit_v = vs[1].to_string();
         let num_v = vs[0].to_string();
         // create amt
-        let mut amt = Amount::new();
+        let mut amt = Amount::default();
         let unit = match unit_v.parse::<u32>() {
             Ok(uv) => uv,
             Err(_) => return Err(mayerr()),
@@ -308,7 +300,7 @@ impl Amount {
 
     pub fn to_unit_unsafe(&self, base_unit: u8) -> f64 {
 
-        // let mut amt = Amount::new();
+        // let mut amt = Amount::default();
         if self.is_empty() {
             return 0f64
         }
@@ -336,7 +328,7 @@ impl Amount {
     pub fn from_bigint( bignum: &BigInt ) -> Result<Amount, String> {
         let numstr = bignum.to_string();
         if numstr == "0" {
-            return Ok(Amount::new())
+            return Ok(Amount::default())
         }
         let numuse = numstr.as_str().trim_end_matches('0');
         let unit = numstr.len() - numuse.len();
@@ -358,7 +350,7 @@ impl Amount {
             dist *= -1;
         }
         // amt
-        let mut amt = Amount::new();
+        let mut amt = Amount::default();
         amt.unit = unit as u8;
         amt.dist = dist;
         amt.byte = byte;

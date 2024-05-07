@@ -2,7 +2,7 @@ use std::time::Instant;
 
 
 fn tdat() -> Box<dyn Action> {
-    let obj = protocol::action::HacTransfer::new();
+    let obj = protocol::action::HacTransfer::default();
     Box::new(obj)
 }
 
@@ -11,20 +11,20 @@ pub fn main_test736428456983476824() {
 
     /*
 
-    let mut list = DiamondNameListMax200::new();
+    let mut list = DiamondNameListMax200::default();
     list.push(DiamondName::from_readable(b"AAABBB"));
     list.push(DiamondName::from_readable(b"WWWTTT"));
     list.push(DiamondName::from_readable(b"HYYNTW"));
 
     println!("{}", list.readable());
 
-   let mut form = DiamondOwnedForm::new();
-   form.push(&list);
-   form.drop_one(&DiamondName::from_readable(b"WWWTTT"));
+    let mut form = DiamondOwnedForm::default();
+    form.push(&list);
+    form.drop_one(&DiamondName::from_readable(b"WWWTTT"));
 
-   println!("{}", form.readable());
+    println!("{}", form.readable());
 
-   */
+    */
 
     /*
     let mut hxds = [255u8; 32];
@@ -139,7 +139,7 @@ pub fn main_test8327459283() {
     let act1 = crate::protocol::action::ACTION_KIND_1;
     println!("{}", act1);
 
-    let mut actobj = crate::protocol::action::HacTransfer::new();
+    let mut actobj = crate::protocol::action::HacTransfer::default();
     println!("{}", hex::encode(actobj.serialize()));
 
 
@@ -154,7 +154,7 @@ pub fn main_test8327459283() {
 pub fn main_test134234() {
 
 
-    let addrhac = AddrHac::new();
+    let addrhac = AddrHac::default();
 
     println!("{} {} {}", "abc 123", s!("error"), addrhac.amount);
 

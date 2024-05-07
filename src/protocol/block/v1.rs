@@ -12,7 +12,7 @@ StructFieldDynVec!{
 StructFieldStructSetParse!{ self, buf, seek, {
     return {
         // intro
-        let mut intro = BlockIntro::new();
+        let mut intro = BlockIntro::default();
         let seek = intro.parse(buf, seek)?;
         let trslen = intro.head.transaction_count.to_u64();
         self.intro = intro;
@@ -103,7 +103,7 @@ impl Block for BlockV1 {
 
 impl BlockV1 {
     pub fn new() -> BlockV1 {
-        let mut blk = <BlockV1 as Field>::new();
+        let mut blk = <BlockV1 as Field>::default_new();
         blk.intro.head.version = Uint1::from(BLOCK_VERSION_1);
         blk 
     }

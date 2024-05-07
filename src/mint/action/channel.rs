@@ -88,12 +88,12 @@ fn channel_open(this: &ChannelOpen, env: &dyn ExecEnv, sta: &mut dyn State, sto:
         interest_attribution: CHANNEL_INTEREST_ATTRIBUTION_TYPE_DEFAULT,
         left_bill: AddrHacSat{
             address: left_addr.clone(),
-            hacsat: HacSat{amount: left_amt.clone(), satoshi: SatoshiOptional::new()}},
+            hacsat: HacSat{amount: left_amt.clone(), satoshi: SatoshiOptional::default()}},
         right_bill: AddrHacSat{
             address: right_addr.clone(),
-            hacsat: HacSat{amount: right_amt.clone(), satoshi: SatoshiOptional::new()}},
-        if_challenging: ChallengePeriodDataOptional::new(), // none
-        if_distribution: ClosedDistributionDataOptional::new(), // none
+            hacsat: HacSat{amount: right_amt.clone(), satoshi: SatoshiOptional::default()}},
+        if_challenging: ChallengePeriodDataOptional::default(), // none
+        if_distribution: ClosedDistributionDataOptional::default(), // none
     };
     state.set_channel(cid, &channel);
 

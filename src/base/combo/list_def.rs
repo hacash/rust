@@ -5,7 +5,7 @@ macro_rules! StructFieldList {
     ($class: ident, $count: ident, $count_type: ty, $value: ident, $value_type: ty) => (
 
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Default, Clone, PartialEq, Eq)]
 pub struct $class  {
 	$count: $count_type,
 	$value: Vec<$value_type>,
@@ -71,13 +71,6 @@ impl Serialize for $class {
 }
 
 impl Field for $class {
-
-   fn new() -> $class {
-        $class {
-            $count: <$count_type>::from(0),
-            $value: Vec::new(),
-        }
-   }
 
     // must & create function
     fnFieldMustCreate!($class);

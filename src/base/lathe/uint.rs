@@ -19,7 +19,7 @@ macro_rules! fnUintFromToParseBytes {
 
     concat_idents!(fn_from_1 = from_, $tarty {
     fn fn_from_1(val: $tarty) -> Self where Self: Sized {
-        let mut obj = <$class>::new();
+        let mut obj = <$class>::default();
         // obj.parse_uint(val as u64).unwrap();
         if let Err(e) = field_parse_uint(&mut obj, val as u64, $size) {
             panic!("{}", e)

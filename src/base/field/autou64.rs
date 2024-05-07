@@ -35,7 +35,7 @@ fn ckprefix1n(a: u8) -> (u8, u8) {
 
 
 
-#[derive(Debug, Hash, Copy, Clone, PartialEq, Eq)]
+#[derive(Default, Debug, Hash, Copy, Clone, PartialEq, Eq)]
 pub struct AutoU64 {
     value: u64,
 }
@@ -183,15 +183,8 @@ impl Serialize for AutoU64 {
 
 impl Field for AutoU64 {
 
-    fn new() -> AutoU64 {
-        AutoU64 {
-            value: 0,
-        }
-    }
-
     // must & create function
     fnFieldMustCreate!(AutoU64);
-
 
 
     fn from_uint<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { 
@@ -213,7 +206,7 @@ impl AutoU64 {
 
     // maybe panic
     pub fn from_bytes(buf: &[u8]) -> AutoU64 {
-        let mut v = AutoU64::new();
+        let mut v = AutoU64::default();
         v.parse(buf, 0).unwrap();
         v
     }

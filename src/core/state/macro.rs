@@ -27,11 +27,11 @@ impl struct_name_disk<'_> {
     $(
         concat_idents!(fn_get_1 = $name1 {
         pub fn fn_get_1(&self) -> $vtype1 {
-            let mut obj = <$vtype1>::new();
-            if (*self.db).load( $kfix1, &Empty::new(), &mut obj) {
+            let mut obj = <$vtype1>::default();
+            if (*self.db).load( $kfix1, &Empty::default(), &mut obj) {
                 return obj
             }
-            $vtype1::new()
+            $vtype1::default()
         }
         });
     )+
@@ -40,7 +40,7 @@ impl struct_name_disk<'_> {
     $(
         concat_idents!(fn_put_1 = put_, $name1 {
         pub fn fn_put_1(&self, obj: &$vtype1) {
-            (*self.db).put( $kfix1, &Empty::new(), obj);
+            (*self.db).put( $kfix1, &Empty::default(), obj);
         }
         });
     )+
@@ -50,7 +50,7 @@ impl struct_name_disk<'_> {
     $(
         concat_idents!(fn_get_2 = $name2 {
         pub fn fn_get_2(&self, $name2: &$keyty2) -> Option<$vtype2> {
-            let mut obj = <$vtype2>::new();
+            let mut obj = <$vtype2>::default();
             if (*self.db).load($kfix2, $name2, &mut obj) {
                 return Some(obj)
             }
@@ -101,8 +101,8 @@ impl $name<'_> {
     $(
         concat_idents!(fn_get_1 = $name1 {
         pub fn fn_get_1(&self) -> $vtype1 {
-            let mut obj = <$vtype1>::new();
-            (*self.db).load( $kfix1, &Empty::new(), &mut obj);
+            let mut obj = <$vtype1>::default();
+            (*self.db).load( $kfix1, &Empty::default(), &mut obj);
             obj
         }
         });
@@ -113,7 +113,7 @@ impl $name<'_> {
         concat_idents!(fn_set_1 = set_, $name1 {
         pub fn fn_set_1(&mut self, obj: &$vtype1) {
             let mut sta = &mut self.db;
-            sta.set( $kfix1, &Empty::new(), obj);
+            sta.set( $kfix1, &Empty::default(), obj);
         }
         });
     )+
@@ -122,7 +122,7 @@ impl $name<'_> {
     $(
         concat_idents!(fn_put_1 = put_, $name1 {
         pub fn fn_put_1(&self, obj: &$vtype1) {
-            (*self.db).put( $kfix1, &Empty::new(), obj);
+            (*self.db).put( $kfix1, &Empty::default(), obj);
         }
         });
     )+

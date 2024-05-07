@@ -1,4 +1,6 @@
 
+
+#[derive(Default)]
 pub struct ASTExtWrap {
     body: Vec<u8>,
 }
@@ -30,9 +32,5 @@ impl Parse for ASTExtWrap {
 
 
 impl Field for ASTExtWrap {
-    fn new() -> ASTExtWrap {
-        ASTExtWrap{
-            body: vec![],
-        }
-    }
+    
 }

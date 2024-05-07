@@ -13,7 +13,7 @@ impl ExecEnvObj {
         ExecEnvObj{
             fastsync: false,
             pdhei: pdhei,
-            pdhash: Hash::new(),
+            pdhash: Hash::default(),
             mainaddr: tx.address().clone(),
             txfee: tx.fee().clone(),
         }

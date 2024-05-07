@@ -26,7 +26,7 @@ async fn console(State(ctx): State<ApiCtx>, req: Request) -> impl IntoResponse {
         if blkdts.is_none() {
             break
         }
-        let mut bhd = BlockIntro::new();
+        let mut bhd = BlockIntro::default();
         if let Err(..) = bhd.parse(blkdts.unwrap().as_ref(), 0) {
             break
         }

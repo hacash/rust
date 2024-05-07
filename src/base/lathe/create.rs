@@ -4,8 +4,12 @@
 macro_rules! fnFieldMustCreate {
     ($class:ty) => (
 
+        fn default_new() -> $class {
+            <$class>::default()
+        }
+
         fn must(buf: &[u8]) -> $class {
-            let mut v = <$class>::new();
+            let mut v = <$class>::default();
             let res = v.parse(buf, 0);
             match res {
                 Ok(_) => v,
@@ -14,7 +18,7 @@ macro_rules! fnFieldMustCreate {
         }
 
         fn create(buf: &[u8]) -> Ret<($class, usize)> {
-            let mut v = <$class>::new();
+            let mut v = <$class>::default();
             let res = v.parse(buf, 0);
             match res {
                 Ok(sk) => Ok((v, sk)),

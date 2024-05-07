@@ -39,7 +39,7 @@ impl DifficultyGnr {
         let store = CoreStoreDisk::wrap(sto);
         let blkhx = store.blockptr(&BlockHeight::from(cylhei)).unwrap();
         let blkdts = store.blockdata(&blkhx).unwrap();
-        let mut intro = BlockIntro::new();
+        let mut intro = BlockIntro::default();
         intro.parse(blkdts.as_ref(), 0).unwrap();
         // get time
         let cyltime = intro.timestamp().uint();

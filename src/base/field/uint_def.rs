@@ -92,7 +92,7 @@ macro_rules! uintDefineAllOperate{
 macro_rules! StructFieldUint{
     ($name:ident, $vty:ty, $size:expr, $size_vl:expr) => (
 
-#[derive(Debug, Hash, Copy, Clone, PartialEq, Eq)]
+#[derive(Default, Debug, Hash, Copy, Clone, PartialEq, Eq)]
 pub struct $name {
     value: $vty,
 }
@@ -222,12 +222,6 @@ impl Serialize for $name {
 }
 
 impl Field for $name {
-
-    fn new() -> $name {
-        $name {
-            value: 0,
-        }
-    }
 
     // must & create function
     fnFieldMustCreate!($name);

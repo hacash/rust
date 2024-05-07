@@ -54,7 +54,7 @@ pub fn engraved_one_diamond(pending_height: u64, state: &mut MintState, store: &
     let diaslt = must_have!(format!("diamond {}", diamond.readable()), store.diamond_smelt(&diamond));
 
     // cost
-    let mut cost = Amount::new(); // zero
+    let mut cost = Amount::default(); // zero
 	if haveng >= 10 {
 		// burning cost bid fee 1/10 from 11 insc
 		cost = Amount::from_i64(diaslt.average_bid_burn.uint() as i64, 247)?;
@@ -76,7 +76,7 @@ pub fn engraved_one_diamond(pending_height: u64, state: &mut MintState, store: &
 pub fn diamond_owned_push_one(state: &mut MintState, address: &Address, name: &DiamondName) {
     let mut owned = state.diamond_owned(address);
     if let None = owned {
-        owned = Some(DiamondOwnedForm::new());
+        owned = Some(DiamondOwnedForm::default());
     }
     let mut owned = owned.unwrap();
     owned.push_one(name);
@@ -95,7 +95,7 @@ pub fn diamond_owned_move(state: &mut MintState, from: &Address, to: &Address, l
     // do push
     let mut to_owned = state.diamond_owned(to);
     if let None = to_owned {
-        to_owned = Some(DiamondOwnedForm::new());
+        to_owned = Some(DiamondOwnedForm::default());
     }
     let mut to_owned = to_owned.unwrap();
     to_owned.push(list);

@@ -106,7 +106,7 @@ impl DiamondNameListMax200 {
         if num > 200  {
             return errf!("diamond list max 200 overflow")
         }
-        let mut obj = DiamondNameListMax200::new();
+        let mut obj = DiamondNameListMax200::default();
         let bs = s.as_bytes();
         for i in 0 .. num {
             let x = i*6;

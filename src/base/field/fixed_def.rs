@@ -9,6 +9,13 @@ pub struct $class {
     bytes: [u8; $size],
 }
 
+impl Default for $class {
+    fn default() -> Self {
+        $class {
+            bytes: [0u8; $size],
+        }
+    }
+}
 
 impl fmt::Display for $class{
     fn fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
@@ -140,24 +147,18 @@ impl Parse for $class {
 
 impl Field for $class {
 
-    fn new() -> $class {
-        $class{
-            bytes: [0u8; $size],
-        }
-    }
-
     // must & create function
     fnFieldMustCreate!($class);
 
     fn from_uint<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output=u64> { 
-        let mut obj = <$class>::new();
+        let mut obj = <$class>::default();
         // obj.parse_uint(nt).unwrap();
         field_parse_uint(&mut obj, nt, $size).unwrap();
         obj
     }
     
     fn from_float<T>(nt: T) -> Self where Self: Sized, T: std::ops::Add<f64, Output=f64> {
-        let mut obj = <$class>::new();
+        let mut obj = <$class>::default();
         // obj.parse_float(nt).unwrap();
         field_parse_float(&mut obj, nt, $size).unwrap();
         obj
@@ -174,7 +175,7 @@ impl FieldHex for $class {
 
     fn from_hex(stuff: &[u8]) -> Self where Self: Sized {
         let bts = bytes_from_hex(stuff, $size).unwrap();
-        let mut obj = <$class>::new();
+        let mut obj = <$class>::default();
         obj.bytes = bts.try_into().unwrap();
         obj
     }
@@ -228,7 +229,7 @@ impl FieldReadable for $class {
     
     fn from_readable(stuff: &[u8]) -> Self where Self: Sized {
         let bts = bytes_from_readable_string(stuff, $size).unwrap();
-        let mut obj = <$class>::new();
+        let mut obj = <$class>::default();
         obj.bytes = bts.try_into().unwrap();
         obj
     }

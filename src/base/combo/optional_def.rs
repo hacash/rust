@@ -6,7 +6,7 @@ macro_rules! StructFieldOptional {
     ($class:ident, $value:ident, $value_type:ident) => (
 
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Default, Clone, PartialEq, Eq)]
 pub struct $class {
     exist: Bool,
     $value: Option<$value_type>,
@@ -57,13 +57,6 @@ impl Serialize for $class {
 
 impl Field for $class {
 
-    fn new() -> $class {
-        $class {
-            exist: Bool::from_bool(false),
-            $value: None,
-        }
-    }
-
     // must & create function
     fnFieldMustCreate!($class);
 }
@@ -85,7 +78,7 @@ impl $class {
     pub fn from_value(ifv: Option<$value_type>) -> $class {
         match ifv {
             Some(v) => <$class>::must(v),
-            _ => <$class>::new(),
+            _ => <$class>::default(),
         }
     }
 
@@ -100,7 +93,7 @@ impl $class {
     pub fn value(&self) -> $value_type {
         match self.exist.check() {
             true => self.$value.as_ref().unwrap().clone(),
-            false => <$value_type>::new(),
+            false => <$value_type>::default(),
         }
     }
     

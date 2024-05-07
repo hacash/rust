@@ -11,7 +11,7 @@ pub fn $func_name(state: &mut CoreState, $addr: &Address, $amt: &Amount) -> Ret<
     if let Some(b) = state.balance( $addr ) {
         userbls = b;
     } else {
-        userbls = Balance::new(); // empty
+        userbls = Balance::default(); // empty
     }
     let $oldhac = userbls.hacash;
     /* -------- */

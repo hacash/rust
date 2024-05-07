@@ -31,7 +31,7 @@ async fn handle_new_tx(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: Vec
 
 async fn handle_new_block(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: Vec<u8>) {
     // println!("222222222222 handle_txblock_arrive Block, peer={} len={}", peer.nick(), body.clone().len());
-    let mut blkhead = BlockIntro::new();
+    let mut blkhead = BlockIntro::default();
     if let Err(_) = blkhead.parse(&body, 0) {
         return // parse tx error
     }

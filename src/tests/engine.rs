@@ -284,7 +284,7 @@ fn _test_blocks() -> Vec<BlockV1> {
     let mut blks = Vec::with_capacity(datas.len());
     for dt in datas {
         let dt = hex::decode(dt).unwrap();
-        let mut blk = BlockV1::new();
+        let mut blk = BlockV1::default();
         if let Err(e) = blk.parse(&dt, 0) {
             panic!("{}", e)
         }
@@ -301,13 +301,13 @@ pub fn create_block(height: u64, pt: u64, prev: &str) {
     let blktime = Timestamp::from(pt); // 1549250700);
     let blknoncenum = Fixed4::from_uint(160117829);
     let reward_addr = Address::form_readable(&"1271438866CSDpJUqrnchoJAiGGBFSQhjd".to_string()).unwrap();
-    let mut trsvec = DynVecTransaction::new(); 
+    let mut trsvec = DynVecTransaction::default(); 
     trsvec.push(Box::new(TransactionCoinbase{
         ty: Uint1::from(0),
         address: reward_addr,
         reward: Amount::new_coin(1),
         message: StringTrim16::from_readable(b"hardertodobetter"),
-        extend: CoinbaseExtend::new()
+        extend: CoinbaseExtend::default()
     }));
     let mut genesis_block = BlockV1 {
         intro: BlockHeadMeta { 
@@ -316,13 +316,13 @@ pub fn create_block(height: u64, pt: u64, prev: &str) {
                 height: BlockHeight::from(height), 
                 timestamp: blktime, 
                 prevhash: Hash::from_hex(prev.as_bytes()),
-                mrklroot: Hash::new(), // 000000...
+                mrklroot: Hash::default(), // 000000...
                 transaction_count: Uint4::from(1) // trs 1
             }, 
             meta: BlockMeta { 
                 nonce: blknoncenum, 
                 difficulty: Uint4::from(0), 
-                witness_stage: Fixed2::new() 
+                witness_stage: Fixed2::default() 
             },
         },
         transactions: trsvec

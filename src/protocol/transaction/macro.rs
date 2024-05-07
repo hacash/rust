@@ -55,9 +55,9 @@ impl $class {
             timestamp: Timestamp::from(curtimes()),
             address: addr,
             fee: fee,
-            actions: DynListVMAction::new(),
-            signs: SignListW2::new(),
-            ano_mark: Uint2::new(),
+            actions: DynListVMAction::default(),
+            signs: SignListW2::default(),
+            ano_mark: Uint2::default(),
         }
     }
 
@@ -197,7 +197,7 @@ impl TxExec for $class {
         if let Some(exi) = state.txexist(&txhx) {
             exiobj = exi;
         }else{
-            exiobj = TxExist::new();
+            exiobj = TxExist::default();
         }
         let exhei = exiobj.height.to_u64();
         if exhei > 0 { // have tx !!!

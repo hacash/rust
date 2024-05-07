@@ -37,7 +37,7 @@ macro_rules! pubFnRegActionCreates {
     ( $($ty:ident)+ ) => {
 
         pub fn cut_kind(buf: &[u8]) -> Ret<u16> {
-            let mut kind = Uint2::new();
+            let mut kind = Uint2::default();
             kind.parse(buf, 0)?;
             let kid = kind.to_u16();
             Ok(kid)
@@ -112,7 +112,7 @@ impl $actname {
     }
 
     pub fn new() -> $actname {
-        let mut obj = <$actname as Field>::new();
+        let mut obj = <$actname as Field>::default_new();
         obj.kind = Uint2::from($actid);
         obj
     }

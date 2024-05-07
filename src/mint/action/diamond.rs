@@ -21,7 +21,7 @@ fn diamond_transfer(this: &DiamondTransfer, env: &dyn ExecEnv, sta: &mut dyn Sta
     // move
     let mut state = MintState::wrap(sta);
     hacd_move_one_diamond(&mut state, from, &this.to, &this.diamond)?;
-    let mut list = DiamondNameListMax200::new();
+    let mut list = DiamondNameListMax200::default();
     list.push(this.diamond);
     diamond_owned_move(&mut state, from, &this.to, &list)?;
     drop(state);

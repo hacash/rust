@@ -7,7 +7,7 @@ macro_rules! StructFieldDynList {
     ($class: ident, $lenty: ty, $dynty: ident, $parseobjfunc: path) => (
 
 
-#[derive(Clone)]
+#[derive(Default, Clone)]
 pub struct $class {
     count: $lenty,
     vlist: Vec<Box<dyn $dynty>>
@@ -68,13 +68,6 @@ impl Serialize for $class {
 }
 
 impl Field for $class {
-
-   fn new() -> $class {
-        $class {
-            count: <$lenty>::new(),
-            vlist: Vec::new(),
-        }
-   }
 
    // create function
    fnFieldMustCreate!($class);

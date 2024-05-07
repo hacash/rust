@@ -76,11 +76,11 @@ impl DiamondMint {
             head: DiamondMintHead{
                 diamond: name,
                 number: number,
-                prev_hash: Hash::new(),
-                nonce: Fixed8::new(),
-                address: Address::new(),
+                prev_hash: Hash::default(),
+                nonce: Fixed8::default(),
+                address: Address::default(),
             },
-            custom_message: Hash::new(),
+            custom_message: Hash::default(),
         }
     }
 
@@ -221,8 +221,8 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     let diaitem = DiamondSto {
         status: DIAMOND_STATUS_NORMAL,
         address: this.head.address.clone(),
-        prev_engraved_height: BlockHeight::new(), // 0
-        inscripts: Inscripts::new() // none
+        prev_engraved_height: BlockHeight::default(), // 0
+        inscripts: Inscripts::default() // none
     };
     state.set_diamond(&name, &diaitem);
     state.set_diamond_ptr(&number, &name);

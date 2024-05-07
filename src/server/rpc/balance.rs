@@ -26,18 +26,9 @@ async fn balance(State(ctx): State<ApiCtx>, q: Query<Q8364>) -> impl IntoRespons
         }
         let adr = adr.unwrap();
         // balance
-        let mut bls = state.balance(&adr);
-        if let None = bls {
-            bls = Some(Balance::new());
-        }
-        let bls = bls.unwrap();
+        let bls = state.balance(&adr).unwrap_or_default();
         // dianames
-        let mut diaowned = mintstate.diamond_owned(&adr);
-        if let None = diaowned {
-            diaowned = Some(DiamondOwnedForm::new());
-        }
-        let diaowned = diaowned.unwrap();
-        
+        let diaowned = mintstate.diamond_owned(&adr).unwrap_or_default();
         resbls.push(json!({
             "hacash": bls.hacash.to_unit_string(&unit),
             "diamond": bls.diamond.uint(),

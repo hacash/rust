@@ -101,7 +101,7 @@ pub fn do_check_insert(
 
     // ready exec
     let coinbase_tx = &*alltxs[0];
-    let mut alltxfee = Amount::new();
+    let mut alltxfee = Amount::default();
     // check state
     let mut sub_state = fork_sub_state(prev_state.clone());
     // if init genesis status

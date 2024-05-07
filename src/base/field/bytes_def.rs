@@ -4,7 +4,7 @@
 macro_rules! StructFieldBytes{
     ($class:ident, $lenty:ty, $size_max:expr) => (
 
-#[derive(Debug, Clone, Eq)]
+#[derive(Default, Debug, Clone, Eq)]
 pub struct $class {
     pub count: $lenty,
     pub bytes: Vec<u8>,
@@ -68,14 +68,6 @@ impl Parse for $class {
 }
 
 impl Field for $class {
-
-    fn new() -> $class {
-        let sz = <$lenty>::from(0);
-        $class{
-            count: sz,
-            bytes: Vec::new(),
-        }
-    }
     
     // must & create function
     fnFieldMustCreate!($class);

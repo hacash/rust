@@ -1,5 +1,5 @@
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq)]
 pub struct Empty {
 }
 
@@ -27,8 +27,5 @@ impl Parse for Empty {
 
 impl Field for Empty {
 
-    fn new() -> Empty {
-        Empty{}
-    }
 
 }

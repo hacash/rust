@@ -11,8 +11,8 @@ impl Balance {
 	pub fn hacash(amt: Amount) -> Balance {
 		Balance{
 			hacash: amt,
-			satoshi: SatoshiAuto::new(),
-			diamond: DiamondNumberAuto::new(),
+			satoshi: SatoshiAuto::default(),
+			diamond: DiamondNumberAuto::default(),
 		}
 	}
 

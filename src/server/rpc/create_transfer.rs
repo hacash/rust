@@ -56,13 +56,13 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
         let mut act: Box<dyn VMAction>;
         let sat = Satoshi::from(satoshi);
         if is_from {
-            let mut obj = SatoshiFromToTransfer::new();
+            let mut obj = SatoshiFromToTransfer::default();
             obj.from = fromaddr;
             obj.to = toaddr;
             obj.satoshi = sat;
             act = Box::new(obj);
         }else{
-            let mut obj = SatoshiTransfer::new();
+            let mut obj = SatoshiTransfer::default();
             obj.to = toaddr;
             obj.satoshi = sat;
             act = Box::new(obj);
@@ -78,19 +78,19 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
         }
         let dialist = dialist.unwrap();
         if is_from {
-            let mut obj = DiamondFromToTransfer::new();
+            let mut obj = DiamondFromToTransfer::default();
             obj.from = fromaddr;
             obj.to = toaddr;
             obj.diamonds = dialist;
             act = Box::new(obj);
         }else{
             if dialist.count().uint() == 1 {
-                let mut obj = DiamondTransfer::new();
+                let mut obj = DiamondTransfer::default();
                 obj.to = toaddr;
                 obj.diamond = DiamondName::cons(*dialist.list()[0]);
                 act = Box::new(obj);
             }else{
-                let mut obj = DiamondMultipleTransfer::new();
+                let mut obj = DiamondMultipleTransfer::default();
                 obj.to = toaddr;
                 obj.diamonds = dialist;
                 act = Box::new(obj);
@@ -107,13 +107,13 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
         }
         let hac = hac.unwrap();
         if is_from {
-            let mut obj = HacFromToTransfer::new();
+            let mut obj = HacFromToTransfer::default();
             obj.from = fromaddr;
             obj.to = toaddr;
             obj.amt = hac;
             act = Box::new(obj);
         }else{
-            let mut obj = HacTransfer::new();
+            let mut obj = HacTransfer::default();
             obj.to = toaddr;
             obj.amt = hac;
             act = Box::new(obj);

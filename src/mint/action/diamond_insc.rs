@@ -48,7 +48,7 @@ fn diamond_inscription(this: &DiamondInscription, env: &dyn ExecEnv, sta: &mut d
     }
 
     // cost
-    let mut ttcost = Amount::new();
+    let mut ttcost = Amount::default();
     let pdhei = env.pending_height();
 
     // do

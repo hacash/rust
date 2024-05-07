@@ -6,7 +6,7 @@ macro_rules! StructFieldStructSetParseSerializeSize {
 
         
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq)]
 pub struct $class {
     $(
         pub $item: $type
@@ -51,14 +51,6 @@ impl Serialize for $class {
 }
 
 impl Field for $class {
-
-    fn new() -> $class {
-        $class{
-            $(
-                $item: <$type>::new()
-            ),+
-        }
-    }
 
     // must & create function
     fnFieldMustCreate!($class);

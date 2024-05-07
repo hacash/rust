@@ -1,6 +1,6 @@
 
 
-
+#[derive(Default)]
 pub struct ASTLeaf {
     code: u8
 }
@@ -27,11 +27,8 @@ impl Parse for ASTLeaf {
 
 
 impl Field for ASTLeaf {
-    fn new() -> ASTLeaf {
-        ASTLeaf{
-            code: 0,
-        }
-    }
+
+    
 }
 
 /*

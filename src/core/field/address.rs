@@ -20,7 +20,7 @@ impl Address {
         if body.len() != ADDRESS_SIZE - 1 {
             return Err("base58check error".to_string())
         }
-        let mut address = Address::new();
+        let mut address = Address::default();
         address[0] = version;
         for i in 1..ADDRESS_SIZE {
             address[i] = body[i-1];

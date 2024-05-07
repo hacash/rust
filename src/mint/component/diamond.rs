@@ -77,7 +77,7 @@ impl DiamondOwnedForm {
 	}
 
 	pub fn drop_one(&mut self, dian: &DiamondName) -> RetErr {
-		let mut list = DiamondNameListMax200::new();
+		let mut list = DiamondNameListMax200::default();
 		list.push(dian.clone());
 		self.drop(&list)
 	}
