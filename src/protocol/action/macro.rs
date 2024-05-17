@@ -75,7 +75,7 @@ impl VMAction for $actname {
     fn kind(&self) -> u16 {
         $actid
     }
-    fn gas(&self) -> u32 {
+    fn gas(&self) -> i32 {
         $gas
     }
     fn as_vm(&self) -> &dyn VMAction {
@@ -112,7 +112,7 @@ impl $actname {
     }
 
     pub fn new() -> $actname {
-        let mut obj = <$actname as Field>::default_new();
+        let mut obj = <$actname as Field>::new();
         obj.kind = Uint2::from($actid);
         obj
     }

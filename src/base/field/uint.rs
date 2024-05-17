@@ -1,9 +1,9 @@
-pub const UINT1_SIZE: usize = 1;
-pub const UINT2_SIZE: usize = 2;
-pub const UINT3_SIZE: usize = 3;
-pub const UINT4_SIZE: usize = 4;
-pub const UINT5_SIZE: usize = 5;
-pub const UINT6_SIZE: usize = 6;
+pub const UINT1_SIZE: usize = 1; // 255
+pub const UINT2_SIZE: usize = 2; // 65535
+pub const UINT3_SIZE: usize = 3; // 16777215
+pub const UINT4_SIZE: usize = 4; // 4294967295
+pub const UINT5_SIZE: usize = 5; // 1099511627775
+pub const UINT6_SIZE: usize = 6; // 
 pub const UINT7_SIZE: usize = 7;
 pub const UINT8_SIZE: usize = 8;
 

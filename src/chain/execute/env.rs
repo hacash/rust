@@ -1,27 +1,27 @@
 
-pub struct ExecEnvObj {
+pub struct ExecEnvObj<'a> {
     fastsync: bool,
     pdhei: u64,
     pdhash: Hash,
     mainaddr: Address,
-    txfee: Amount,
+    tx: &'a dyn TransactionRead,
 }
 
 
-impl ExecEnvObj {
-    pub fn new(pdhei: u64, tx: &dyn TransactionRead) -> ExecEnvObj {
+impl ExecEnvObj<'_> {
+    pub fn new<'a>(pdhei: u64, tx: &'a dyn TransactionRead) -> ExecEnvObj {
         ExecEnvObj{
             fastsync: false,
             pdhei: pdhei,
             pdhash: Hash::default(),
             mainaddr: tx.address().clone(),
-            txfee: tx.fee().clone(),
+            tx: tx,
         }
     }
 }
 
 
-impl ExecEnv for ExecEnvObj {
+impl ExecEnv for ExecEnvObj<'_> {
 
     fn pending_height(&self) -> u64 {
         self.pdhei
@@ -30,13 +30,13 @@ impl ExecEnv for ExecEnvObj {
         &self.pdhash
     }
     fn tx_fee(&self) -> &Amount {
-        &self.txfee
+        self.tx.fee()
     }
     fn main_address(&self) -> &Address {
         &self.mainaddr
     }
-    fn check_signature(&self, _: &Address) -> RetErr {
-        Ok(())
+    fn check_signature(&self, adr: &Address) -> RetErr {
+        transaction::verify_target_signature(adr, self.tx)
     }
     fn call_depth(&self) -> u32 {
         0

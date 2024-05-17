@@ -103,7 +103,7 @@ impl Block for BlockV1 {
 
 impl BlockV1 {
     pub fn new() -> BlockV1 {
-        let mut blk = <BlockV1 as Field>::default_new();
+        let mut blk = <BlockV1 as Field>::new();
         blk.intro.head.version = Uint1::from(BLOCK_VERSION_1);
         blk 
     }

@@ -1,12 +1,13 @@
 
-const AUTOU64SX0: u64 = 128;
-const AUTOU64SX1: u64 = 64 * 256;
-const AUTOU64SX2: u64 = 32 * 256 * 256;
-const AUTOU64SX3: u64 = 16 * 256 * 256 * 256;
-const AUTOU64SX4: u64 = 8  * 256 * 256 * 256 * 256;
-const AUTOU64SX5: u64 = 4  * 256 * 256 * 256 * 256 * 256;
-const AUTOU64SX6: u64 = 2  * 256 * 256 * 256 * 256 * 256 * 256;
-const AUTOU64SX7: u64 = 1  * 256 * 256 * 256 * 256 * 256 * 256 * 256;
+const AUTOU64SX0: u64 = 128; // 1 : 128
+const AUTOU64SX1: u64 = 64 * 256; // 2 : 16384
+const AUTOU64SX2: u64 = 32 * 256 * 256; // 3 : 2097152
+const AUTOU64SX3: u64 = 16 * 256 * 256 * 256; // 4 : 2_68435456
+const AUTOU64SX4: u64 = 8  * 256 * 256 * 256 * 256; // 5 : 343_59738368
+const AUTOU64SX5: u64 = 4  * 256 * 256 * 256 * 256 * 256; // 6 : 43980_46511104
+const AUTOU64SX6: u64 = 2  * 256 * 256 * 256 * 256 * 256 * 256; // 7 : 5629499_53421312
+const AUTOU64SX7: u64 = 1  * 256 * 256 * 256 * 256 * 256 * 256 * 256; // 8 : 7_20575940_37927936
+// MAX                  1  * 256 * 256 * 256 * 256 * 256 * 256 * 256 * 256; // 9 : 1844_67440737_09551616
 pub const AUTOU64XLIST: [u64; 8] = [AUTOU64SX0, AUTOU64SX1, AUTOU64SX2, AUTOU64SX3, AUTOU64SX4, AUTOU64SX5, AUTOU64SX6, AUTOU64SX7];
 const AUTOU64MATCH: [u8;  8] = [0b00000000, 0b10000000, 0b11000000, 0b11100000, 0b11110000, 0b11111000, 0b11111100, 0b11111110];
 
@@ -163,7 +164,25 @@ impl Parse for AutoU64 {
 impl Serialize for AutoU64 {
 
     fn serialize(&self) -> Vec<u8> {
-        self.to_bytes().to_vec()
+        let mut apsz = 0;
+        let mut nvbt = self.value.to_be_bytes().to_vec();
+        nvbt = vec![vec![0b00000000], nvbt].concat(); // 9byte
+        for i in 0..AUTOU64XLIST.len() {
+            let x = AUTOU64XLIST[i];
+            if self.value < x {
+                break
+            }else{
+                apsz += 1;
+            }
+        }
+        if apsz >= 8 {
+            nvbt[0] |= 0b11111111;
+            return nvbt.to_vec()
+        }
+        let mchdn = AUTOU64MATCH[apsz];
+        let mut resbt = &mut nvbt[9-(apsz+1)..];
+        resbt[0] |= mchdn;
+        resbt.to_vec()
     }
 
     fn size(&self) -> usize {
@@ -212,25 +231,7 @@ impl AutoU64 {
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut apsz = 0;
-        let mut nvbt = self.value.to_be_bytes().to_vec();
-        nvbt = vec![vec![0b00000000], nvbt].concat(); // 9byte
-        for i in 0..AUTOU64XLIST.len() {
-            let x = AUTOU64XLIST[i];
-            if self.value < x {
-                break
-            }else{
-                apsz += 1;
-            }
-        }
-        if apsz >= 8 {
-            nvbt[0] |= 0b11111111;
-            return nvbt.to_vec()
-        }
-        let mchdn = AUTOU64MATCH[apsz];
-        let mut resbt = &mut nvbt[9-(apsz+1)..];
-        resbt[0] |= mchdn;
-        resbt.to_vec()
+        self.serialize()
     }
     
     pub fn uint(&self) -> u64 {

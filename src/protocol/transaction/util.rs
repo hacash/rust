@@ -2,7 +2,7 @@
 /**
 * verify tx all needs signature
 */
-pub fn verify_tx_signature(tx: &dyn Transaction) -> RetErr {
+pub fn verify_tx_signature(tx: &dyn TransactionRead) -> RetErr {
     let hx = tx.hash();
     let hxwf = tx.hash_with_fee();
     let signs = tx.signs();
@@ -17,6 +17,19 @@ pub fn verify_tx_signature(tx: &dyn Transaction) -> RetErr {
         verify_one_sign(ckhx, &adr, signs)?;
     }
     Ok(())
+}
+
+pub fn verify_target_signature(adr: &Address, tx: &dyn TransactionRead) -> RetErr {
+    let hx = tx.hash();
+    let hxwf = tx.hash_with_fee();
+    let signs = tx.signs();
+    let addrs = tx.req_sign();
+    let main_addr = tx.address();
+    let mut ckhx = &hx;
+    if adr == main_addr{
+        ckhx = &hxwf;
+    }
+    verify_one_sign(ckhx, &adr, signs)
 }
 
 

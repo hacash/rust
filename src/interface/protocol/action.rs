@@ -7,7 +7,7 @@
 pub trait VMAction : Field + Send + Sync + dyn_clone::DynClone {
     fn code(&self) -> u8 { 0 } // bytecode
     fn kind(&self) -> u16 { 0 } // action kind
-    fn gas(&self) -> u32 { 0 } // gas use
+    fn gas(&self) -> i32 { 0 } // gas use
     fn opnum(&self) -> u8 { 0 } // stack number of operate 
     fn childs(&self) -> &Vec<Box<dyn VMAction>> { panic_never_call_this!() }
     fn body(&self) -> &[u8] { &[] } // action body data

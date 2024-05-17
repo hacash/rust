@@ -4,7 +4,7 @@
 macro_rules! fnFieldMustCreate {
     ($class:ty) => (
 
-        fn default_new() -> $class {
+        fn new() -> $class {
             <$class>::default()
         }
 
