@@ -1,20 +1,13 @@
 
 #[derive(Debug, Clone)]
 pub enum ValueItem {
-    Abort(String),
-    
-    Nil,
     Bool(bool),
-
     U8(u8),
     U16(u16),
     U32(u32),
     U64(u64),
     U128(u128),
-
-    Address([u8; 21]),  
-    Hash([u8; 32]),  
-
+    // U256(u256),
     Buffer(Vec<u8>),
 }
 
@@ -30,8 +23,6 @@ impl ValueItem {
             U32(_) => 4,
             U64(_) => 8,
             U128(_) => 16,
-            Address(_) => 21,
-            Hash(_) => 32,
             Buffer(b) => b.len(),
             _ => 0, 
         }
@@ -39,15 +30,12 @@ impl ValueItem {
 
     pub fn cast_bool(&mut self) -> RetErr {
         let bv = match self {
-            Nil => false,
             Bool(b) => *b,
             U8(n)   => *n != 0,
             U16(n)  => *n != 0,
             U32(n)  => *n != 0,
             U64(n)  => *n != 0,
             U128(n) => *n != 0,
-            Address(b) => buf_is_not_zero(b),
-            Hash(b)    => buf_is_not_zero(b),
             Buffer(b)  => buf_is_not_zero(b),
             s => return errf!("cannot cast {:?} to bool", s),
         };
@@ -63,7 +51,7 @@ impl ValueItem {
 
 
 /**
-* ret: change left(-1) nothing(0) or right(1), Cannot do cast
+* ret: change left(-1) nothing(0) or right(1), err is cannot do cast
 */
 pub fn castv(l: &mut ValueItem, r: &mut ValueItem) -> Ret<i8> {
     match (l, r) {
