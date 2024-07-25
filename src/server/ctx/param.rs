@@ -1,5 +1,6 @@
 
 
+#[macro_export]
 macro_rules! ctx_state{
     ($ctx:expr, $state:ident) => (
         let _s1_db = $ctx.engine.state();
@@ -7,6 +8,7 @@ macro_rules! ctx_state{
     )
 }
 
+#[macro_export]
 macro_rules! ctx_store{
     ($ctx:expr, $store:ident) => (
         let _s2_db = $ctx.engine.store();
@@ -14,6 +16,7 @@ macro_rules! ctx_store{
     )
 }
 
+#[macro_export]
 macro_rules! ctx_mintstate{
     ($ctx:expr, $mintstate:ident) => (
         let _s3_db = $ctx.engine.state();
@@ -21,6 +24,7 @@ macro_rules! ctx_mintstate{
     )
 }
 
+#[macro_export]
 macro_rules! ctx_mintstore{
     ($ctx:expr, $mintstore:ident) => (
         let _s4_db = $ctx.engine.store();
@@ -29,14 +33,14 @@ macro_rules! ctx_mintstore{
 }
 
 #[derive(Clone, Debug)]
-struct CoinKind {
-    hacash: bool,
-    satoshi: bool,
-    diamond: bool,
-    diamonds: bool,
+pub struct CoinKind {
+    pub hacash: bool,
+    pub satoshi: bool,
+    pub diamond: bool,
+    pub diamonds: bool,
 }
 impl CoinKind {
-    fn new(mut s: String) -> CoinKind {
+    pub fn new(mut s: String) -> CoinKind {
         let s = s.to_lowercase();
         CoinKind {
             hacash: s.contains("h"),
@@ -47,6 +51,7 @@ impl CoinKind {
     }
 }
 
+#[macro_export]
 macro_rules! q_coinkind{
     ( $q: ident, $k: ident ) => (
         q_must!($q, $k, s!("hsd"));
@@ -54,12 +59,14 @@ macro_rules! q_coinkind{
     )
 }
 
+#[macro_export]
 macro_rules! q_unit{
     ( $q: ident, $k: ident ) => (
         q_must!($q, $k, s!("fin"));
     )
 }
 
+#[macro_export]
 macro_rules! q_must{
     ( $q: ident, $k: ident, $dv: expr ) => (
         let mut $k = {
@@ -72,6 +79,7 @@ macro_rules! q_must{
     )
 }
 
+#[macro_export]
 macro_rules! defineQueryObject{
     ( $name: ident, $( $item: ident, $ty: ty, $dv: expr,)+ ) => (
 

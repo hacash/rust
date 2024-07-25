@@ -1,8 +1,11 @@
 
 
 pub fn routes(mut ctx: ApiCtx) -> Router {
-    Router::new().route("/", get(console))
 
+    use ctx::*;
+    
+    let lrt = Router::new().route("/", get(console))
+    
     // query
     .route(&query("latest"), get(latest))
     .route(&query("balance"), get(balance))
@@ -12,32 +15,22 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
 
     // create
     .route(&create("account"), get(account))
-    .route(&create("coin_transfer"), get(create_coin_transfer))
+    .route(&ctx::create("coin_transfer"), get(create_coin_transfer))
     
     // submit
     .route(&submit("transaction"), post(submit_transaction))
-    .route(&submit("block"), post(submit_block))
+    .route(&submit("block"), post(submit_block));
 
-    // submit
-    // ...
+    // operate
+    // //
 
-    // ctx
+    // merge unstable & extend
+    Router::new().merge(lrt)
+    .merge(unstable::routes())
+    .merge(extend::routes())
     .with_state(ctx)
+    
 }
 
 
 
-
-// paths
-fn query(p: &str) -> String {
-    "/query/".to_owned() + p
-}
-fn create(p: &str) -> String {
-    "/create/".to_owned() + p
-}
-fn submit(p: &str) -> String {
-    "/submit/".to_owned() + p
-}
-fn operate(p: &str) -> String {
-    "/operate/".to_owned() + p
-}
