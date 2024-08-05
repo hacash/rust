@@ -36,7 +36,8 @@ async fn do_handle_pmsg(pary1: PeerList, pary2: PeerList, msghdl: Arc<MsgHandler
     {   // print connect tips
         let ps1 = pary1.lock().unwrap();
         let ps2 = pary2.lock().unwrap();
-        println!("[Peer] {} connected, {} public, {} private.", peer.nick(), ps1.len(), ps2.len());
+        println!("[Peer] {} connected, total {} public {} subnet.", 
+            peer.nick(), ps1.len(), ps2.len());
     }
     // run loop
     loop {

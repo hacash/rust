@@ -75,6 +75,12 @@ impl P2PManage {
         }
     }
 
+    fn print_conn_peers(&self) {
+        let l1 = self.backbones.lock().unwrap().len();
+        let l2 = self.offshoots.lock().unwrap().len();
+        flush!("[P2P] {} public and {} subnet nodes connected.\n", l1, l2);
+    }
+
     pub fn close(&self) {
         self.closer.close();
     }

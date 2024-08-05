@@ -3,6 +3,7 @@
 impl P2PManage {
 
     pub async fn event_loop(this: Arc<P2PManage>) -> RetErr {
+        let mut printpeer_tkr = new_ticker(60+30).await; // 90mins print peers
         let mut reconnect_tkr = new_ticker(51*33).await; // 30mins check reconnect
         let mut findnodes_tkr = new_ticker(52*60*4).await; // 4hour find nodes or boot
         let mut checkpeer_tkr = new_ticker(53*3).await; // 3mins ping all no active nodes
@@ -16,6 +17,9 @@ impl P2PManage {
                 _ = closech.recv() => {
                     break
                 }
+                _ = printpeer_tkr.tick() => {
+                    this.print_conn_peers();
+                },
                 _ = reconnect_tkr.tick() => {
                     let no_nodes = this.backbones().len() < 2;
                     if no_nodes && this.cnf.findnodes {
