@@ -5,29 +5,30 @@
  ActionDefine!{
     DiamondTransfer : 5, (
         diamond  : DiamondName
-        to       : Address
+        to       : AddrOrPtr
     ),
-    ACTLV_TOP, // level
+    ACTLV_MAIN, // level
     6 + 21, // gas
-    (self, env, state, store), // params
+    (self, ctx, state, store, gas), // params
     false, // burn 90
     [], // req sign
-    ActExecRes::wrap(diamond_transfer(self, env, state, store))
+    diamond_transfer(self, ctx, state, store)
 }
 
-fn diamond_transfer(this: &DiamondTransfer, env: &dyn ExecEnv, sta: &mut dyn State, sto: &dyn Store) -> RetErr {
+fn diamond_transfer(this: &DiamondTransfer, ctx: &mut dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
 
-    let from = env.main_address();
+    let from = ctx.main_address().clone();
     // move
     let mut state = MintState::wrap(sta);
-    hacd_move_one_diamond(&mut state, from, &this.to, &this.diamond)?;
+    let to = this.to.real(ctx.addr_list())?;
+    hacd_move_one_diamond(&mut state, &from, &to, &this.diamond)?;
     let mut list = DiamondNameListMax200::default();
     list.push(this.diamond);
-    diamond_owned_move(&mut state, from, &this.to, &list)?;
+    diamond_owned_move(&mut state, &from, &to, &list)?;
     drop(state);
     // transfer
     let mut core_state = CoreState::wrap(sta);
-    hacd_transfer(&mut core_state, from, &this.to, &DiamondNumber::from(1))
+    hacd_transfer(ctx, &mut core_state, &from, &to, &DiamondNumber::from(1), &list)
 }
 
 
@@ -38,37 +39,38 @@ fn diamond_transfer(this: &DiamondTransfer, env: &dyn ExecEnv, sta: &mut dyn Sta
  */
  ActionDefine!{
     DiamondFromToTransfer : 6, (
-        from           : Address 
-        to             : Address 
+        from           : AddrOrPtr 
+        to             : AddrOrPtr 
         diamonds       : DiamondNameListMax200 
     ),
-    ACTLV_TOP, // level
+    ACTLV_MAIN, // level
     21+21, // gas
-    (self, env, state, store), // params
+    (self, ctx, state, store, gas), // params
     false, // burn 90
     [self.from], // req sign
     {
-        let mut res = ActExecRes::wrap(diamond_from_to_transfer(self, env, state, store));
-        let addgas = self.diamonds.count().uint() as u32 * DiamondName::width() as u32;
-        res.add_gas_use( addgas ); // gas = dia num * 6
-        res
+        // gas = dia num * 6
+        gas += self.diamonds.count().uint() as i64 * DiamondName::width() as i64;
+        diamond_from_to_transfer(self, ctx, state, store)
     }
 }
 
-fn diamond_from_to_transfer(this: &DiamondFromToTransfer, env: &dyn ExecEnv, sta: &mut dyn State, sto: &dyn Store) -> RetErr {
+fn diamond_from_to_transfer(this: &DiamondFromToTransfer, ctx: &mut dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
 
     // check
     let dianum = this.diamonds.check()?;
     //transfer
     let mut state = MintState::wrap(sta);
+    let from = this.from.real(ctx.addr_list())?;
+    let to = this.to.real(ctx.addr_list())?;
     for dianame in this.diamonds.list() {
-        hacd_move_one_diamond(&mut state, &this.from, &this.to, &dianame)?; // move one
+        hacd_move_one_diamond(&mut state, &from, &to, &dianame)?; // move one
     }
-    diamond_owned_move(&mut state, &this.from, &this.to, &this.diamonds)?;
+    diamond_owned_move(&mut state, &from, &to, &this.diamonds)?;
     drop(state);
     // transfer
     let mut core_state = CoreState::wrap(sta);
-    hacd_transfer(&mut core_state, &this.from, &this.to, &DiamondNumber::from(dianum as u32))
+    hacd_transfer(ctx, &mut core_state, &from, &to, &DiamondNumber::from(dianum as u32), &this.diamonds)
 }
 
 
@@ -78,36 +80,36 @@ fn diamond_from_to_transfer(this: &DiamondFromToTransfer, env: &dyn ExecEnv, sta
  */
  ActionDefine!{
     DiamondMultipleTransfer : 7, (
-        to             : Address 
+        to             : AddrOrPtr
         diamonds       : DiamondNameListMax200 
     ),
-    ACTLV_TOP, // level
+    ACTLV_MAIN, // level
     21, // gas
-    (self, env, state, store), // params
+    (self, ctx, state, store, gas), // params
     false, // burn 90
     [], // req sign
     {
-        let mut res = ActExecRes::wrap(diamond_multiple_transfer(self, env, state, store));
-        let addgas = self.diamonds.count().uint() as u32 * DiamondName::width() as u32;
-        res.add_gas_use( addgas ); // gas = dia num * 6
-        res
+        // gas = dia num * 6
+        gas += self.diamonds.count().uint() as i64 * DiamondName::width() as i64;
+        diamond_multiple_transfer(self, ctx, state, store)
     }
 }
 
-fn diamond_multiple_transfer(this: &DiamondMultipleTransfer, env: &dyn ExecEnv, sta: &mut dyn State, sto: &dyn Store) -> RetErr {
+fn diamond_multiple_transfer(this: &DiamondMultipleTransfer, ctx: &mut dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
 
     // check
     let dianum = this.diamonds.check()?;
     // from
-    let from = env.main_address();
+    let from = ctx.main_address().clone();
     //transfer
     let mut state = MintState::wrap(sta);
+    let to = this.to.real(ctx.addr_list())?;
     for dianame in this.diamonds.list() {
-        hacd_move_one_diamond(&mut state, from, &this.to, &dianame)?; // move one
+        hacd_move_one_diamond(&mut state, &from, &to, &dianame)?; // move one
     }
-    diamond_owned_move(&mut state, from, &this.to, &this.diamonds)?;
+    diamond_owned_move(&mut state, &from, &to, &this.diamonds)?;
     drop(state);
     // transfer
     let mut core_state = CoreState::wrap(sta);
-    hacd_transfer(&mut core_state, from, &this.to, &DiamondNumber::from(dianum as u32))
+    hacd_transfer(ctx, &mut core_state, &from, &to, &DiamondNumber::from(dianum as u32), &this.diamonds)
 }

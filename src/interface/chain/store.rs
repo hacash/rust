@@ -13,6 +13,9 @@ pub trait StoreDB: Send + Sync {
         }
     }
     // mem
+    
+    fn set_at(&mut self, k: &[u8], v: Vec<u8>) { panic_never_call_this!() }
+    fn del_at(&mut self, k: &[u8]) { panic_never_call_this!() }
     fn set(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) { panic_never_call_this!() }
     fn del(&mut self, p: &[u8], k: &dyn Serialize) { panic_never_call_this!() }
     // disk

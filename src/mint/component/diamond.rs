@@ -54,7 +54,7 @@ StructFieldStruct!{ DiamondSmelt,
 	nonce                     : Fixed8
 	// custom_message           : HashOptional
 	average_bid_burn          : Uint2
-	visual_gene               : Fixed10
+	life_gene                 : Hash
 }
 
 

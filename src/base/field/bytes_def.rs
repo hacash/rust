@@ -88,6 +88,10 @@ impl $class {
         self.bytes
     }
 
+    pub fn to_vec(&self) -> Vec<u8> {
+        self.bytes.clone()
+    }
+
     pub fn length(&self) -> usize {
         self.count.to_usize()
     }

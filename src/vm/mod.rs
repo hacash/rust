@@ -1,23 +1,50 @@
 
-use std::sync::{ Arc };
-
-use crate::protocol::transaction::DynListVMAction;
-use crate::sys::*;
-use crate::interface::protocol::*;
-use crate::interface::chain::*;
-use crate::interface::vm::*;
 
 
-mod stack;
-mod memory;
-mod storage;
-mod bytecode;
-mod ast;
 
 
-pub mod action;
-pub mod vm;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 
 pub struct HacashVM {
     store: Arc<dyn Store>,
@@ -34,9 +61,35 @@ impl VM for HacashVM {
         }
     }
 
-    fn exec(&self, env: &dyn ExecEnv, bst: &mut dyn State, con: &Vec<Box<dyn VMAction>>) -> RetErr {
-        vm::do_exec(env, bst, self.store.as_ref(), con)
+    fn exec(&self, ctx: &dyn ExecContext, bst: &mut dyn State, con: &Vec<Box<dyn Action>>) -> RetErr {
+        do_exec(ctx, bst, self.store.as_ref(), con)
     }
 
 }
 
+
+
+fn do_exec(ctx: &dyn ExecContext, bst: &mut dyn State, sto: &dyn Store, actlist: &Vec<Box<dyn Action>>) -> RetErr {
+    
+    for act in actlist {
+
+        // ext action
+        if act.kind() > 0 {
+            // exec
+            let res = act.execute(ctx, bst, sto);
+            if let Some(abort_err) = res.abort() {
+                return Err(abort_err.clone()) // abort error
+            }
+        }else{
+            let kd = act.kind();
+            return errf!("cannot exec action bykind {}", kd)
+        }
+
+    }
+    
+    // ok finish
+    Ok(())
+}
+
+
+*/

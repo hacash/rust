@@ -27,5 +27,28 @@ impl Parse for Empty {
 
 impl Field for Empty {
 
+}
+
+
+
+///////////////////////
+
+
+
+#[derive(Default, Debug, Clone, PartialEq, Eq)]
+pub struct VecWrap {
+    pub data: Vec<u8>,
+}
+
+
+impl Serialize for VecWrap {
+
+    fn serialize(&self) -> Vec<u8> {
+        self.data.clone()
+    }
+
+    fn size(&self) -> usize {
+        self.data.len()
+    }
 
 }

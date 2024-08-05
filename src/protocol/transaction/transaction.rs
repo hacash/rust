@@ -1,7 +1,7 @@
 // Action list
 StructFieldDynList!{
-    DynListVMAction, 
-    Uint2, VMAction, vm::action::create
+    DynListAction, 
+    Uint2, Action, action::create
 }
 
 
@@ -17,12 +17,19 @@ DefineCommonTransaction!{
 }
 
 
+// TransactionType3
+DefineCommonTransaction!{
+    TX_TYPE_3, TransactionType3
+}
+
+
 
 pubFnTransactionsTypeDefineCreate!{
 
     TX_TYPE_0_COINBASE   , 0u8, TransactionCoinbase
     TX_TYPE_1_DEPRECATED , 1u8, TransactionType1
     TX_TYPE_2            , 2u8, TransactionType2
+    TX_TYPE_3            , 3u8, TransactionType3
 
 }
 

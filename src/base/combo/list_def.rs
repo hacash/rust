@@ -30,6 +30,13 @@ impl std::ops::IndexMut<usize> for $class {
     }
 }
 
+impl FieldReadable for $class {
+    fn readable(&self) -> String {
+        format!("[...]")
+    }
+}
+
+
 impl Parse for $class {
 
     fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
@@ -94,6 +101,15 @@ impl $class {
         }
 		self.$count += 1u8;
         self.$value.push(v);
+        Ok(())
+	}
+
+	pub fn append(&mut self, mut list: Vec<$value_type>) -> RetErr {
+        if self.$count.to_usize() + list.len() > <$count_type>::max() as usize {
+            return errf!("append size overflow")
+        }
+		self.$count += list.len() as u8;
+        self.$value.append(&mut list);
         Ok(())
 	}
 

@@ -1,7 +1,7 @@
 
 // close default
 pub fn close_channel_default(pdhei: u64, sta: &mut dyn State, channel_id: &ChannelId, paychan: &ChannelSto
-) -> RetErr {
+) -> Ret<Vec<u8>> {
     close_channel_with_distribution(
         pdhei, sta, channel_id, paychan, 
         &paychan.left_bill.hacsat.amount,
@@ -22,7 +22,7 @@ pub fn close_channel_with_distribution(pdhei: u64, sta: &mut dyn State, channel_
     left_amt: &Amount,  right_amt: &Amount,
     left_sat: &Satoshi, right_sat: &Satoshi,
     is_final_closed: bool,
-) -> RetErr {
+) -> Ret<Vec<u8>> {
 
     // check
     if paychan.status != CHANNEL_STATUS_OPENING {
@@ -99,7 +99,7 @@ pub fn close_channel_with_distribution(pdhei: u64, sta: &mut dyn State, channel_
     state.set_channel(&channel_id, &savechan);
     state.set_total_count(&ttcount);
     // ok finish
-    Ok(())
+    Ok(vec![])
 }
 
 

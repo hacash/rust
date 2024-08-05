@@ -233,6 +233,13 @@ impl Field for $name {
 
 }
 
+impl FieldReadable for $name {
+    fn readable(&self) -> String {
+        format!("{}", self.value)
+    }
+}
+
+
 /*
 impl FieldNumber for $name {
 

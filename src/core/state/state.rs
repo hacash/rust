@@ -47,6 +47,14 @@ impl StoreDB for ChainState {
         }
     }
     
+    fn set_at(&mut self, k: &[u8], v: Vec<u8>) {
+        self.memk.set(k, &v); // local mem
+    }
+
+    fn del_at(&mut self, k: &[u8]) {
+        self.memk.del(&k); // local mem
+    }
+
     fn get(&self, p: &[u8], k: &dyn Serialize) -> Option<Bytes> {
         let key = splice_key(p, k);
         self.get_at(&key)
@@ -55,12 +63,12 @@ impl StoreDB for ChainState {
     fn set(&mut self, p: &[u8], k: &dyn Serialize, v: &dyn Serialize) {
         let key = splice_key(p, k);
         let vdt = v.serialize();
-        self.memk.set(&key, &vdt); // local mem
+        self.set_at(&key, vdt);
     }
 
     fn del(&mut self, p: &[u8], k: &dyn Serialize) {
         let key = splice_key(p, k);
-        self.memk.del(&key); // local mem
+        self.del_at(&key); // local mem
     }
 
 }

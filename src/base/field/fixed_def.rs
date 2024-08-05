@@ -6,7 +6,7 @@ macro_rules! StructFieldFixedBytes{
 
 #[derive(Debug, Hash, Copy, Clone, PartialEq, Eq)]
 pub struct $class {
-    bytes: [u8; $size],
+    pub bytes: [u8; $size],
 }
 
 impl Default for $class {

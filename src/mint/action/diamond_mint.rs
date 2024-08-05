@@ -92,12 +92,12 @@ impl DiamondMint {
  */
 ActionDefineWithStruct!{
     DiamondMint : 4,
-    ACTLV_TOP_ONLY, // level
+    ACTLV_TOP_UNIQUE, // level
     6 + 3 + 32 + 8 + 21 + 32, // gas
-    (self, env, state, store), // params
+    (self, ctx, state, store, gas), // params
     { self.head.number.to_u32() > DIAMOND_ABOVE_NUMBER_OF_BURNING90_PERCENT_TX_FEES }, // burn 90
     [], // req sign
-    ActExecRes::wrap(diamond_mint(self, env, state, store))
+    diamond_mint(self, ctx, state, store)
 }
 
 
@@ -105,13 +105,14 @@ ActionDefineWithStruct!{
 /**
  * DiamondMint Exec
  */
-fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto: &dyn Store) -> RetErr {
+fn diamond_mint(this: &DiamondMint, ctx: &dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
+    require_address_version_privkey!(&this.head.address);
 
     let mut state = MintState::wrap(sta);
     let store = MintStoreDisk::wrap(sto);
 
-    let pending_height = env.pending_height();
-    let pending_hash = env.pending_hash();
+    let pending_height = ctx.pending_height();
+    let pending_hash = ctx.pending_hash();
 
     let number = this.head.number;
     let dianum = number.to_u32();
@@ -127,7 +128,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     // check mine
     let (sha3hx, mediumhx, diahx) = x16rs::mine_diamond(dianum, &prev_hash, &nonce, &address, &custom_message);
 
-    let not_fast_sync = false == env.fast_sync();
+    let not_fast_sync = false == ctx.fast_sync();
     if not_fast_sync {
 
         // check
@@ -181,7 +182,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     }
 
     // tx fee
-    let tx_bid_fee = env.tx_fee();
+    let tx_bid_fee = ctx.tx_fee();
 
     // total count 
     let mut ttcount = state.total_count();
@@ -192,11 +193,11 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
             sub.unit_sub(1);
         }
         let burn = tx_bid_fee.clone().sub(&sub)?; // 90%
-        ttcount.hacd_bid_burn_zhu = Uint8::from_u64(burn.to_zhu_unsafe() as u64);
+        ttcount.hacd_bid_burn_zhu += Uint8::from_u64(burn.to_zhu_unsafe() as u64);
     }
 
-    // visual_gene
-    let visual_gene = calculate_diamond_visual_gene(dianum, &mediumhx, &diahx, &pending_hash, &tx_bid_fee);
+    // gene
+    let (life_gene, visual_gene) = calculate_diamond_gene(dianum, &mediumhx, &diahx, &pending_hash, &tx_bid_fee);
 
     // bid_burn    
     let average_bid_burn = calculate_diamond_average_bid_burn(dianum, ttcount.hacd_bid_burn_zhu.to_u64());
@@ -212,7 +213,7 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
         bid_fee: tx_bid_fee.clone(),
         nonce: nonce.clone(),
         average_bid_burn: average_bid_burn,
-        visual_gene: visual_gene,
+        life_gene: life_gene,
     };
     state.set_latest_diamond(&diasmelt);
     store.put_diamond_smelt(&name, &diasmelt);
@@ -238,11 +239,8 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
     let mut core_state = CoreState::wrap(sta);
     hacd_add(&mut core_state, &this.head.address, &DiamondNumber::from(1))?;
 
-
-
-
     // ok
-    Ok(())
+    Ok(vec![])
 }
 
 
@@ -251,18 +249,50 @@ fn diamond_mint(this: &DiamondMint, env: &dyn ExecEnv, sta: &mut dyn State, sto:
 
 /*************** util ***************/
 
-
+const HEX_CHARS: &[u8; 16] = b"0123456789ABCDEF";
 
 
 /**
  * calculate diamond visual gene
- */
-pub fn calculate_diamond_visual_gene(dianum: u32, diamhash: &[u8;32], diamondstr: &[u8;16], pedding_block_hash: &Hash, diabidfee: &Amount) -> DiamondVisualGene {
+*/
+pub fn calculate_diamond_visual_gene(name: &[u8;6], life_gene: &[u8;32]) -> (DiamondVisualGene) {
     
-    const HEX_CHARS: &[u8; 16] = b"0123456789ABCDEF";
-    
-    // start
     let mut genehexstr = [b'0'; 20];
+    // step 1
+    let searchgx = |x| {
+        for (i, a) in DIAMOND_NAME_VALID_CHARS.iter().enumerate() {
+            if *a == x {
+                return HEX_CHARS[i]
+            }
+        }
+        panic!("not supply diamond char!!!")
+    };
+
+    for i in 0..6 {
+        genehexstr[i+2] = searchgx( name[i] );
+    }
+
+    // step 2
+    let mut idx = 9;
+    for i in 20..31 {
+        let k = (life_gene[i] as usize) % 16;
+        genehexstr[idx] = HEX_CHARS[k];
+        idx += 1;
+    }
+    // last bit of hash as shape selection
+    let mut genehex = hex::decode(genehexstr).unwrap();
+    genehex[0] = life_gene[31];
+    
+    // ok
+    DiamondVisualGene::cons(genehex.try_into().unwrap())
+}
+
+/**
+ * calculate diamond visual gene
+*/
+pub fn calculate_diamond_gene(dianum: u32, diamhash: &[u8;32], diamondstr: &[u8;16], pedding_block_hash: &Hash, diabidfee: &Amount) -> (DiamondLifeGene, DiamondVisualGene) {
+    
+    
     // cacl vgenehash
     let mut vgenehash = diamhash.clone();
     if dianum > DIAMOND_ABOVE_NUMBER_OF_VISUAL_GENE_APPEND_BLOCK_HASH {
@@ -274,30 +304,12 @@ pub fn calculate_diamond_visual_gene(dianum: u32, diamhash: &[u8;32], diamondstr
         vgenehash = x16rs::calculate_hash(vgenestuff);
     }
 
-    let mut idx = 2usize; // from index 2
-    // step 1
-    let searchgx = |x| {
-        for (i, a) in DIAMOND_NAME_VALID_CHARS.iter().enumerate() {
-            if *a == x {
-                return HEX_CHARS[i]
-            }
-        }
-        panic!("not supply diamond char!!!")
-    };
-    for i in 10..16 {
-        genehexstr[idx] = searchgx( diamondstr[i] );
-        idx += 1;
-    }
-    // step 2
-    for i in 20..31 {
-        let k = (vgenehash[i] as usize) % 16;
-        genehexstr[idx] = HEX_CHARS[k];
-        idx += 1;
-    }
-    // last bit of hash as shape selection
-    let mut genehex = hex::decode(genehexstr).unwrap();
-    genehex[0] = vgenehash[31];
-    DiamondVisualGene::cons(genehex.try_into().unwrap())
+    let dianame = diamondstr[10..16].try_into().unwrap();
+    // ok ret
+    (
+        DiamondLifeGene::cons(vgenehash.try_into().unwrap()),
+        calculate_diamond_visual_gene(&dianame, &vgenehash), 
+    )
 }
 
 

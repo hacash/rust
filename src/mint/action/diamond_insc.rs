@@ -9,22 +9,20 @@
         engraved_type     : Uint1 //  0:String  1:CompressedDict  51:MD5  52:SHA256 ....
         engraved_content  : BytesW1
     ),
-    ACTLV_TOP_ONLY, // level
+    ACTLV_TOP_UNIQUE, // level
     11 + 1, // gas
-    (self, env, state, store), // params
-    false, // burn 90
+    (self, ctx, state, store, gas), // params
+    true, // burn 90
     [], // req sign
     {
-        let mut res = ActExecRes::wrap(diamond_inscription(self, env, state, store));
-        let moregasuse = 0u32;
-        res.add_gas_use(moregasuse);
-        res
+        gas += 0;
+        diamond_inscription(self, ctx, state, store)
     }
 }
 
-fn diamond_inscription(this: &DiamondInscription, env: &dyn ExecEnv, sta: &mut dyn State, sto: &dyn Store) -> RetErr {
+fn diamond_inscription(this: &DiamondInscription, ctx: &dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
 
-    let main_addr = env.main_address();
+    let main_addr = ctx.main_address();
     let pcost = &this.protocol_cost;
 
     // check
@@ -49,7 +47,7 @@ fn diamond_inscription(this: &DiamondInscription, env: &dyn ExecEnv, sta: &mut d
 
     // cost
     let mut ttcost = Amount::default();
-    let pdhei = env.pending_height();
+    let pdhei = ctx.pending_height();
 
     // do
     let mut state = MintState::wrap(sta);
@@ -79,6 +77,6 @@ fn diamond_inscription(this: &DiamondInscription, env: &dyn ExecEnv, sta: &mut d
 	}
 
     // finish
-    Ok(())
+    Ok(vec![])
 
 }

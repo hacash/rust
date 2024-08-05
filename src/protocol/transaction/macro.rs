@@ -21,7 +21,7 @@ pub fn create(buf: &[u8]) -> Ret<(Box<dyn Transaction>, usize)> {
             Ok((Box::new(trs), mvsk))
         },
     )+
-    _ => Err(format!("Transaction Type <{}> not find.", ty))
+    _ => errf!("Transaction Type <{}> not find.", ty)
     }
 }
 
@@ -38,13 +38,14 @@ macro_rules! DefineCommonTransaction {
 
 // Transaction Type 1 & 2
 StructFieldStruct!{ $class, 
-	ty        : Uint1
-	timestamp : Timestamp
-	address   : Address
-	fee       : Amount
-    actions   : DynListVMAction
-    signs     : SignListW2
-	ano_mark  : Uint2
+	ty         : Uint1
+	timestamp  : Timestamp
+	addrorlist : AddrOrList
+	fee        : Amount
+    actions    : DynListAction
+    signs      : SignListW2
+	gas_max    : Uint1
+	ano_mark   : Fixed1
 }
 
 impl $class {
@@ -53,22 +54,28 @@ impl $class {
         $class{
             ty: Uint1::from($tyid),
             timestamp: Timestamp::from(curtimes()),
-            address: addr,
+            addrorlist: AddrOrList::by_addr(addr),
             fee: fee,
-            actions: DynListVMAction::default(),
+            actions: DynListAction::default(),
             signs: SignListW2::default(),
-            ano_mark: Uint2::default(),
+	        gas_max : Uint1::default(),
+            ano_mark: Fixed1::default(),
         }
     }
 
     fn hash_ex(&self, adfe: Vec<u8>) -> Hash {
-        let stuff = vec![
+        let mut stuff = vec![
             self.ty.serialize(),
             self.timestamp.serialize(),
-            self.address.serialize(),
+            self.addrorlist.serialize(),
             adfe, /* self.fee.serialize()*/
             self.actions.serialize()
         ].concat();
+        // ignore signs data
+        if $tyid >= TX_TYPE_3 {
+            stuff.append(&mut self.gas_max.serialize());
+            stuff.append(&mut self.ano_mark.serialize());
+        }
         let hx = x16rs::calculate_hash(stuff);
         Hash::must(&hx[..])
     }
@@ -89,12 +96,18 @@ impl TransactionRead for $class {
         self.ty.to_u8()
     }
 
-    fn address(&self) -> &Address {
-        &self.address
+    fn address(&self) -> Ret<Address> {
+        self.addrorlist.main()
+    }
+    fn addrlist(&self) -> &AddrOrList{ 
+        &self.addrorlist
     }
     fn fee(&self) -> &Amount {
         &self.fee
     }
+    fn gas_max(&self) -> u8 { 
+        self.gas_max.value()
+     }
 
     fn timestamp(&self) -> &Timestamp {
         &self.timestamp
@@ -103,7 +116,7 @@ impl TransactionRead for $class {
     fn action_count(&self) -> u16 {
         self.actions.count().to_u64() as u16
     }
-    fn actions(&self) -> &Vec<Box<dyn VMAction>> {
+    fn actions(&self) -> &Vec<Box<dyn Action>> {
         self.actions.list()
     }
 
@@ -114,7 +127,7 @@ impl TransactionRead for $class {
     // burn_90_percent_fee
     fn burn_90(&self) -> bool {
         for act in self.actions() {
-            if act.as_ext().burn_90() {
+            if act.burn_90() {
                 return true // burn
             }
         }
@@ -130,14 +143,17 @@ impl TransactionRead for $class {
         gfee
     } 
 
-    fn req_sign(&self) -> HashSet<Address> {
-        let mut addrs = HashSet::from([self.address().clone()]);
+    fn req_sign(&self) -> Ret<HashSet<Address>> {
+        let mut addrs = HashSet::from([self.address()?]);
         for act in self.actions() {
-            for adr in act.as_ext().req_sign() {
-                addrs.insert(adr);
+            for adr in act.req_sign() {
+                let a = adr.real(self.addrlist())?;
+                if a.version() == ADDRVER_PRIVAKEY {
+                    addrs.insert(a); // just PRIVAKEY
+                }
             }
         }
-        addrs
+        Ok(addrs)
     }
     
 }
@@ -148,7 +164,7 @@ impl Transaction for $class {
     }
     fn fill_sign(&mut self, acc: &Account) -> RetErr {
         let mut fhx = self.hash();
-        if acc.address() == self.address.as_bytes() {
+        if acc.address() == self.address()?.as_bytes() {
             fhx = self.hash_with_fee();
         }
         // do sign
@@ -176,7 +192,7 @@ impl Transaction for $class {
         self.signs.as_mut()[istid] = signobj;
         Ok(())
     }
-    fn push_action(&mut self, act: Box<dyn VMAction>) -> RetErr {
+    fn push_action(&mut self, act: Box<dyn Action>) -> RetErr {
         self.actions.push(act)
     }
 
@@ -212,10 +228,23 @@ impl TxExec for $class {
         exiobj.height = BlockHeight::from(blkhei);
         state.set_txexist(&txhx, &exiobj);
         // sub fee
-        let feeadr = self.address();
+        let feeadr = self.address()?;
+        if feeadr.version() != ADDRVER_PRIVAKEY {
+            return errf!("tx fee address version must be PRIVAKEY type.")
+        }
+        if self.ty() <= TX_TYPE_3 {
+            if self.ano_mark[0] != 0 {
+                return errf!("tx extend data error")
+            }
+        }
+        if self.ty() <= TX_TYPE_2 {
+            if self.gas_max.value() != 0 {
+                return errf!("tx extend data error")
+            }
+        }
         let amt = self.fee();    
         // println!("tx execute pay fee from {} amount {}", feeadr.readable(), amt.to_fin_string());
-        operate::hac_sub(&mut state, feeadr, amt)?;
+        operate::hac_sub(&mut state, &feeadr, amt)?;
         Ok(())
     }
 

@@ -46,3 +46,15 @@ pub fn bytes_from_uint(val: u64, msz: usize, len: usize) -> Ret<Vec<u8>> {
     let left = 8 - len;
     Ok(rlbt[left..8].to_vec())
 }
+
+
+/**
+* number set in range
+*/
+macro_rules! set_in_range { ($n: expr, $a: expr, $b: expr) => {
+    $n = match $n {
+        0..=$a => $a, 
+        $a..=$b => $n,
+        _ => $b,
+    };
+} }

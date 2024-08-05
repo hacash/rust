@@ -3,6 +3,7 @@ use crate::mint::component::DiamondOwnedForm;
 
 defineQueryObject!{ Q8364,
     address, String, s!(""),
+    diamonds, Option<bool>, None,
 }
 
 async fn balance(State(ctx): State<ApiCtx>, q: Query<Q8364>) -> impl IntoResponse  {
@@ -27,14 +28,19 @@ async fn balance(State(ctx): State<ApiCtx>, q: Query<Q8364>) -> impl IntoRespons
         let adr = adr.unwrap();
         // balance
         let bls = state.balance(&adr).unwrap_or_default();
-        // dianames
-        let diaowned = mintstate.diamond_owned(&adr).unwrap_or_default();
-        resbls.push(json!({
+        let mut resj = json!({
             "hacash": bls.hacash.to_unit_string(&unit),
             "diamond": bls.diamond.uint(),
             "satoshi": bls.satoshi.uint(),
-            "diamonds": diaowned.readable(),
-        }));
+        });
+        // dianames
+        let mut dianames = "".to_owned();
+        if let Some(true) = q.diamonds {
+            let diaowned = mintstate.diamond_owned(&adr).unwrap_or_default();
+            dianames = diaowned.readable();
+            resj["diamonds"] = dianames.into();
+        }
+        resbls.push(resj);
     }
     // ok
     api_data_list(resbls)

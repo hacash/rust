@@ -2,6 +2,7 @@
 pub trait Field : Serialize + Parse { // Default
     fn new() -> Self where Self: Sized { panic_never_call_this!() }
     fn must(_: &[u8]) -> Self where Self: Sized { panic_never_call_this!(); } // maybe panic!
+    fn build(_: &[u8]) -> Ret<Self> where Self: Sized { panic_never_call_this!(); }
     fn create(_: &[u8]) -> Ret<(Self, usize)> where Self: Sized { panic_never_call_this!(); }
     
     fn from_uint<T>(_: T) -> Self where Self: Sized, T: std::ops::Add<u64, Output = u64> { panic_never_call_this!(); }

@@ -159,7 +159,6 @@ impl BlockEngine {
         // try insert
         let sub_state = do_check_insert(
             &self.cnf, 
-            self.vmobj.as_ref(),
             self.mintk.as_ref(),
             self.store.as_ref(),
             base_chunk.state.clone(),

@@ -41,13 +41,21 @@ fnDiamondOperateCommon!(hacd_sub, addr, hacd, oldhacd, {
 /**************************** */
 
 
-pub fn hacd_transfer(state: &mut CoreState, addr_from: &Address, addr_to: &Address, hacd: &DiamondNumber) -> RetErr {
+pub fn hacd_transfer(ctx: &mut dyn ExecContext, state: &mut CoreState, 
+    addr_from: &Address, addr_to: &Address, hacd: &DiamondNumber, dlist: &DiamondNameListMax200
+) -> Ret<Vec<u8>> {
     if addr_from == addr_to {
 		return errf!("cannot transfer to self")
     }
+    // check contract
+    /*use vm::rt::SystemCallType::*;
+    let amtv = dlist.form(); // name bytes vec
+    ctx.syscall_check_true(addr_from, PermitHACD  as u8, amtv.clone())?;
+    ctx.syscall_check_true(addr_to,   PayableHACD as u8, amtv)?;*/
+    // do transfer
     hacd_sub(state, addr_from, hacd)?;
     hacd_add(state, addr_to, hacd)?;
     // ok
-    Ok(())
+    Ok(vec![])
 }
 

@@ -1,9 +1,59 @@
 
+const BLOCK_REWARD_SEC_TWO: usize = 66;
+const BLOCK_REWARD_STEP_BLOCK: u64 = 10_0000;
+const BLOCK_REWARD_DEF_LIST: [u8; BLOCK_REWARD_SEC_TWO] = [
+    1, 1, 2, 3, 5, 8,
+    8,8,8,8,8,8,8,8,8,8,
+    5,5,5,5,5,5,5,5,5,5,
+    3,3,3,3,3,3,3,3,3,3,
+    2,2,2,2,2,2,2,2,2,2,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+];
+
+/*
+* Currency release algorithm: 22 million in the first 66 years
+*/
+pub fn block_reward_number(block_height: u64) -> u8 {
+    let stp = BLOCK_REWARD_STEP_BLOCK;
+    let lis = BLOCK_REWARD_DEF_LIST;
+    let sct = BLOCK_REWARD_SEC_TWO as u64;
+    let curstp = block_height / stp;
+    if curstp >= sct {
+        return 1 // after 66 years
+    }
+    // before 66 years
+    lis[curstp as usize]
+}
+
+pub fn block_reward(block_height: u64) -> Amount {
+	let num = block_reward_number(block_height);
+	return Amount::new_coin(num)
+}
+
+pub fn cumulative_block_reward(block_height: u64) -> u64 {
+    let stp = BLOCK_REWARD_STEP_BLOCK;
+    let mut cbhei = block_height + 1;
+    let mut ttcoin = 0u64;
+    for (i, v) in BLOCK_REWARD_DEF_LIST.iter().enumerate() {
+        let v = *v as u64;
+        if cbhei < stp {
+            ttcoin += cbhei * v;
+            break // finish
+        }
+        ttcoin += stp * v;
+        cbhei -= stp; // next
+    }
+    ttcoin - 1
+}
 
 
-/**
- * Currency release algorithm: 22 million in the first 66 years
- */
+
+/////////////////////
+
+
+
+ /*
  pub fn block_reward_number(block_height: u64) -> u8 {
     let part1 = [1u8, 1, 2, 3, 5, 8];
     let part2 = [8u8, 5, 3, 2, 1, 1];
@@ -22,8 +72,4 @@
     }
     return part3
 }
-
-pub fn block_reward(block_height: u64) -> Amount {
-	let num = block_reward_number(block_height);
-	return Amount::new_coin(num)
-}
+*/

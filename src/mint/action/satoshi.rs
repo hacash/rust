@@ -4,20 +4,19 @@
  */
  ActionDefine!{
     SatoshiTransfer : 8, (
-        to       : Address
+        to       : AddrOrPtr
         satoshi  : Satoshi
     ),
-    ACTLV_TOP, // level
+    ACTLV_MAIN, // level
     21 + 8, // gas
-    (self, env, state, store), // params
+    (self, ctx, state, store, gas), // params
     false, // burn 90
     [], // req sign
     { 
         let mut state = CoreState::wrap(state);
-        let from = env.main_address(); 
-        ActExecRes::wrap(
-            sat_transfer(&mut state, from, &self.to, &self.satoshi)
-        )
+        let from = ctx.main_address().clone(); 
+        let to = self.to.real(ctx.addr_list())?;
+        sat_transfer(ctx, &mut state, &from, &to, &self.satoshi)
     }
 }
 
@@ -28,20 +27,20 @@
  */
  ActionDefine!{
     SatoshiFromToTransfer : 11, (
-        from     : Address 
-        to       : Address 
+        from     : AddrOrPtr 
+        to       : AddrOrPtr 
         satoshi  : Satoshi
     ),
-    ACTLV_TOP, // level
+    ACTLV_MAIN, // level
     21 + 21 + 8, // gas
-    (self, env, state, store), // params
+    (self, ctx, state, store, gas), // params
     false, // burn 90
     [self.from], // req sign
     {
         let mut state = CoreState::wrap(state);
-        ActExecRes::wrap(
-            sat_transfer(&mut state, &self.from, &self.to, &self.satoshi)
-        )
+        let from = self.from.real(ctx.addr_list())?;
+        let to = self.to.real(ctx.addr_list())?;
+        sat_transfer(ctx, &mut state, &from, &to, &self.satoshi)
     }
 }
 
@@ -51,19 +50,18 @@
  */
  ActionDefine!{
     SatoshiFromTransfer : 28, (
-        from     : Address 
+        from     : AddrOrPtr
         satoshi  : Satoshi
     ),
-    ACTLV_TOP, // level
+    ACTLV_MAIN, // level
     21 + 8, // gas
-    (self, env, state, store), // params
+    (self, ctx, state, store, gas), // params
     false, // burn 90
     [self.from], // req sign
     { 
         let mut state = CoreState::wrap(state);
-        let to = env.main_address(); 
-        ActExecRes::wrap(
-            sat_transfer(&mut state, &self.from, to, &self.satoshi)
-        )
+        let from = self.from.real(ctx.addr_list())?;
+        let to = ctx.main_address().clone();
+        sat_transfer(ctx, &mut state, &from, &to, &self.satoshi)
     }
 }

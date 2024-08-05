@@ -21,23 +21,24 @@ extern crate lazy_static;
 
 /********* mod ********/
 
-mod x16rs;
+pub mod x16rs;
 
 #[macro_use]
-mod sys;
+pub mod sys;
 #[macro_use]
-mod base;
-mod interface;
-mod config;
+pub mod base;
+pub mod interface;
+pub mod config;
 #[macro_use]
-mod core;
+pub mod core;
 #[macro_use]
-mod protocol;
-mod mint;
-mod vm;
-mod chain;
-mod node;
-mod server;
+pub mod protocol;
+pub mod mint;
+#[macro_use]
+pub mod vm;
+pub mod chain;
+pub mod node;
+pub mod server;
 
 
 

@@ -35,7 +35,7 @@ impl Account {
     pub fn create_by_secret_key_value(key32: [u8; 32]) -> Result<Account, Error> {
         let kkk = key32.to_vec();
         // if(kkk.len()!=32) {
-        //     return Err(format!("create_account_by_secret_key param key32 length must be 32 but got {}.", kkk.len()));
+        //     return errf!("create_account_by_secret_key param key32 length must be 32 but got {}.", kkk.len()));
         // }
         if kkk[0] == 255 && kkk[1] == 255 && kkk[2] == 255 && kkk[3] == 255 {
             return Err("not support secret_key, change one and try again.".to_string());

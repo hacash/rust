@@ -4,6 +4,11 @@ pub const AMOUNT_MIN_SIZE: usize = 2;
 
 static _BIG_MEI_DIP_DIV: u64 = 1_00000000_00000000;
 static _BIG_MEI_DIP_UNIT: u8 = 248 - 8 - 8; // 232
+static _MEI_UNIT:  u8 = 248;
+static _ZHU_UNIT:  u8 = 240;
+static _SHUO_UNIT: u8 = 232;
+static _AI_UNIT:   u8 = 224;
+static _MIAO_UNIT: u8 = 216;
 
 macro_rules! amount_check_data_len{
     ($self:expr, $tip:expr) => (
@@ -134,7 +139,7 @@ impl Amount {
             panic!("{} is not support.", num)
         }
         let amt = Amount{
-            unit: 248,
+            unit: _MEI_UNIT,
             dist: 1,
             byte: vec!(num),
         };
@@ -167,13 +172,20 @@ impl Amount {
         })
     }
 
-    pub fn from_i64(num: i64, unit: u8) -> Result<Amount, String> {
+    pub fn from_i64(mut num: i64, mut unit: u8) -> Result<Amount, String> {
         let mut amt = Amount::default();
         if num == 0 {
             return Ok(amt);
         }
+        while num % 10 == 0 {
+            num /= 10;
+            unit+=1;
+            if unit==255 {
+                break
+            }
+        }
         if num % 10 == 0 {
-            return Err(format!("Amount.from_mei_i64 `{}` format error.", num))
+            return errf!("Amount.from_mei_i64 `{}` format error.", num)
         }
         // parse
         let big: BigInt = FromPrimitive::from_i64(num).unwrap();
@@ -192,17 +204,16 @@ impl Amount {
         return Ok(amt);
     }
 
-    pub fn from_mei_i64(mei: i64) -> Result<Amount, String> {
-        let mut baseunit = 248;
-        let mut num = mei;
-        while num % 10 == 0 {
-            num /= 10;
-            baseunit+=1;
-            if baseunit==255 {
-                break
-            }
-        }
-        return Amount::from_i64(num, baseunit as u8);
+    pub fn from_mei(mei: i64) -> Result<Amount, String> {
+        return Amount::from_i64(mei, _MEI_UNIT);
+    }
+
+    pub fn from_zhu(zhu: i64) -> Result<Amount, String> {
+        return Amount::from_i64(zhu, _ZHU_UNIT);
+    }
+
+    pub fn from_shuo(shuo: i64) -> Result<Amount, String> {
+        return Amount::from_i64(shuo, _SHUO_UNIT);
     }
 
     pub fn from_string_unsafe(v: &String) -> Result<Amount, String> {
@@ -215,7 +226,7 @@ impl Amount {
 
     pub fn from_mei_string_unsafe(v: &String) -> Result<Amount, String> {
         let mayerr = ||{
-            Err(format!("Amount.from_mei_string_unsafe `{}` format error.", v))
+            errf!("Amount.from_mei_string_unsafe `{}` format error.", v)
         };
         // let mut amt = Amount::default();
         let nums: Vec<&str> = v.as_str().trim().split(".").collect();
@@ -225,7 +236,7 @@ impl Amount {
                 Err(_) => return mayerr(),
                 Ok(i) => i,
             };
-            return Amount::from_mei_i64(ii);
+            return Amount::from_mei(ii);
 
         }else if 2 == nums.len() {
             let ff = match v.parse::<f64>() {
@@ -239,7 +250,7 @@ impl Amount {
             }
             let base = 10i32.pow(fdl as u32) as f64;
             let ii = (ff * base) as i64;
-            return Amount::from_i64(ii, 248 - (fdl as u8));
+            return Amount::from_i64(ii, _MEI_UNIT - (fdl as u8));
 
         }else{
             return mayerr();
@@ -291,11 +302,15 @@ impl Amount {
     }
 
     pub fn to_mei_unsafe(&self) -> f64 {
-        self.to_unit_unsafe(248)
+        self.to_unit_unsafe(_MEI_UNIT)
     }
 
     pub fn to_zhu_unsafe(&self) -> f64 {
-        self.to_unit_unsafe(240)
+        self.to_unit_unsafe(_ZHU_UNIT)
+    }
+
+    pub fn to_shuo_unsafe(&self) -> f64 {
+        self.to_unit_unsafe(_SHUO_UNIT)
     }
 
     pub fn to_unit_unsafe(&self, base_unit: u8) -> f64 {
@@ -337,7 +352,7 @@ impl Amount {
         }
         let biguse = BigInt::from_str_radix(&numuse, 10);
         if let Err(e) = biguse {
-            return Err(format!("BigInt::from_str_radix error: {} {} {} {}", numstr, numuse, numuse, e.to_string()))
+            return errf!("BigInt::from_str_radix error: {} {} {} {}", numstr, numuse, numuse, e.to_string())
         }
         let biguse = biguse.unwrap();
         let (sign, byte) = biguse.to_bytes_be();
@@ -416,11 +431,11 @@ impl Amount {
             unit = u;
         }else{
             unit = match unit_str {
-                "mei"  => 248,
-                "zhu"  => 240,
-                "shuo" => 232,
-                "ai"   => 224,
-                "miao" => 216,
+                "mei"  => _MEI_UNIT,
+                "zhu"  => _ZHU_UNIT,
+                "shuo" => _SHUO_UNIT,
+                "ai"   => _AI_UNIT,
+                "miao" => _MIAO_UNIT,
                 _ => 0,
             }
         }
@@ -518,7 +533,7 @@ impl Amount {
             nnn = nnn / 10;
             let unit_n = useamt.unit as u64 + 1;
             if unit_n > 255 {
-                return Err(format!("`{}` compress failed.", self.to_fin_string()));
+                return errf!("`{}` compress failed.", self.to_fin_string());
             }
             useamt.unit = unit_n as u8;
             if upper {

@@ -1,12 +1,12 @@
 
+
+
+/*
+
 pub struct ExtActionCaller {
 
 
 }
-
-
-
-
 
 
 include!("cutout.rs");
@@ -24,3 +24,5 @@ impl ExtActCaller for ExtActionCaller {
     }
     
 }
+
+*/

@@ -35,7 +35,7 @@ async fn scan_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q4538>) -> impl 
         "block_hash", blkobj.hash().hex(),
         "tx_timestamp", tartrs.timestamp().uint(),
         "block_timestamp", blkobj.timestamp().uint(),
-        "address", tartrs.address().readable(),
+        "address", tartrs.address().unwrap().readable(),
         "transfers", dtlist,
     };
     api_data(data)
@@ -44,13 +44,13 @@ async fn scan_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q4538>) -> impl 
 
 
 
-macro_rules! transfer_scan_action_item{
-    ( $kid: expr, $aext: expr, $transfers: expr, $actname: ident, $acty: ty, $ck: expr, $jsonobj: expr ) => (
+macro_rules! transfer_scan_action_item_old {
+    ( $kid: expr, $act: expr, $transfers: expr, $actname: ident, $acty: ty, $ck: expr, $jsonobj: expr ) => (
         if $kid == <$acty>::kid(){
             if false == $ck {
                 return
             }
-            let ($actname, _) = <$acty>::create(&$aext.serialize()).unwrap();
+            let $actname = <$acty>::build(&$act.serialize()).unwrap();
             $transfers.push($jsonobj);
             return
         }
@@ -58,69 +58,72 @@ macro_rules! transfer_scan_action_item{
 }
 
 
-fn append_transfer_scan(unit: &str, ck: &CoinKind, transfers: &mut Vec<Value>, a: &dyn VMAction) {
-    let act = a.as_ext();
-    let akd = act.kind();
+fn append_transfer_scan(unit: &str, ck: &CoinKind, transfers: &mut Vec<Value>, act: &dyn Action) {
+    let kid = act.kind();
+
+    macro_rules! transfer_scan_action_item {
+        ( $actname: ident, $acty: ty, $ck: expr, $jsonobj: expr ) => (
+            if kid == <$acty>::kid(){
+                if false == $ck {
+                    return
+                }
+                let $actname = <$acty>::build(&act.serialize()).unwrap();
+                transfers.push($jsonobj);
+                return
+            }
+        )
+    }
 
     // HacTransfer // 1
-    transfer_scan_action_item!(akd, a, transfers, act, 
-        HacTransfer, ck.hacash, json!({
+    transfer_scan_action_item!( act, HacTransfer, ck.hacash, json!({
         "to": act.to.readable(),
         "hacash": act.amt.to_unit_string(unit),
     }));
     // HacFromTransfer // 13
-    transfer_scan_action_item!(akd, a, transfers, act, 
-        HacFromTransfer, ck.hacash, json!({
+    transfer_scan_action_item!( act, HacFromTransfer, ck.hacash, json!({
         "from": act.from.readable(),
         "hacash": act.amt.to_unit_string(unit),
     }));
     // HacFromToTransfer // 14
-    transfer_scan_action_item!(akd, a, transfers, act, 
-        HacFromToTransfer, ck.hacash, json!({
+    transfer_scan_action_item!( act, HacFromToTransfer, ck.hacash, json!({
         "from": act.from.readable(),
         "to": act.to.readable(),
         "hacash": act.amt.to_unit_string(unit),
     }));
 
     // DiamondTransfer          // 5 
-    transfer_scan_action_item!(akd, a, transfers, act, 
-        DiamondTransfer, ck.diamond, json!({
+    transfer_scan_action_item!( act, DiamondTransfer, ck.diamond, json!({
         "to": act.to.readable(),
         "diamond": 1usize,
         "diamonds": act.diamond.readable(),
     }));
     // DiamondFromToTransfer    // 6
-    transfer_scan_action_item!(akd, a, transfers, act, 
-        DiamondFromToTransfer, ck.diamond, json!({
+    transfer_scan_action_item!( act, DiamondFromToTransfer, ck.diamond, json!({
         "from": act.from.readable(),
         "to": act.to.readable(),
         "diamond": act.diamonds.count().uint(),
         "diamonds": act.diamonds.readable(),
     }));
     // DiamondMultipleTransfer  // 7
-    transfer_scan_action_item!(akd, a, transfers, act, 
-        DiamondMultipleTransfer, ck.diamond, json!({
+    transfer_scan_action_item!( act, DiamondMultipleTransfer, ck.diamond, json!({
         "to": act.to.readable(),
         "diamond": act.diamonds.count().uint(),
         "diamonds": act.diamonds.readable(),
     }));
 
     // SatoshiTransfer // 8
-    transfer_scan_action_item!(akd, a, transfers, act, 
-        SatoshiTransfer, ck.satoshi, json!({
+    transfer_scan_action_item!( act, SatoshiTransfer, ck.satoshi, json!({
         "to": act.to.readable(),
         "satoshi": act.satoshi.uint(),
     }));
     // SatoshiFromToTransfer // 11
-    transfer_scan_action_item!(akd, a, transfers, act, 
-        SatoshiFromToTransfer, ck.satoshi, json!({
+    transfer_scan_action_item!( act, SatoshiFromToTransfer, ck.satoshi, json!({
         "from": act.from.readable(),
         "to": act.to.readable(),
         "satoshi": act.satoshi.uint(),
     }));
     // SatoshiFromTransfer // 28
-    transfer_scan_action_item!(akd, a, transfers, act, 
-        SatoshiFromTransfer, ck.satoshi, json!({
+    transfer_scan_action_item!( act, SatoshiFromTransfer, ck.satoshi, json!({
         "from": act.from.readable(),
         "satoshi": act.satoshi.uint(),
     }));

@@ -8,10 +8,10 @@ use crate::core::field::*;
 use crate::core::account::*;
 use crate::protocol::action::*;
 use crate::protocol::block::*;
+use crate::interface::vm::*;
 
 use super::field::*;
 use super::chain::*;
-// use super::vm::VMAction;
 
 include!("action.rs");
 include!("transaction.rs");

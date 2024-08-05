@@ -23,8 +23,13 @@ impl ApiCtx {
         }
     }
 
-    // load block from cache or disk, key = height or hash
     pub fn load_block(&self, store: &CoreStoreDisk, key: &String) -> Ret<Arc<dyn BlockPkg>> {
+        self.load_block_from_cache(store, key, true)
+    }
+
+    
+    // load block from cache or disk, key = height or hash
+    pub fn load_block_from_cache(&self, store: &CoreStoreDisk, key: &String, with_cache: bool) -> Ret<Arc<dyn BlockPkg>> {
         let mut hash = Hash::cons([0u8; 32]);
         let mut height = BlockHeight::from(0);
         if key.len() == 64 {
@@ -37,10 +42,12 @@ impl ApiCtx {
             }
         }
         // check cache
-        let mut list = self.blocks.lock().unwrap();
-        for blk in list.iter() {
-            if height == blk.objc().height().uint() || hash == *blk.hash() {
-                return Ok(blk.clone())
+        if with_cache {
+            let mut list = self.blocks.lock().unwrap();
+            for blk in list.iter() {
+                if height == blk.objc().height().uint() || hash == *blk.hash() {
+                    return Ok(blk.clone())
+                }
             }
         }
         // read from disk
@@ -60,9 +67,12 @@ impl ApiCtx {
         let blkpkg = blkpkg.unwrap();
         // ok
         let blkcp: Arc<dyn BlockPkg> = blkpkg.into();
-        list.push_front(blkcp.clone());
-        if list.len() > self.blocks_max {
-            list.pop_back(); // cache limit 
+        if with_cache {
+            let mut list = self.blocks.lock().unwrap();
+            list.push_front(blkcp.clone());
+            if list.len() > self.blocks_max {
+                list.pop_back(); // cache limit 
+            }
         }
         return Ok(blkcp)
     }

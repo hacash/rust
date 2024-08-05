@@ -37,8 +37,8 @@ impl TransactionRead for TransactionCoinbase {
         self.ty.to_u8()
     }
 
-    fn address(&self) -> &Address {
-        &self.address
+    fn address(&self) -> Ret<Address> {
+        Ok(self.address.clone())
     }
 
     fn reward(&self) -> &Amount {
@@ -56,9 +56,9 @@ impl Transaction for TransactionCoinbase {
 impl TxExec for TransactionCoinbase {
     fn execute(&self, _: u64, sta: &mut dyn State) -> RetErr {
         let mut state = CoreState::wrap(sta);
-        let rwdadr = self.address();
+        let rwdadr = self.address()?;
         let amt = self.reward();
-        operate::hac_add(&mut state, rwdadr, amt)?;
+        operate::hac_add(&mut state, &rwdadr, amt)?;
         Ok(())
     }
 }

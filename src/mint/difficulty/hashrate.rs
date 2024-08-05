@@ -26,7 +26,7 @@ pub fn rates_to_show(rates: u128) -> String {
     }
     let num = (rates as f64) / (HVS[hsx] as f64);
     let unit = HNS[hsx];
-    format!("{:.2}{}H/s", num, unit)
+    format!("{:.2}{}c/s", num, unit)
 }
 
 pub fn hash_to_rateshow(hx: &[u8; HASH_WIDTH], secs: u64) -> String {

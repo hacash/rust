@@ -39,9 +39,12 @@ include!("routes.rs");
 include!("console.rs");
 
 include!("latest.rs");
+include!("hashrate.rs");
+include!("supply.rs");
 include!("balance.rs");
 include!("diamond.rs");
-include!("block_intro.rs");
+include!("block.rs");
+
 include!("scan_transfer.rs");
 
 include!("create_account.rs");

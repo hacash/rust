@@ -14,9 +14,15 @@ cargo build --release --target=x86_64-unknown-linux-musl
 ldd target/x86_64-unknown-linux-musl/release/hacash
 
 
+RUSTFLAGS="$RUSTFLAGS -Awarnings -L ./src/x16rs/" cargo build && 
+cp ./target/debug/hacash ./test/hacash_dev1 &&
+./test/hacash_dev1 hacash.dev1.config.ini
 
 
-*/
+RUSTFLAGS="$RUSTFLAGS -Awarnings" RUST_BACKTRACE=1 cargo run -- --reptblk
+
+
+*/ 
 
 
 /**
@@ -35,7 +41,6 @@ fn main() {
         .compile("x16rs");
     println!("cargo:rerun-if-changed=src/x16rs/x16rs.c");
 }
-
 
 
 

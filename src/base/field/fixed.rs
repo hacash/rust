@@ -5,6 +5,7 @@ StructFieldFixedBytes!{ Fixed3 ,  3usize }
 StructFieldFixedBytes!{ Fixed4 ,  4usize }
 StructFieldFixedBytes!{ Fixed5 ,  5usize }
 StructFieldFixedBytes!{ Fixed6 ,  6usize }
+StructFieldFixedBytes!{ Fixed7 ,  7usize }
 StructFieldFixedBytes!{ Fixed8 ,  8usize }
 StructFieldFixedBytes!{ Fixed10, 10usize }
 StructFieldFixedBytes!{ Fixed12, 12usize }

@@ -2,7 +2,7 @@
 /**
  * reg actions
  */
-pubFnRegActionCreates!{
+ pubFnRegExtendActionCreates!{
 
     ChannelOpen      // 2
     ChannelClose     // 3
@@ -14,4 +14,11 @@ pubFnRegActionCreates!{
 
     DiamondInscription       // 32
 
+}
+
+// reg action
+pub fn init_reg() {
+    unsafe {
+        crate::protocol::action::EXTEND_ACTIONS_TRY_CREATE_FUNC = Some(try_create);   
+    }
 }

@@ -17,6 +17,15 @@ macro_rules! fnFieldMustCreate {
             }
         }
 
+        fn build(buf: &[u8]) -> Ret<$class> {
+            let mut v = <$class>::default();
+            let res = v.parse(buf, 0);
+            match res {
+                Ok(sk) => Ok(v),
+                Err(e) => return Err(e),
+            }
+        }
+
         fn create(buf: &[u8]) -> Ret<($class, usize)> {
             let mut v = <$class>::default();
             let res = v.parse(buf, 0);

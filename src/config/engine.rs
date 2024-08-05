@@ -8,25 +8,26 @@ pub struct EngineConf {
     pub data_dir: String,
     pub store_data_dir: Box<Path>, // block data
     pub state_data_dir: Box<Path>, // chain state
-    pub ctrkv_data_dir: Box<Path>, // contract kv storage
 }
 
 
 impl EngineConf {
     
-    pub fn new(ini: &IniObj) -> EngineConf {
+    pub fn new(ini: &IniObj, dbv: u32) -> EngineConf {
     
         // datadir
         let data_dir = get_datadir(ini);
     
+        let state_dir = join_path(&data_dir, "state");
+        let state_data_dir = Path::new(state_dir.to_str().unwrap()).join(format!("v{}", dbv)).into_boxed_path();
+
         let mut cnf = EngineConf{
             max_block_txs: 1000,
             max_block_size: 1024*1024*1, // 1MB
             unstable_block: 4, // 4 block
             fast_sync: false,
             store_data_dir: join_path(&data_dir, "store"),
-            state_data_dir: join_path(&data_dir, "state"),
-            ctrkv_data_dir: join_path(&data_dir, "ctrkv"),
+            state_data_dir: state_data_dir,
             data_dir: data_dir,
         };
 
