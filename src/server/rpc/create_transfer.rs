@@ -20,33 +20,19 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
     q_must!(q, hacash, s!(""));
     q_must!(q, diamonds, s!(""));
     // create
-    let to = Address::form_readable(&q.to_address);
-    if let Err(e) = to {
-        return api_error(&format!("to address {} format error: {}", &q.to_address, &e))
-    }
-    let toaddr = to.unwrap();
-    let fee = Amount::from_string_unsafe(&q.fee);
-    if let Err(e) = fee {
-        return api_error(&format!("fee {} format error: {}", &q.fee, &e))
-    }
-    let acc = account::Account::create_by(&q.main_prikey);
-    if let Err(e) = acc {
-        return api_error(&format!("main prikey error: {}", &e))
-    }
-    let main_acc = acc.unwrap();
+    let toaddr = q_data_addr!(q, to_address);
+    let fee = q_data_amt!(q, fee);
+    let main_acc = q_data_acc!(q, main_prikey);
+
     let mut from_acc = main_acc.clone();
     if from_prikey.len() > 0 {
-        let fc = account::Account::create_by(&from_prikey);
-        if let Err(e) = fc {
-            return api_error(&format!("from prikey error: {}", &e))
-        }
-        from_acc = fc.unwrap();
+        from_acc = q_data_acc_from!(from_prikey);
     }
     let is_from = from_acc != main_acc;
     let addr = Address::cons(main_acc.address().clone());
     let fromaddr = Address::cons(from_acc.address().clone());
     // trs v2
-    let mut trsobj = TransactionType2::build(addr, fee.unwrap());
+    let mut trsobj = TransactionType2::build(addr, fee);
     if timestamp > 0 {
         trsobj.timestamp = Timestamp::from(timestamp);
     }

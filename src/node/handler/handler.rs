@@ -23,7 +23,7 @@ impl MsgHandler {
             blktx: tx,
             blktxch: Some(rx).into(),
             doing_sync: AtomicU64::new(0),
-            knows: Knowledge::new(100),
+            knows: Knowledge::new(200),
             closer: Closer::new(),
         }
     }

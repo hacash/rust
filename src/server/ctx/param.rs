@@ -80,6 +80,67 @@ macro_rules! q_must{
 }
 
 #[macro_export]
+macro_rules! q_data_may_hex {
+    ( $q: ident, $d: expr) => (
+        { 
+            q_must!($q, hex, false);
+            match hex {
+                false => $d,
+                true => {
+                    let res = hex::decode(&$d);
+                    if let Err(_) = res {
+                        return api_error("hex format error")
+                    }
+                    res.unwrap()
+                }
+            }
+        }
+    )
+}
+
+#[macro_export]
+macro_rules! q_data_addr {
+    ( $q: ident, $adr: ident) => ({
+        let adr = Address::form_readable(&$q.$adr);
+        if let Err(e) = adr {
+            return api_error(&format!("address {} format error: {}", &$q.$adr, &e))
+        }
+        adr.unwrap()
+    })
+}
+
+#[macro_export]
+macro_rules! q_data_amt {
+    ( $q: ident, $amt: ident) => ({
+        let amt = Amount::from_string_unsafe(&$q.$amt);
+        if let Err(e) = amt {
+            return api_error(&format!("amount {} format error: {}", &$q.$amt, &e))
+        }
+        amt.unwrap()
+    })
+}
+
+#[macro_export]
+macro_rules! q_data_acc_from {
+    ( $acc: expr) => ({
+        let acc = account::Account::create_by(&$acc);
+        if let Err(e) = acc {
+            return api_error(&format!("prikey error: {}", &e))
+        }
+        acc.unwrap()
+    })
+}
+
+#[macro_export]
+macro_rules! q_data_acc {
+    ( $q: ident, $acc: ident) => (
+        q_data_acc_from!($q.$acc)
+    )
+}
+
+
+
+#[macro_export]
 macro_rules! defineQueryObject{
     ( $name: ident, $( $item: ident, $ty: ty, $dv: expr,)+ ) => (
 

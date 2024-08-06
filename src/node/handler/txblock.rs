@@ -10,22 +10,19 @@ async fn handle_new_tx(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: Vec
     let txpkg = txpkg.unwrap();
     // tx hash with fee
     let hxfe = txpkg.objc().hash_with_fee();
-    let (already, knowkey) = check_know(&this.knows, &hxfe);
-    if let Some(pr) = peer {
-        pr.knows.add(knowkey.clone());
-    }
+    let (already, knowkey) = check_know(&this.knows, &hxfe, peer.clone());
     if already {
         return  // alreay know it
     }
 
     // TODO:: append to txpool
+    
 
 
     // broadcast
     let p2p = this.p2pmng.lock().unwrap();
     let p2p = p2p.as_ref().unwrap();
     p2p.broadcast_message(1/*delay*/, knowkey, MSG_TX_SUBMIT, txpkg.body().clone().into_vec());
-
 }
 
 
@@ -37,10 +34,7 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: 
     }
     let blkhei = blkhead.height().uint();
     let blkhx = blkhead.hash();
-    let (already, knowkey) = check_know(&this.knows, &blkhx);
-    if let Some(ref pr) = peer {
-        pr.clone().knows.add(knowkey.clone());
-    }
+    let (already, knowkey) = check_know(&this.knows, &blkhx, peer.clone());
     if already {
         return  // alreay know it
     }
@@ -95,8 +89,11 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: 
 
 
 // return already know
-fn check_know(mine: &Knowledge, hxkey: &Hash) -> (bool, KnowKey) {
+fn check_know(mine: &Knowledge, hxkey: &Hash, peer: Option<Arc<Peer>>) -> (bool, KnowKey) {
     let knowkey: [u8; KNOWLEDGE_SIZE] = hxkey.clone().into_array();
+    if let Some(ref pr) = peer {
+        pr.knows.add(knowkey.clone());
+    }
     if mine.check(&knowkey) {
         return (true, knowkey) // alreay know it
     }

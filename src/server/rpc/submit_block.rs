@@ -5,16 +5,8 @@ defineQueryObject!{ Q3735,
 }
 
 async fn submit_block(State(ctx): State<ApiCtx>, q: Query<Q3735>, body: Bytes) -> impl IntoResponse {
-    q_must!(q, hex, false);
     // body bytes
-    let mut bddts = body.to_vec();
-    if hex {
-        let res = hex::decode(&bddts);
-        if let Err(_) = res {
-            return api_error("hex format error")
-        }
-        bddts = res.unwrap();
-    }
+    let bddts = q_data_may_hex!(q, body.to_vec());
     // println!("get block body: {}", hex::encode(&bddts));
     // parse
     let blkpkg = block::create_pkg( BytesW4::from_vec(bddts) );

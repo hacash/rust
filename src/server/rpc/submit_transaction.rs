@@ -4,16 +4,8 @@ defineQueryObject!{ Q4396,
 }
 
 async fn submit_transaction(State(ctx): State<ApiCtx>, q: Query<Q4396>, body: Bytes) -> impl IntoResponse {
-    q_must!(q, hex, false);
     // body bytes
-    let mut bddts = body.to_vec();
-    if hex {
-        let res = hex::decode(&bddts);
-        if let Err(_) = res {
-            return api_error("hex format error")
-        }
-        bddts = res.unwrap();
-    }
+    let bddts = q_data_may_hex!(q, body.to_vec());
     // println!("get tx body: {}", hex::encode(&bddts));
     // parse
     let txpkg = transaction::create_pkg( BytesW4::from_vec(bddts) );

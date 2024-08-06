@@ -13,6 +13,7 @@
     DiamondMultipleTransfer  // 7
 
     DiamondInscription       // 32
+    DiamondInscriptionClean  // 33
 
 }
 

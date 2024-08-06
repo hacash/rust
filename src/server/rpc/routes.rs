@@ -14,18 +14,18 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     .route(&query("balance"), get(balance))
     .route(&query("diamond"), get(diamond))
     .route(&query("block/intro"), get(block_intro))
-    .route(&query("transfer/coin"), get(scan_coin_transfer))
+    .route(&query("coin/transfer"), get(scan_coin_transfer))
 
     // create
     .route(&create("account"), get(account))
-    .route(&create("transfer/coin"), get(create_coin_transfer))
+    .route(&create("coin/transfer"), get(create_coin_transfer))
     
     // submit
     .route(&submit("transaction"), post(submit_transaction))
-    .route(&submit("block"), post(submit_block));
+    .route(&submit("block"), post(submit_block))
 
     // operate
-    // //
+    .route(&operate("fee/raise"), post(raise_fee));
 
     // merge unstable & extend
     Router::new().merge(lrt)

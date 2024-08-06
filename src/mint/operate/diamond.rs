@@ -70,6 +70,30 @@ pub fn engraved_one_diamond(pending_height: u64, state: &mut MintState, store: &
 	Ok(cost)
 }
 
+/* 
+* return total cost
+*/
+pub fn engraved_clean_one_diamond(pending_height: u64, state: &mut MintState, store: &MintStoreDisk, addr :&Address, diamond: &DiamondName) -> Ret<Amount> {
+
+    let mut diasto = check_diamond_status(state, addr, diamond)?;
+    let diaslt = must_have!(format!("diamond {}", diamond.readable()), store.diamond_smelt(&diamond));
+    // check
+    if *diasto.inscripts.count() <= 0 {
+        return errf!("cannot find any inscriptions in HACD {}", diamond.readable())    }
+
+    // burning cost bid fee
+    let cost = Amount::from_mei(diaslt.average_bid_burn.uint() as i64)?;
+	// do clean
+    diasto.prev_engraved_height = BlockHeight::from(0);
+    diasto.inscripts = Inscripts::default();
+	// save
+	state.set_diamond(diamond, &diasto);
+
+	// ok finish
+	Ok(cost)
+}
+
+
 /**
 * diamond owned push or drop
 */

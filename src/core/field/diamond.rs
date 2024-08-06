@@ -92,8 +92,12 @@ impl DiamondNameListMax200 {
         false // not find
     }
 
-    pub fn readable(&self) -> String {
+    pub fn splitstr(&self) -> String {
         self.lists.iter().map(|a|a.readable()).collect::<Vec<_>>().join(",")
+    }
+
+    pub fn readable(&self) -> String {
+        self.lists.iter().map(|a|a.readable()).collect::<Vec<_>>().concat()
     }
 
     pub fn form(&self) -> Vec<u8> {

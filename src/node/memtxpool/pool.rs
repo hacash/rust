@@ -45,12 +45,6 @@ impl TxPool for MemTxPool {
         grp.clean()
     }
 
-
-}
-
-
-
-impl MemTxPool { 
     // from group id
     fn find(&self, hx: &Hash, gi: isize) -> Option<Box<dyn TxPkg>> {
         let gid = self.get_group_id(gi);
@@ -62,5 +56,16 @@ impl MemTxPool {
         }
     }
     
+    // find
+    fn find_all(&self, hx: &Hash) -> Option<Box<dyn TxPkg>> {
+        for gi in 0..self.groups.len() as isize {
+            if let Some(tx) = self.find(hx, gi) {
+                return Some(tx) // ok find
+            }
+        }
+        // not find
+        None
+    }
+
 }
 
