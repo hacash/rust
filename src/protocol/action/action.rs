@@ -9,6 +9,8 @@ pubFnRegActionCreates!{
     HacFromTransfer
     HacFromToTransfer
 
+    SubChainID
+
 }
 
 /*******************/

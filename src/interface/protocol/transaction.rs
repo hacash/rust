@@ -24,6 +24,9 @@ pub trait TransactionRead : Field + Send + Sync + dyn_clone::DynClone {
     fn req_sign(&self) -> Ret<HashSet<Address>> { panic_never_call_this!(); }
     fn fee_got(&self) -> Amount { panic_never_call_this!(); } // fee_miner_received
     fn burn_90(&self) -> bool { panic_never_call_this!(); } // burn_90_percent_fee
+
+    // verify_all_need_signs
+    fn verify_signature(&self) -> RetErr { panic_never_call_this!(); }
 }
 
 

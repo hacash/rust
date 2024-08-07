@@ -73,12 +73,15 @@ fn main() {
     // return;
     // return main_test28374659823746892();
     
+
+    // test
     let args: Vec<_> = std::env::args().collect();
-    println!("{:?}", args);
-    if args.len() >= 2 && args[1] == "--reptblk" {
-        return main_test_report_test_block();
+    // println!("{:?}", args);
+    if args.len() >= 2 && args[1] == "--test" {
+        return rpc_test();
     }
 
+    // start
     let inicnf = config::load_config();
     // deal datadir
     start_hacash_node(inicnf);

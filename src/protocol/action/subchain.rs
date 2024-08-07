@@ -5,7 +5,7 @@
     SubChainID : 30, (
         chain_id : Uint8
     ),
-    ACTLV_TOP_ONLY, // level
+    ACTLV_TOP_UNIQUE, // level
     8, // gas = 32
     (self, ctx, state, store, gas), // params
     false, // burn 90

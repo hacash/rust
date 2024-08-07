@@ -155,13 +155,23 @@ impl TransactionRead for $class {
         }
         Ok(addrs)
     }
+
+    fn verify_signature(&self) -> RetErr {
+        verify_tx_signature(self)
+    }
     
 }
 
 impl Transaction for $class {
+
     fn as_read(&self) -> &dyn TransactionRead {
         self
     }
+
+    fn set_fee(&mut self, fee: Amount) {
+        self.fee = fee;
+    }
+
     fn fill_sign(&mut self, acc: &Account) -> RetErr {
         let mut fhx = self.hash();
         if acc.address() == self.address()?.as_bytes() {
@@ -192,6 +202,7 @@ impl Transaction for $class {
         self.signs.as_mut()[istid] = signobj;
         Ok(())
     }
+
     fn push_action(&mut self, act: Box<dyn Action>) -> RetErr {
         self.actions.push(act)
     }

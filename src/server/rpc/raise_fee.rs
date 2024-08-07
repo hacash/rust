@@ -2,25 +2,25 @@
 
 defineQueryObject!{ Q5396,
     hex, Option<bool>, None,
+    tx_hash, Option<String>, None,
     fee, String, s!(""),
     fee_prikey, String, s!(""),
-    tx_hash, String, s!(""),
 }
 
 async fn raise_fee(State(ctx): State<ApiCtx>, q: Query<Q5396>, body: Bytes) -> impl IntoResponse {
     // ctx_store!(ctx, store);
-
+    q_must!(q, tx_hash, s!(""));
     let fee = q_data_amt!(q, fee);
     let acc = q_data_acc!(q, fee_prikey);
 
-    let txhxstr = &q.tx_hash;
+    let txhxstr = &tx_hash;
     let bddts = match txhxstr.len() > 0 {
         // find from tx pool
         true => {
             let txhx = q_data_hash!(txhxstr);
             let txf = ctx.hcshnd.tx_pool().find_all(&txhx);
             let Some(tx) = txf else {
-                return api_error(&format!("cannot find tx by hash {} in tx pool", txhxstr))
+                return api_error(&format!("cannot find tx by hash {} in tx pool", &txhxstr))
             };
             tx.body().to_vec()
         },
@@ -40,10 +40,13 @@ async fn raise_fee(State(ctx): State<ApiCtx>, q: Query<Q5396>, body: Bytes) -> i
     // check set fee
     let old_fee = txb.fee();
     if fee.less_than(old_fee) {
-        return api_error(&format!("fee {} cannot less than {}", fee, old_fee))
+        return api_error(&format!("fee {} cannot less than old set {}", fee, old_fee))
     }
     txb.set_fee(fee.clone());
     txb.fill_sign(&acc);
+    if let Err(e) = txb.verify_signature() {
+        return api_error(&format!("transaction signature verify error: {}", &e))
+    }
     let txhash = txb.hash();
     let txhashwf = txb.hash_with_fee();
     // pkg

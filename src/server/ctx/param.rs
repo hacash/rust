@@ -52,7 +52,7 @@ impl CoinKind {
 }
 
 #[macro_export]
-macro_rules! q_coinkind{
+macro_rules! q_coinkind {
     ( $q: ident, $k: ident ) => (
         q_must!($q, $k, s!("hsd"));
         let $k = CoinKind::new( $k );
@@ -60,21 +60,19 @@ macro_rules! q_coinkind{
 }
 
 #[macro_export]
-macro_rules! q_unit{
+macro_rules! q_unit {
     ( $q: ident, $k: ident ) => (
         q_must!($q, $k, s!("fin"));
     )
 }
 
 #[macro_export]
-macro_rules! q_must{
+macro_rules! q_must {
     ( $q: ident, $k: ident, $dv: expr ) => (
-        let mut $k = {
-            if let Some(v) = $q.$k.clone() {
-                v
-            }else  {
-                $dv
-            }
+        let mut $k = match $q.$k.clone() 
+        {
+            Some(v) => v,
+            _ => $dv,
         };
     )
 }

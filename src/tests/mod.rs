@@ -22,6 +22,7 @@ use crate::chain::engine::*;
 
 
 include!("test.rs");
+include!("rpc.rs");
 include!("engine.rs");
 include!("blockdatas.rs");
 
