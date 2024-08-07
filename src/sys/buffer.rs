@@ -5,3 +5,4 @@ macro_rules! bufcut {
         $buf[$l..$r].try_into().unwrap()
     };
 }
+

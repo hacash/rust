@@ -12,15 +12,31 @@ async fn raise_fee(State(ctx): State<ApiCtx>, q: Query<Q5396>, body: Bytes) -> i
 
     let fee = q_data_amt!(q, fee);
     let acc = q_data_acc!(q, fee_prikey);
+
+    let txhxstr = &q.tx_hash;
+    let bddts = match txhxstr.len() > 0 {
+        // find from tx pool
+        true => {
+            let txhx = q_data_hash!(txhxstr);
+            let txf = ctx.hcshnd.tx_pool().find_all(&txhx);
+            let Some(tx) = txf else {
+                return api_error(&format!("cannot find tx by hash {} in tx pool", txhxstr))
+            };
+            tx.body().to_vec()
+        },
+        // tx body data
+        false => {
+            q_data_may_hex!(q, body.to_vec())
+        }
+    };
     
-    // body bytes
-    let bddts = q_data_may_hex!(q, body.to_vec());
     // parse
     let txb = transaction::create(&bddts);
     if let Err(e) = txb {
         return api_error(&format!("transaction parse error: {}", &e))
     }
     let (mut txb, _) = txb.unwrap();
+
     // check set fee
     let old_fee = txb.fee();
     if fee.less_than(old_fee) {
@@ -42,6 +58,7 @@ async fn raise_fee(State(ctx): State<ApiCtx>, q: Query<Q5396>, body: Bytes) -> i
         "hash", txhash.hex(),
         "hash_with_fee", txhashwf.hex(),
         "fee", fee.to_fin_string(),
+        "tx_body", txpkg.objc().serialize().hex(),
     };
     api_data(data)
 }

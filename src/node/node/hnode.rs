@@ -36,8 +36,8 @@ impl HNode for HacashNode {
         Ok(())
     }
 
-    fn tx_pool(&self) -> Ret<&dyn TxPool> {
-        Ok(self.txpool.as_ref())
+    fn tx_pool(&self) -> &dyn TxPool {
+        self.txpool.as_ref()
     }
 
 }

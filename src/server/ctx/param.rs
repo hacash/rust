@@ -138,6 +138,22 @@ macro_rules! q_data_acc {
     )
 }
 
+#[macro_export]
+macro_rules! q_data_hash {
+    ( $hxstr: ident) => ({
+        let hx = hex::decode($hxstr);
+        if let Err(e) = hx {
+            return api_error(&format!("hash parse error: {}", &e))
+        }
+        let hx = hx.unwrap();
+        if hx.len() != HASH_SIZE {
+            return api_error(&format!("hash size error"))
+        }
+        Hash::cons(hx.try_into().unwrap())
+    })
+}
+
+
 
 
 #[macro_export]

@@ -74,11 +74,11 @@ pub type HashNonce = Fixed8;
 pub type HashCheck = Fixed4;
 pub type HashMark = Fixed2;
 
-const HASH_SIZE: usize = Hash::width();
-const HASH_HALF_SIZE: usize = HashHalf::width();
-const HASH_NONCE_SIZE: usize = HashNonce::width();
-const HASH_CHECK_SIZE: usize = HashCheck::width();
-const HASH_MARK_SIZE: usize = HashMark::width();
+pub const HASH_SIZE: usize = Hash::width();
+pub const HASH_HALF_SIZE: usize = HashHalf::width();
+pub const HASH_NONCE_SIZE: usize = HashNonce::width();
+pub const HASH_CHECK_SIZE: usize = HashCheck::width();
+pub const HASH_MARK_SIZE: usize = HashMark::width();
 
 impl Hash {
 

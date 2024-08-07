@@ -11,3 +11,21 @@ pub fn bytes_from_hex(stuff: &[u8], len: usize) -> Result<Vec<u8>, Error> {
         Err(e) => Err(e.to_string()),
     }
 }
+
+
+
+//////////////////////////
+
+
+pub trait ToHex {
+    fn hex(&self) -> String;
+}
+
+
+impl ToHex for Vec<u8> {
+
+    fn hex(&self) -> String {
+        hex::encode(self)
+    }
+
+}
