@@ -3,16 +3,16 @@
 *
 */
 pub fn exec_tx_actions(is_fast_sync: bool, 
-    pending_height: u64, pending_hash: Hash, 
+    chain_id: u64, pending_height: u64, pending_hash: Hash, 
     bst: &mut dyn State, sto: &dyn Store, tx: &dyn TransactionRead,
 ) -> RetErr {
 
-    let (a,b,c,d,e,f) = (is_fast_sync, pending_height, pending_hash, bst, sto, tx);
+    let (a,b,c,d,e,f,g) = (is_fast_sync, chain_id, pending_height, pending_hash, bst, sto, tx);
     let no_need_vm = tx.ty() < transaction::TX_TYPE_3 || tx.gas_max() <= 0;
 
     match no_need_vm {
-        true  => exec_tx_actions_normal(a,b,c,d,e,f),
-        false => exec_tx_actions_withvm(a,b,c,d,e,f),
+        true  => exec_tx_actions_normal(a,b,c,d,e,f,g),
+        false => exec_tx_actions_withvm(a,b,c,d,e,f,g),
     }
 }
 
@@ -21,12 +21,12 @@ pub fn exec_tx_actions(is_fast_sync: bool,
 
 
 fn exec_tx_actions_normal(is_fast_sync: bool, 
-    pending_height: u64, pending_hash: Hash, 
+    chain_id: u64, pending_height: u64, pending_hash: Hash, 
     bst: &mut dyn State, sto: &dyn Store, tx: &dyn TransactionRead,
 ) -> RetErr {
 
     // context & env
-    let mut ctx = ExecEnvObj::new(pending_height, tx);
+    let mut ctx = ExecEnvObj::new(chain_id, pending_height, tx);
     // ptr
     ctx.pdhash = pending_hash;
     ctx.fastsync = is_fast_sync;
@@ -49,7 +49,7 @@ fn exec_tx_actions_normal(is_fast_sync: bool,
 
 
 fn exec_tx_actions_withvm(is_fast_sync: bool, 
-    pending_height: u64, pending_hash: Hash, 
+    chain_id: u64, pending_height: u64, pending_hash: Hash, 
     bst: &mut dyn State, sto: &dyn Store, tx: &dyn TransactionRead,
 ) -> RetErr {
     errf!("cannot exec tx with vm")

@@ -19,6 +19,7 @@ include!("util.rs");
 include!("level.rs");
 include!("macro.rs");
 include!("hacash.rs");
+include!("subchain.rs");
 include!("contract.rs");
 include!("script.rs");
 include!("action.rs");

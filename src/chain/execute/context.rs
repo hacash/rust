@@ -3,6 +3,7 @@
 
 pub struct ExecEnvObj<'a> {
     fastsync: bool,
+    chainid: u64,
     pdhei: u64,
     pdhash: Hash,
     mainaddr: Address,
@@ -18,13 +19,15 @@ pub struct ExecEnvObj<'a> {
 impl ExecEnvObj<'_> {
 
     pub fn new<'a>(
+        chainid: u64,
         pdhei: u64, 
         tx: &'a dyn TransactionRead,
     ) -> ExecEnvObj<'a> {
 
         ExecEnvObj {
             fastsync: false,
-            pdhei: pdhei,
+            chainid,
+            pdhei,
             pdhash: Hash::default(),
             mainaddr: tx.address().unwrap(),
             tx,
@@ -41,6 +44,9 @@ impl ExecEnvObj<'_> {
 
 impl ExecContext for ExecEnvObj<'_> {
 
+    fn chain_id(&self) -> u64 {
+        self.chainid
+    }
     fn pending_height(&self) -> u64 {
         self.pdhei
     }

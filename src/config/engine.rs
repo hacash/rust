@@ -3,6 +3,7 @@
 pub struct EngineConf {
     pub max_block_txs: usize,
     pub max_block_size: usize,
+    pub chain_id: u64, // sub chain id
     pub unstable_block: u64, // The number of blocks that are likely to fall back from the fork
     pub fast_sync: bool,
     pub data_dir: String,
@@ -24,6 +25,7 @@ impl EngineConf {
         let mut cnf = EngineConf{
             max_block_txs: 1000,
             max_block_size: 1024*1024*1, // 1MB
+            chain_id: 0,
             unstable_block: 4, // 4 block
             fast_sync: false,
             store_data_dir: join_path(&data_dir, "store"),
@@ -33,6 +35,9 @@ impl EngineConf {
 
         let sec = ini_section(ini, "node");
         cnf.fast_sync = ini_must_bool(&sec, "fast_sync", false);
+
+        let sec_mint = ini_section(ini, "mint");
+        cnf.chain_id = ini_must_u64(&sec_mint, "chain_id", 0);
 
         // ok
         cnf

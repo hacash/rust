@@ -11,6 +11,7 @@ pub trait ExecResult {
 
 
 pub trait ExecContext {
+    fn chain_id(&self) -> u64 { 0 }
     fn pending_height(&self) -> u64 { 0 }
     fn pending_hash(&self) -> &Hash { panic_never_call_this!() }
     fn main_address(&self) -> &Address { panic_never_call_this!() }
