@@ -42,13 +42,13 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
         let mut act: Box<dyn Action>;
         let sat = Satoshi::from(satoshi);
         if is_from {
-            let mut obj = SatoshiFromToTransfer::default();
+            let mut obj = SatoshiFromToTransfer::new();
             obj.from = AddrOrPtr::by_addr(fromaddr);
             obj.to = AddrOrPtr::by_addr(toaddr);
             obj.satoshi = sat;
             act = Box::new(obj);
         }else{
-            let mut obj = SatoshiTransfer::default();
+            let mut obj = SatoshiTransfer::new();
             obj.to = AddrOrPtr::by_addr(toaddr);
             obj.satoshi = sat;
             act = Box::new(obj);
@@ -64,19 +64,19 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
         }
         let dialist = dialist.unwrap();
         if is_from {
-            let mut obj = DiamondFromToTransfer::default();
+            let mut obj = DiamondFromToTransfer::new();
             obj.from = AddrOrPtr::by_addr(fromaddr);
             obj.to = AddrOrPtr::by_addr(toaddr);
             obj.diamonds = dialist;
             act = Box::new(obj);
         }else{
             if dialist.count().uint() == 1 {
-                let mut obj = DiamondTransfer::default();
+                let mut obj = DiamondTransfer::new();
                 obj.to = AddrOrPtr::by_addr(toaddr);
                 obj.diamond = DiamondName::cons(*dialist.list()[0]);
                 act = Box::new(obj);
             }else{
-                let mut obj = DiamondMultipleTransfer::default();
+                let mut obj = DiamondMultipleTransfer::new();
                 obj.to = AddrOrPtr::by_addr(toaddr);
                 obj.diamonds = dialist;
                 act = Box::new(obj);
@@ -93,13 +93,13 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
         }
         let hac = hac.unwrap();
         if is_from {
-            let mut obj = HacFromToTransfer::default();
+            let mut obj = HacFromToTransfer::new();
             obj.from = AddrOrPtr::by_addr(fromaddr);
             obj.to = AddrOrPtr::by_addr(toaddr);
             obj.amt = hac;
             act = Box::new(obj);
         }else{
-            let mut obj = HacTransfer::default();
+            let mut obj = HacTransfer::new();
             obj.to = AddrOrPtr::by_addr(toaddr);
             obj.amt = hac;
             act = Box::new(obj);
@@ -115,12 +115,15 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
             return api_error(&format!("fill from sgin error: {}", e))
         }
     }
+    if let Err(e) = trsobj.verify_signature() {
+        return api_error(&format!("verify signature error: {}", e))
+    }
     // ok ret
     let mut data = jsondata!{
         "hash", trsobj.hash().hex(),
         "hash_with_fee", trsobj.hash_with_fee().hex(),
         "timestamp", trsobj.timestamp().uint(),
-        "body", hex::encode(trsobj.serialize()),
+        "body", trsobj.serialize().hex(),
     };
     api_data(data)
 }

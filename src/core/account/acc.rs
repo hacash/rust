@@ -3,7 +3,7 @@ impl Account {
 
     // create
     
-    pub fn create_randomly() -> Result<Account, Error> {
+    pub fn create_randomly() -> Ret<Account> {
         loop {
             let mut data = [0u8; 32];
             if let Err(e) = getrandom::getrandom(&mut data) {
@@ -16,7 +16,7 @@ impl Account {
         }
     }
 
-    pub fn create_by(pass: &str) -> Result<Account, Error> {
+    pub fn create_by(pass: &str) -> Ret<Account> {
         // is private key
         if pass.len() == 64{
             if let Ok(bts) = hex::decode(pass.clone()) {
@@ -27,16 +27,13 @@ impl Account {
         return Account::create_by_password(pass)
     }
 
-    pub fn create_by_password(pass: &str) -> Result<Account, Error> {
+    pub fn create_by_password(pass: &str) -> Ret<Account> {
         let dt = sha2(pass);
         Account::create_by_secret_key_value(dt)
     }
 
-    pub fn create_by_secret_key_value(key32: [u8; 32]) -> Result<Account, Error> {
+    pub fn create_by_secret_key_value(key32: [u8; 32]) -> Ret<Account> {
         let kkk = key32.to_vec();
-        // if(kkk.len()!=32) {
-        //     return errf!("create_account_by_secret_key param key32 length must be 32 but got {}.", kkk.len()));
-        // }
         if kkk[0] == 255 && kkk[1] == 255 && kkk[2] == 255 && kkk[3] == 255 {
             return Err("not support secret_key, change one and try again.".to_string());
         }
