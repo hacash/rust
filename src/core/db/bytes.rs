@@ -1,8 +1,7 @@
 
 
 pub enum Bytes {
-    // Raw(RawBytes),
-    Raw(Vec<u8>),
+    Raw(RawBytes),
     Mem(Vec<u8>),
 }
 
@@ -41,8 +40,7 @@ impl AsRef<[u8]> for Bytes {
 impl From<Bytes> for Vec<u8> {
     fn from(bytes: Bytes) -> Self {
         match bytes {
-            // Bytes::Raw(d) => d.as_ref().to_owned(),
-            Bytes::Raw(d) => d.clone(),
+            Bytes::Raw(d) => d.as_ref().to_owned(),
             Bytes::Mem(d) => d.clone(),
         }
     }
@@ -51,8 +49,7 @@ impl From<Bytes> for Vec<u8> {
 impl From<Bytes> for Box<[u8]> {
     fn from(bytes: Bytes) -> Self {
         match bytes {
-            // Bytes::Raw(d) => d.as_ref().to_owned().into_boxed_slice(),
-            Bytes::Raw(d) => d.clone().into_boxed_slice(),
+            Bytes::Raw(d) => d.as_ref().to_owned().into_boxed_slice(),
             Bytes::Mem(d) => d.clone().into_boxed_slice(),
         }
     }
