@@ -1,4 +1,4 @@
-use std::sync::{Arc, Weak};
+use std::sync::{Arc, Weak, Mutex};
 use std::collections::{ HashMap };
 use std::collections::hash_map::Iter as MapIter;
 use std::cell::{ RefCell };
@@ -26,7 +26,7 @@ use super::util::*;
 
 // include!("macro.rs");
 // include!("disk.rs");
-include!("level/mod.rs");
+include!("level.rs");
 include!("mem.rs");
 include!("bytes.rs");
 // include!("state.rs");

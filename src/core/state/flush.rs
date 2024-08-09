@@ -10,7 +10,7 @@ fn impl_flush_disk(this: &ChainState) {
         }
     }
     // flush to disk
-    this.disk.write(&batch);
+    this.disk.write(batch);
     // change mark, drop base
     // this.base = Weak::new().into();
 }

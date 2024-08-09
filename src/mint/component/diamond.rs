@@ -115,6 +115,7 @@ impl DiamondOwnedForm {
 			}
 		}
 		if rmleft/l != srclen {
+			println!("names = {}", self.readable());
 			println!("rmleft/l={}, srclen={}, dstlen={}", rmleft/l, srclen, dstlen);
 			return errf!("drop {} not match", srclen)
 		}
