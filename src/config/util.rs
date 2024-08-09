@@ -1,6 +1,8 @@
 
-fn join_path(a: &String, b: &str) -> Box<Path> {
-    Path::new(a).join(b).into_boxed_path()
+fn join_path(a: &PathBuf, b: &str) -> PathBuf {
+    let mut a = a.clone();
+    a.push(b);
+    a
 }
 
 fn ini_section(ini: &IniObj, key: &str) -> HashMap<String, Option<String>> {

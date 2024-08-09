@@ -72,9 +72,9 @@ impl NodeConf {
  */
 fn read_node_key(ini: &IniObj) -> [u8; 16] {
 
-    // datadir
-    let data_dir = get_datadir(ini);
-    let nidfp = data_dir + "/node.id";
+    // node.id path
+    let mut nidfp = get_data_path(ini);
+    nidfp.push("node.id");
         
     // node id
     let mut node_key = [0u8; 16];
