@@ -26,7 +26,7 @@ use super::util::*;
 
 // include!("macro.rs");
 // include!("disk.rs");
-include!("level.rs");
+include!("level/mod.rs");
 include!("mem.rs");
 include!("bytes.rs");
 // include!("state.rs");
