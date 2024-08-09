@@ -12,7 +12,7 @@ cp target/x86_64-unknown-linux-gnu/release/hacash ../../download_rust/hacash_ubu
 
 
 Windows:
-RUSTFLAGS='-C target-feature=+crt-static' ; set RUST_BACKTRACE=1 ; cargo build --release --target x86_64-pc-windows-msvc
+set RUSTFLAGS='-C target-feature=+crt-static' ; set RUST_BACKTRACE=1 ; cargo build --release --target x86_64-pc-windows-msvc
 cp target/x86_64-pc-windows-msvc/release/hacash.exe ./hacash_windows.exe
 
 MacOS:
