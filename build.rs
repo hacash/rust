@@ -1,6 +1,61 @@
 extern crate cc;
 
-/**
+
+/*
+
+
+build release software
+
+Ubuntu: 
+RUSTFLAGS='-C target-feature=+crt-static' RUST_BACKTRACE=1 cargo build --release --target x86_64-unknown-linux-gnu
+cp target/x86_64-unknown-linux-gnu/release/hacash ../../download_rust/hacash_ubuntu
+
+
+Windows:
+RUSTFLAGS='-C target-feature=+crt-static' ; set RUST_BACKTRACE=1 ; cargo build --release --target x86_64-pc-windows-msvc
+cp target/x86_64-pc-windows-msvc/release/hacash.exe ./hacash_windows.exe
+
+MacOS:
+RUSTFLAGS='-C target-feature=+crt-static' RUST_BACKTRACE=1 cargo build --release --target x86_64-apple-darwin
+cp target/x86_64-apple-darwin/release/hacash ./hacash_macos
+
+
+*/
+
+
+
+fn main() {
+    cc::Build::new()
+        .file("src/x16rs/x16rs.c")
+        .compile("x16rs");
+    println!("cargo:rerun-if-changed=src/x16rs/x16rs.c");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+RUST update:
+export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
+export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
+
+
+*/
+
+
+
+
+/*
 
 # Step 1: create libx16rs.a
 # Step 2: build and run
@@ -23,26 +78,6 @@ RUSTFLAGS="$RUSTFLAGS -Awarnings" RUST_BACKTRACE=1 cargo run -- --reptblk
 
 
 */ 
-
-
-/**
-
-RUST update:
-export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
-export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
-
-
-*/
-
-
-fn main() {
-    cc::Build::new()
-        .file("src/x16rs/x16rs.c")
-        .compile("x16rs");
-    println!("cargo:rerun-if-changed=src/x16rs/x16rs.c");
-}
-
-
 
 
 /*
