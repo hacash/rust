@@ -29,7 +29,7 @@ use crate::mint::state::{ MintStateDisk, MintStoreDisk };
 use crate::interface::field::*;
 use crate::interface::protocol::*;
 use crate::interface::chain::Engine;
-use crate::interface::node::HNode;
+use crate::interface::node::{ HNode, TxPool };
 
 
 

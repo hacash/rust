@@ -14,15 +14,20 @@ async fn handle_new_tx(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: Vec
     if already {
         return  // alreay know it
     }
-
-    // TODO:: append to txpool
-    
-
-
+    let txdatas = txpkg.body().clone().into_vec();
+    let is_open_miner = this.engine.config().miner_enable;
+    if is_open_miner {
+        // try execute tx
+        if let Err(_) = this.engine.try_execute_tx(txpkg.objc().as_ref()) {
+            return // tx execute fail
+        }
+        // add to pool
+        this.txpool.insert(txpkg);
+    }
     // broadcast
     let p2p = this.p2pmng.lock().unwrap();
     let p2p = p2p.as_ref().unwrap();
-    p2p.broadcast_message(1/*delay*/, knowkey, MSG_TX_SUBMIT, txpkg.body().clone().into_vec());
+    p2p.broadcast_message(1/*delay*/, knowkey, MSG_TX_SUBMIT, txdatas);
 }
 
 
@@ -39,14 +44,17 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: 
         return  // alreay know it
     }
     // check height and difficulty (mint consensus)
-    let heispan = this.engine.config().unstable_block;
-    let latest = this.engine.latest_block();
+    let eng = this.engine.clone();
+    let engcnf = eng.config();
+    let is_open_miner = engcnf.miner_enable;
+    let heispan = engcnf.unstable_block;
+    let latest = eng.latest_block();
     let lathei = latest.objc().height().uint();
     if blkhei < lathei - heispan {
         return // height too late
     }
-    let mintckr = this.engine.mint_checker();
-    let stoptr = this.engine.store();
+    let mintckr = eng.mint_checker();
+    let stoptr = eng.store();
     // may insert
     if blkhei <= lathei + 1 {
         // prepare check
@@ -60,17 +68,24 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: 
         print!("❏ discover block {} …{} txs{:2} time {} inserting at {} ... ", 
             blkhei, hex::encode(hxtail), txs, blkts, &ctshow()[11..]);
         let bodycp = body.clone();
-        let engicp = this.engine.clone();
+        let engptr = eng.clone();
+        let txpool = this.txpool.clone();
+        let state = engptr.state().clone();
         std::thread::spawn(move||{
             // create block
             let blkpkg = block::create_pkg(BytesW4::from_vec(bodycp));
             if let Err(e) = blkpkg {
                 return // parse error
             }
-            if let Err(e) = engicp.insert(blkpkg.unwrap()) {
-                println!("Error: {}", e)
+            let blkp = blkpkg.unwrap();
+            let thsx = blkp.objc().transaction_hash_list(false); // hash no fee
+            if let Err(e) = engptr.insert(blkp) {
+                println!("Error: {}", e);
             }else{
-                println!("ok.")
+                println!("ok.");
+                if is_open_miner {
+                    drain_all_block_txs(state, txpool, thsx, blkhei);
+                }
             }
         });
     }else{
@@ -100,3 +115,34 @@ fn check_know(mine: &Knowledge, hxkey: &Hash, peer: Option<Arc<Peer>>) -> (bool,
     mine.add(knowkey.clone());
     (false, knowkey)
 }
+
+
+// drain_all_block_txs
+fn drain_all_block_txs(sta: Arc<dyn State>, txpool: Arc<dyn TxPool>, txs: Vec<Hash>, blkhei: u64) {
+    if blkhei % 15 == 0 {
+        println!("{}", txpool.print());
+    }
+    if blkhei % 5 == 0 {
+        // drop all overdue diamond mint tx
+        let ldn = MintStateDisk::wrap(sta.as_ref()).latest_diamond().number.uint();
+        txpool.drain_filter_at(&|a: &Box<dyn TxPkg>| {
+            get_diamond_mint_number(a.objc().as_read()) <= ldn
+        }, TXPOOL_GROUP_DIAMOND_MINT);
+    }
+    txpool.drain(&txs);
+}
+
+
+// for diamond create action
+fn get_diamond_mint_number(tx: &dyn TransactionRead) -> u32 {
+    const DMINT: u16 = mint_action::ACTION_KIND_ID_DIAMOND_MINT;
+    let mut num: u32 = 0;
+    for act in tx.actions() {
+        if act.kind() == DMINT {
+            let dm = mint_action::DiamondMint::must(&act.serialize());
+            num = dm.head.number.uint();
+            break;
+        }
+    }
+    num
+} 

@@ -24,7 +24,7 @@ pub fn genesis_block_ptr() -> Arc<dyn BlockPkg>  {
 fn create_genesis_block() -> BlockV1 {
     let blktime = Timestamp::from(1549250700);
     let blknoncenum = Fixed4::from_uint(160117829);
-    let reward_addr = Address::form_readable(&"1271438866CSDpJUqrnchoJAiGGBFSQhjd".to_string()).unwrap();
+    let reward_addr = Address::from_readable(&"1271438866CSDpJUqrnchoJAiGGBFSQhjd".to_string()).unwrap();
     let mut trsvec = DynVecTransaction::default(); 
     trsvec.push(Box::new(TransactionCoinbase{
         ty: Uint1::from(0),

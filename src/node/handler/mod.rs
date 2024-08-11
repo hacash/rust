@@ -13,6 +13,8 @@ use crate::base::combo::*;
 use crate::chain::engine::*;
 use crate::protocol::transaction::{self, *};
 use crate::protocol::block::{self, *};
+use crate::mint::action as mint_action;
+use crate::mint::state::*;
 
 
 use crate::interface::field::*;

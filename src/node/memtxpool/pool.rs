@@ -8,7 +8,11 @@ pub struct MemTxPool {
 impl MemTxPool {
     
     pub fn new(gs: Vec<usize>) -> MemTxPool {
-        let mut grps = vec![];
+        let MS = TXPOOL_GROUP_MAX_SIZE;
+        if gs.len() != MS {
+            panic!("new tx pool group size must be {}", MS)
+        }
+        let mut grps = Vec::with_capacity(MS);
         for sz in &gs {
             grps.push( Mutex::new( TxGroup::new(*sz)) );
         }
@@ -24,48 +28,97 @@ impl MemTxPool {
 impl TxPool for MemTxPool {
 
     // insert to target group
-    fn insert(&self, txp: Box<dyn TxPkg>, gi: isize) -> RetErr { 
-        let gid = self.deal_group_id(txp.as_ref(), gi)?;
+    fn insert_at(&self, txp: Box<dyn TxPkg>, gi: usize) -> RetErr { 
+        check_group_id(gi)?;
         // do insert
-        let mut grp = self.groups[gid].lock().unwrap();
+        let mut grp = self.groups[gi].lock().unwrap();
         grp.insert(txp)
     }
 
-    fn delete(&self, hxs: &Vec<Hash>, gi: isize) {
-        let gid = self.get_group_id(gi);
+    fn delete_at(&self, hxs: &Vec<Hash>, gi: usize) -> RetErr {
+        check_group_id(gi)?;
         // do delete
-        let mut grp = self.groups[gid].lock().unwrap();
-        grp.delete(hxs)
+        let mut grp = self.groups[gi].lock().unwrap();
+        grp.delete(hxs);
+        Ok(())
     }
 
-    fn clean(&self, gi: isize) {
-        let gid = self.get_group_id(gi);
+    fn clear_at(&self, gi: usize) -> RetErr {
+        check_group_id(gi)?;
         // do clean
-        let mut grp = self.groups[gid].lock().unwrap();
-        grp.clean()
+        let mut grp = self.groups[gi].lock().unwrap();
+        grp.clear();
+        Ok(())
     }
 
     // from group id
-    fn find(&self, hx: &Hash, gi: isize) -> Option<Box<dyn TxPkg>> {
-        let gid = self.get_group_id(gi);
+    fn find_at(&self, hx: &Hash, gi: usize) -> Option<Box<dyn TxPkg>> {
+        check_group_id(gi).unwrap();
         // do clean
-        let grp = self.groups[gid].lock().unwrap();
+        let grp = self.groups[gi].lock().unwrap();
         match grp.find(hx) {
             Some((_, &ref tx)) => Some(tx.clone()),
             None => None,
         }
     }
+
+    fn drain_filter_at(&self, filter: &dyn Fn(&Box<dyn TxPkg>)->bool, gi: usize) 
+        -> RetErr
+    {
+        check_group_id(gi)?;
+        self.groups[gi].lock().unwrap().drain_filter(filter)
+    }
+
     
     // find
-    fn find_all(&self, hx: &Hash) -> Option<Box<dyn TxPkg>> {
-        for gi in 0..self.groups.len() as isize {
-            if let Some(tx) = self.find(hx, gi) {
+    fn find(&self, hx: &Hash) -> Option<Box<dyn TxPkg>> {
+        for gi in 0..self.groups.len() {
+            if let Some(tx) = self.find_at(hx, gi) {
                 return Some(tx) // ok find
             }
         }
         // not find
         None
     }
+
+    fn insert(&self, txp: Box<dyn TxPkg>) -> RetErr {
+        let tx = txp.objc();
+        let acts = tx.actions();
+        let actlen = acts.len();
+        // check for group
+        const DMINT: u16 = mint_action::ACTION_KIND_ID_DIAMOND_MINT;
+        let mut group_id = TXPOOL_GROUP_NORMAL;
+        for i in 0..actlen {
+            let act = &acts[i];
+            if act.kind() == DMINT {
+                group_id = TXPOOL_GROUP_DIAMOND_MINT;
+            }
+        }
+        // insert
+        self.insert_at(txp, group_id)
+    }
+
+    fn drain(&self, hxs: &Vec<Hash>) -> Ret<Vec<Box<dyn TxPkg>>> {
+        let mut txres = vec![];
+        let mut hxst = HashSet::from_iter(hxs.clone().into_iter());
+        for gi in 0..self.groups.len() {
+            let mut grp = self.groups[gi].lock().unwrap();
+            let mut res = grp.drain(&mut hxst);
+            txres.append(&mut res);
+        }
+        Ok(txres)
+    }
+
+    fn print(&self) -> String {
+        let mut shs: Vec<String> = vec![];
+        for gi in 0..self.groups.len() {
+            if let Ok(gr) = self.groups[gi].try_lock() {
+                shs.push(format!("{}({})", TXPOOL_GROUP_TIPS[gi], gr.txpkgs.len()));
+            }
+        }
+        format!("[TxPool] tx count: {}", shs.join(", "))
+    }
+
 
 }
 

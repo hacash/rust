@@ -99,7 +99,7 @@ macro_rules! q_data_may_hex {
 #[macro_export]
 macro_rules! q_data_addr {
     ( $q: ident, $adr: ident) => ({
-        let adr = Address::form_readable(&$q.$adr);
+        let adr = Address::from_readable(&$q.$adr);
         if let Err(e) = adr {
             return api_error(&format!("address {} format error: {}", &$q.$adr, &e))
         }

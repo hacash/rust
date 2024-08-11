@@ -300,7 +300,7 @@ pub fn create_block(height: u64, pt: u64, prev: &str) {
 
     let blktime = Timestamp::from(pt); // 1549250700);
     let blknoncenum = Fixed4::from_uint(160117829);
-    let reward_addr = Address::form_readable(&"1271438866CSDpJUqrnchoJAiGGBFSQhjd".to_string()).unwrap();
+    let reward_addr = Address::from_readable(&"1271438866CSDpJUqrnchoJAiGGBFSQhjd".to_string()).unwrap();
     let mut trsvec = DynVecTransaction::default(); 
     trsvec.push(Box::new(TransactionCoinbase{
         ty: Uint1::from(0),

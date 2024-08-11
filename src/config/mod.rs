@@ -8,6 +8,7 @@ use std::collections::HashMap;
 use ini::ini;
 
 use crate::sys::{self, *};
+use crate::core::field::Address;
 
 include!("util.rs");
 include!("engine.rs");

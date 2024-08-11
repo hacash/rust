@@ -42,10 +42,12 @@ async fn console(State(ctx): State<ApiCtx>, req: Request) -> impl IntoResponse {
         <h3>Hacash console</h3>
         <p>Latest height {} time {}</p>
         <p>Block span times: {}</p>
+        <p>{}</p>
     </body></html>"#, 
         latest.height().uint(),
         timeshow(latest.timestamp().uint()),
         target_time.join(", "),
+        ctx.hcshnd.tx_pool().print(),
     ))
 }
 

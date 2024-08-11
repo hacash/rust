@@ -20,7 +20,7 @@ impl Address {
         }
     }
 
-    pub fn form_readable(addr: &str) -> Result<Address, Error> {
+    pub fn from_readable(addr: &str) -> Ret<Address> {
         let res = addr.from_base58check();
         if let Err(_) = res {
             return Err("base58check error".to_string())

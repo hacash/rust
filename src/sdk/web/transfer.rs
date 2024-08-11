@@ -120,7 +120,7 @@ pub fn hac_transfer(chain_id: u64, from_pass: String, to_addr: String, amount: S
     let amt = or_return!{ "Amount parse", Amount::from_string_unsafe(&amount) };
     let fee = or_return!{ "Fee parse", Amount::from_string_unsafe(&fee) };
     let acc = or_return!{ "From Account", Account::create_by(&from_pass) };
-    let toaddr = or_return!{ "To Address", Address::form_readable(&to_addr) };
+    let toaddr = or_return!{ "To Address", Address::from_readable(&to_addr) };
     // tx
     let mut tx = transaction::new_type_2(acc.address(), &fee, time_set);
     // chain id
@@ -153,7 +153,7 @@ pub fn sat_transfer(chain_id: u64, from_pass: String, fee_pass: String, to_addr:
     let fee = or_return!{ "Fee parse", Amount::from_string_unsafe(&fee) };
     let acc = or_return!{ "From Account", Account::create_by(&from_pass) };
     let feeacc = or_return!{ "Fee Account", Account::create_by(&fee_pass) };
-    let toaddr = or_return!{ "To Address", Address::form_readable(&to_addr) };
+    let toaddr = or_return!{ "To Address", Address::from_readable(&to_addr) };
     // tx
     let is_main_single = feeacc.address() == acc.address();
     let mut tx = transaction::new_type_2(feeacc.address(), &fee, time_set);
@@ -201,7 +201,7 @@ pub fn hacd_transfer(chain_id: u64, from_pass: String, fee_pass: String, to_addr
     let fee = or_return!{ "Fee parse", Amount::from_string_unsafe(&fee) };
     let acc = or_return!{ "From Account", Account::create_by(&from_pass) };
     let feeacc = or_return!{ "Fee Account", Account::create_by(&fee_pass) };
-    let toaddr = or_return!{ "To Address", Address::form_readable(&to_addr) };
+    let toaddr = or_return!{ "To Address", Address::from_readable(&to_addr) };
     // tx
     let is_main_single = feeacc.address() == acc.address();
     let mut tx = transaction::new_type_2(feeacc.address(), &fee, time_set);

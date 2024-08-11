@@ -1,7 +1,7 @@
 
 impl TxGroup {
     
-    fn clean(&mut self) {
+    fn clear(&mut self) {
         self.txpkgs.clear()
     }
 
@@ -14,6 +14,25 @@ impl TxGroup {
         // rm & ret
         Some(self.txpkgs.remove(rmid))
     }
+
+    fn drain(&mut self, hxst: &mut HashSet<Hash>) -> Vec<Box<dyn TxPkg>> {
+        let mut res = vec![];
+        let hxs: Vec<Hash> = hxst.iter().map(|a|a.clone()).collect();
+        for hx in hxs {
+            if let Some(txp) = self.remove(&hx) {
+                hxst.remove(&hx);
+                res.push(txp);
+            }
+        }
+        res
+    }
+
+
+    fn drain_filter(&mut self, filter: &dyn Fn(&Box<dyn TxPkg>)->bool) -> RetErr {
+        self.txpkgs.retain(|a| filter(a) != true );
+        Ok(())
+    }
+
 
     fn delete(&mut self, txhxs: &Vec<Hash>) {
         for hx in txhxs {

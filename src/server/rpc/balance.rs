@@ -21,7 +21,7 @@ async fn balance(State(ctx): State<ApiCtx>, q: Query<Q8364>) -> impl IntoRespons
     }
     let mut resbls = Vec::with_capacity(adrsz);
     for a in addrs {
-        let adr = Address::form_readable(a);
+        let adr = Address::from_readable(a);
         if let Err(e) = adr {
             return api_error(&format!("address {} format error", a))
         }

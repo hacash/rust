@@ -1,5 +1,8 @@
 
 
+
+
+
 fn mrkl_merge(list: &Vec<Hash>) -> Vec<Hash> {
     let num = list.len();
     let mut res = vec![];
