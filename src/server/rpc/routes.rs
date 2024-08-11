@@ -16,6 +16,9 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     .route(&query("block/intro"), get(block_intro))
     .route(&query("coin/transfer"), get(scan_coin_transfer))
 
+    .route(&query("miner/notice"), get(miner_notice))
+    .route(&query("miner/pending"), get(miner_pending))
+
     // create
     .route(&create("account"), get(account))
     .route(&create("coin/transfer"), get(create_coin_transfer))
@@ -23,6 +26,7 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     // submit
     .route(&submit("transaction"), post(submit_transaction))
     .route(&submit("block"), post(submit_block))
+    .route(&submit("miner/success"), get(miner_success))
 
     // operate
     .route(&operate("fee/raise"), post(raise_fee));

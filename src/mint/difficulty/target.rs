@@ -33,7 +33,7 @@ impl DifficultyGnr {
         let prevbign = u32_to_biguint(prevdiff);
         let mut targetbign = prevbign * BigUint::from(real_time_span) / BigUint::from(target_time_span);
         let tarnum = biguint_to_u32(&targetbign);
-        (tarnum, u32_to_hash(tarnum), u32_to_biguint(tarnum))
+        (tarnum, u32_to_hash(tarnum), targetbign)
     }
 
 }

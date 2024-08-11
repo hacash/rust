@@ -21,8 +21,12 @@ StructFieldFixedBytes!{ Fixed33, 33usize }
 StructFieldFixedBytes!{ Fixed64, 64usize }
 
 
-
 pub type StringTrim16 = Fixed16;
+
+impl StringTrim16 {
+
+}
+
 
 /* Uint
 
@@ -100,6 +104,21 @@ impl Hash {
     pub fn mark(&self) -> HashMark {
         let pt: [u8; HASH_MARK_SIZE] = self.bytes[0..HASH_MARK_SIZE].try_into().unwrap();
         HashMark::must(&pt)
+    }
+
+    // value +1 bigend
+    pub fn increase(&mut self) {
+        let right: [u8; HASH_HALF_SIZE] = self.bytes[HASH_HALF_SIZE..].try_into().unwrap();
+        let mut rnum: u128 = u128::from_be_bytes(right);
+        if rnum == u128::MAX {
+            let left: [u8; HASH_HALF_SIZE] = self.bytes[0..HASH_HALF_SIZE].try_into().unwrap();
+            let mut lnum: u128 = u128::from_be_bytes(left);
+            lnum += 1;
+            self.bytes[0..HASH_HALF_SIZE].copy_from_slice(&lnum.to_be_bytes());
+        }
+        // yes
+        rnum += 1;
+        self.bytes[HASH_HALF_SIZE..].copy_from_slice(&rnum.to_be_bytes());
     }
 
 }

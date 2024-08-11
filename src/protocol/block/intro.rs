@@ -29,8 +29,8 @@ impl BlockHead {
 // BlockMeta
 StructFieldStruct!{ BlockMeta, 
 	// meta
-	nonce         : Fixed4     // Mining random value
-	difficulty    : Uint4       // Target difficulty value
+	nonce         : Uint4      // Mining random value
+	difficulty    : Uint4      // Target difficulty value
 	witness_stage : Fixed2     // Witness quantity level
 }
 
@@ -59,9 +59,6 @@ impl BlockRead for BlockHeadMeta {
         &self.head.timestamp
     }
 
-	fn difficulty(&self) -> &Uint4 {
-        &self.meta.difficulty
-	}
     fn prevhash(&self) -> &Hash {
         &self.head.prevhash
     }
@@ -72,6 +69,14 @@ impl BlockRead for BlockHeadMeta {
 
 	fn transaction_count(&self) -> &Uint4 {
 		self.head.transaction_count()
+	}
+
+
+	fn nonce(&self) -> &Uint4 {
+        &self.meta.nonce
+	}
+	fn difficulty(&self) -> &Uint4 {
+        &self.meta.difficulty
 	}
     
 

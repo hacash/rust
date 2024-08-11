@@ -18,8 +18,17 @@ impl BlockMintChecker {
 
 
 impl MintChecker for BlockMintChecker {
+
     fn config(&self) -> &MintConf {
         &self.cnf
+    }
+
+    fn next_difficulty(&self, prev: &dyn BlockRead, sto: &dyn Store) -> u32 {
+        let pdif = prev.difficulty().uint();
+        let ptim = prev.timestamp().uint();
+        let nhei = prev.height().uint() + 1;
+        let (difn, ..) = self.difficulty.target(pdif, ptim, nhei, sto);
+        difn
     }
 
     fn prepare(&self, sto: &dyn Store, curblk: &dyn BlockRead) -> RetErr {
@@ -48,4 +57,5 @@ impl MintChecker for BlockMintChecker {
     fn actions(&self) -> Vec<Box<dyn Action>> {
         vec![]
     }
+
 }

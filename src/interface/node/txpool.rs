@@ -1,6 +1,7 @@
 
 
 pub trait TxPool {
+    fn iter_at(&self, _: &mut dyn FnMut(&Box<dyn TxPkg>)->bool, _: usize) -> RetErr { Ok(()) }
     fn insert_at(&self, _: Box<dyn TxPkg>, _: usize) -> RetErr { Ok(()) } // from group id
     fn delete_at(&self, _: &Vec<Hash>, _: usize) -> RetErr { Ok(()) } // from group id
     fn find_at(&self, _: &Hash, _: usize) -> Option<Box<dyn TxPkg>> { None } // from group id

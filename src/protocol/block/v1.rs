@@ -48,6 +48,7 @@ impl BlockRead for BlockV1 {
     block_intro_fn_mount!{height, BlockHeight}
     block_intro_fn_mount!{timestamp, Timestamp}
     block_intro_fn_mount!{difficulty, Uint4}
+    block_intro_fn_mount!{nonce, Uint4}
     block_intro_fn_mount!{prevhash, Hash}
     block_intro_fn_mount!{mrklroot, Hash}
     block_intro_fn_mount!{transaction_count, Uint4}
@@ -92,6 +93,32 @@ impl Block for BlockV1 {
     fn set_mrklroot(&mut self, mkrt: Hash) {
         self.intro.head.mrklroot = mkrt;
     }
+
+	fn set_nonce(&mut self, nonce: Uint4) {
+        self.intro.meta.nonce = nonce;
+	}
+
+    fn replace_transaction(&mut self, i: usize, v: Box<dyn Transaction>) -> RetErr {
+        let tl = self.transactions.vlist.len();
+        if i >= tl {
+            return errf!("transaction index overflow")
+        }
+        self.transactions.vlist[i] = v;
+        Ok(())
+    }
+
+    fn push_transaction(&mut self, tx: Box<dyn Transaction>) -> RetErr {
+        let ct = &mut self.intro.head.transaction_count;
+        if ct.uint() + 1 == u32::MAX  {
+            return errf!("transaction overflow")
+        }
+        *ct += 1;
+        self.transactions.set_count(ct.uint() as u64);
+        self.transactions.push(tx);
+        Ok(())
+    }
+
+
 
     
 }

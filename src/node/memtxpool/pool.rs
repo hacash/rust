@@ -27,6 +27,17 @@ impl MemTxPool {
 
 impl TxPool for MemTxPool {
 
+    fn iter_at(&self, scan: &mut dyn FnMut(&Box<dyn TxPkg>)->bool, gi: usize) -> RetErr {
+        check_group_id(gi)?;
+        let grp = self.groups[gi].lock().unwrap();
+        for txp in &grp.txpkgs {
+            if false == scan(&txp) {
+                break // finish
+            }
+        }
+        Ok(())
+    }
+
     // insert to target group
     fn insert_at(&self, txp: Box<dyn TxPkg>, gi: usize) -> RetErr { 
         check_group_id(gi)?;
@@ -94,6 +105,7 @@ impl TxPool for MemTxPool {
                 group_id = TXPOOL_GROUP_DIAMOND_MINT;
             }
         }
+        // println!("TXPOOL: insert tx {} in group {}", tx.hash().hex(), group_id);
         // insert
         self.insert_at(txp, group_id)
     }

@@ -80,6 +80,7 @@ impl BlockEngine {
                     // let now = Instant::now();
                     let blk = blk.unwrap();
                     let hei = blk.objc().height().uint();
+                    // println!("sync insert height: {}, body: {}", hei, blk.body().bytes.hex());
                     let resck = this.exec_state(blk);
                     if resck.is_err() {
                         let err = sync_warning(format!("height {} exec state error: {}", 

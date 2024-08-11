@@ -4,7 +4,7 @@ impl HNode for HacashNode {
 
     fn submit_transaction(&self, txpkg: &Box<dyn TxPkg>, is_async: bool) -> RetErr {
         // try execute tx
-        self.engine.try_execute_tx(txpkg.objc().as_ref())?;
+        self.engine.try_execute_tx(txpkg.objc().as_ref().as_read())?;
         // add to pool
         let msghdl = self.msghdl.clone();
         let txbody = txpkg.body().clone().into_vec();

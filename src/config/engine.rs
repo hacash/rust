@@ -12,6 +12,7 @@ pub struct EngineConf {
     //
     pub miner_enable: bool,
     pub miner_reward_address: Address,
+    pub miner_message: StringTrim16,
 }
 
 
@@ -36,6 +37,7 @@ impl EngineConf {
             data_dir: data_path.to_str().unwrap().to_owned(),
             miner_enable: false,
             miner_reward_address: Address::default(),
+            miner_message: StringTrim16::default(),
         };
 
         let sec = &ini_section(ini, "node");
@@ -48,6 +50,10 @@ impl EngineConf {
         cnf.miner_enable = ini_must_bool(sec_miner, "enable", false);
         if cnf.miner_enable {
             cnf.miner_reward_address = ini_must_address(sec_miner, "reward");
+            let mut msg = ini_must_maxlen(sec_miner, "message", "", 16);
+            let mut msgapp = vec![' ' as u8].repeat(16-msg.len());
+            let msg: [u8; 16] = vec![msg.as_bytes().to_vec(), msgapp].concat().try_into().unwrap();
+            cnf.miner_message = StringTrim16::from_readable(&msg);
         }
 
         // ok

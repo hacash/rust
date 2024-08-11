@@ -18,7 +18,7 @@ async fn handle_new_tx(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: Vec
     let is_open_miner = this.engine.config().miner_enable;
     if is_open_miner {
         // try execute tx
-        if let Err(_) = this.engine.try_execute_tx(txpkg.objc().as_ref()) {
+        if let Err(..) = this.engine.try_execute_tx(txpkg.objc().as_ref().as_read()) {
             return // tx execute fail
         }
         // add to pool
@@ -70,7 +70,6 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: 
         let bodycp = body.clone();
         let engptr = eng.clone();
         let txpool = this.txpool.clone();
-        let state = engptr.state().clone();
         std::thread::spawn(move||{
             // create block
             let blkpkg = block::create_pkg(BytesW4::from_vec(bodycp));
@@ -84,7 +83,7 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: 
             }else{
                 println!("ok.");
                 if is_open_miner {
-                    drain_all_block_txs(state, txpool, thsx, blkhei);
+                    drain_all_block_txs(engptr.state().clone(), txpool, thsx, blkhei);
                 }
             }
         });
@@ -122,13 +121,17 @@ fn drain_all_block_txs(sta: Arc<dyn State>, txpool: Arc<dyn TxPool>, txs: Vec<Ha
     if blkhei % 15 == 0 {
         println!("{}", txpool.print());
     }
+    // drop all overdue diamond mint tx
     if blkhei % 5 == 0 {
-        // drop all overdue diamond mint tx
         let ldn = MintStateDisk::wrap(sta.as_ref()).latest_diamond().number.uint();
         txpool.drain_filter_at(&|a: &Box<dyn TxPkg>| {
-            get_diamond_mint_number(a.objc().as_read()) <= ldn
+            let tx = a.objc().as_read();
+            let dn = get_diamond_mint_number(tx);
+            // println!("TXPOOL: drain_filter_at dmint, tx: {}, dn: {}, last dn: {}", tx.hash().hex(), dn, ldn);
+            dn + 1 != ldn // is not next
         }, TXPOOL_GROUP_DIAMOND_MINT);
     }
+    // drop all exist normal tx
     txpool.drain(&txs);
 }
 

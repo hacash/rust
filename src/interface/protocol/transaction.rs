@@ -1,5 +1,5 @@
 
-pub trait TransactionRead : Field + Send + Sync + dyn_clone::DynClone {    
+pub trait TransactionRead : Field + Send + Sync + TxExec + dyn_clone::DynClone {    
 
     fn hash(&self) -> Hash { panic_never_call_this!() }
     fn hash_with_fee(&self) -> Hash { panic_never_call_this!() }
@@ -30,7 +30,7 @@ pub trait TransactionRead : Field + Send + Sync + dyn_clone::DynClone {
 }
 
 
-pub trait Transaction : TransactionRead + TxExec + Send + Sync {
+pub trait Transaction : TransactionRead + Send + Sync {
 
     fn as_read(&self) -> &dyn TransactionRead;
 
@@ -38,6 +38,7 @@ pub trait Transaction : TransactionRead + TxExec + Send + Sync {
     // fn verify_target_signs(&self, _: &HashSet<Address>) -> Option<Error> { panic_never_call_this!() }
 
     fn set_fee(&mut self, _: Amount) { panic_never_call_this!(); }
+    fn set_nonce(&mut self, _: Hash) { panic_never_call_this!(); }
 
     fn fill_sign(&mut self,_: &Account) -> RetErr { panic_never_call_this!() }
     fn push_action(&mut self, _: Box<dyn Action>) -> RetErr { panic_never_call_this!() }

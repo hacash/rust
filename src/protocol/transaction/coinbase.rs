@@ -51,6 +51,13 @@ impl Transaction for TransactionCoinbase {
     fn as_read(&self) -> &dyn TransactionRead {
         self
     }
+
+    fn set_nonce(&mut self, nonce: Hash) { 
+        match &mut self.extend.datas_v1 {
+            Some(ref mut d) => d.miner_nonce = nonce,
+            _ => (), // do nothing
+        };
+    }
 }
 
 impl TxExec for TransactionCoinbase {

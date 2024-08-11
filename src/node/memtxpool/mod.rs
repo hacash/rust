@@ -3,6 +3,7 @@ use std::collections::{ HashSet };
 
 use crate::interface::protocol::*;
 use crate::interface::node::*;
+use crate::interface::field::*;
 
 
 use crate::sys::*;

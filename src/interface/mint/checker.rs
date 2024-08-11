@@ -2,6 +2,7 @@
 
 pub trait MintChecker: Send + Sync + dyn_clone::DynClone {
     fn config(&self) -> &MintConf;
+    fn next_difficulty(&self, _: &dyn BlockRead, _: &dyn Store) -> u32;
     // check
     fn prepare(&self, _: &dyn Store, _: &dyn BlockRead) -> RetErr;
     fn consensus(&self, _: &dyn Store, _: &dyn BlockRead, _: &dyn BlockRead) -> RetErr;

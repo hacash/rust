@@ -12,6 +12,7 @@ pub trait EngineRead: Send + Sync {
     fn latest_block(&self) -> Arc<dyn BlockPkg> { panic_never_call_this!() }
     fn mint_checker(&self) -> Arc<dyn MintChecker> { panic_never_call_this!() }
 
+    fn try_execute_tx(&self, _: &dyn TransactionRead) -> RetErr{ panic_never_call_this!() }
     // realtime average fee purity
     // fn avgfee(&self) -> u32 { 0 }
 }

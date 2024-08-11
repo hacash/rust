@@ -22,13 +22,17 @@ use crate::protocol::block::{ self, * };
 use crate::protocol::transaction::{ self, * };
 use crate::protocol::action::*;
 use crate::node::node::HacashNode;
+use crate::node::memtxpool::*;
 use crate::mint::action::*;
 use crate::mint::state::{ MintStateDisk, MintStoreDisk };
 
 use crate::interface::field::*;
 use crate::interface::protocol::*;
 use crate::interface::chain::Engine;
-use crate::interface::node::HNode;
+use crate::interface::node::{ HNode, TxPool};
+use crate::interface::chain::Store;
+
+use crate::node::asleep;
 
 use super::ctx::{ self, * };
 use super::unstable;
@@ -54,5 +58,8 @@ include!("submit_transaction.rs");
 include!("submit_block.rs");
 
 include!("raise_fee.rs");
+
+include!("miner.rs");
+
 
 
