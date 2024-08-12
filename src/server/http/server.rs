@@ -9,7 +9,7 @@ pub struct RPCServer {
 
 impl RPCServer {
     pub fn open(iniobj: &IniObj, eng: ChainEngine, nd: ChainNode) -> RPCServer {
-        let cnf = NewServerConf(iniobj);
+        let cnf = ServerConf::new(iniobj);
         RPCServer{
             cnf: cnf,
             engine: eng,

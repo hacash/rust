@@ -8,15 +8,18 @@ pub struct ServerConf {
 
 
 
+impl  ServerConf {
+    
+    pub fn new(ini: &IniObj) -> ServerConf {
+        let sec = ini_section(ini, "server");
+        let mut cnf = ServerConf{
+            enable:       ini_must_bool(&sec, "enable", false),
+            listen:   ini_must_u64(&sec, "listen", 8083) as u16,
+            multi_thread: ini_must_bool(&sec, "multi_thread", false),
+        };
 
-pub fn NewServerConf(ini: &IniObj) -> ServerConf {
-    let sec = ini_section(ini, "server");
-    let mut cnf = ServerConf{
-        enable:       ini_must_bool(&sec, "enable", false),
-        listen:   ini_must_u64(&sec, "listen", 8083) as u16,
-        multi_thread: ini_must_bool(&sec, "multi_thread", false),
-    };
+        cnf
+    }
 
-    cnf
+
 }
-

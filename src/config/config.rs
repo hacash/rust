@@ -45,9 +45,9 @@
 /**
  * load config
  */
-pub fn load_config() -> IniObj {
+pub fn load_config(mut cnfilestr: String) -> IniObj {
 
-    let mut cnfilestr = "./hacash.config.ini".to_string();
+    // let mut cnfilestr = "./hacash.config.ini".to_string();
 
     // exec dir
     let mut execdir = std::env::current_exe().unwrap().parent().unwrap().to_path_buf();

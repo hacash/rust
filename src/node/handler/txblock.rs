@@ -119,7 +119,7 @@ fn check_know(mine: &Knowledge, hxkey: &Hash, peer: Option<Arc<Peer>>) -> (bool,
 // drain_all_block_txs
 fn drain_all_block_txs(sta: Arc<dyn State>, txpool: Arc<dyn TxPool>, txs: Vec<Hash>, blkhei: u64) {
     if blkhei % 15 == 0 {
-        println!("{}", txpool.print());
+        println!("{}.", txpool.print());
     }
     // drop all overdue diamond mint tx
     if blkhei % 5 == 0 {

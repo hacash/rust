@@ -10,12 +10,16 @@ pub struct NodeConf {
     pub offshoot_peers: usize, // private IP
     pub backbone_peers: usize, // public IP
 
+    pub txpool_maxs: Vec<usize>,
+
 }
 
 
 impl NodeConf {
+
+    
     pub fn new(ini: &IniObj) -> NodeConf {
-        let sec = ini_section(ini, "node");
+        let sec = &ini_section(ini, "node");
 
         // node key
         let node_key = read_node_key(ini);
@@ -27,15 +31,15 @@ impl NodeConf {
         // println!("node name = {}", node_name);
 
         // port
-        let mut port = ini_must_u64(&sec, "listen", 3337);
+        let mut port = ini_must_u64(sec, "listen", 3337);
         if port<1001 || port>65535 {
             panic!("{}", exiterr!(1,"node listen port '{}' not support", port))
         }
         // off_find
-        let find = ini_must_bool(&sec, "not_find_nodes", false) == false;
+        let find = ini_must_bool(sec, "not_find_nodes", false) == false;
 
         // boots
-        let boots = ini_must(&sec, "boots", "");
+        let boots = ini_must(sec, "boots", "");
         let boots = boots.replace(" ", "");
         let mut ipts: Vec<SocketAddr> = Vec::new();
         if ! boots.is_empty() {
@@ -45,8 +49,6 @@ impl NodeConf {
             ).collect();
         }
         // println!("boot nodes: {:?}", ipts);
-
-
 
         // create config
         let mut cnf = NodeConf{
@@ -58,7 +60,19 @@ impl NodeConf {
             // connect peers
             offshoot_peers: 200,
             backbone_peers: 4,
+            txpool_maxs: Vec::default(),
         };
+
+        cnf.offshoot_peers = ini_must_u64(sec, "offshoot_peers", 200) as usize;
+        cnf.backbone_peers = ini_must_u64(sec, "backbone_peers", 4) as usize;
+
+        let sec_txpool = &ini_section(ini, "txpool");
+        cnf.txpool_maxs = ini_must(sec_txpool, "maxs", "").replace(" ", "").split(",").map(|a|{
+            match a.parse::<usize>() {
+                Ok(n) => n,
+                _ => 100,
+            }
+        }).collect();
 
         // ok
         cnf

@@ -12,6 +12,7 @@ include!{"buffer.rs"}
 include!{"string.rs"}
 include!{"error.rs"}
 include!{"number.rs"}
+include!{"slice.rs"}
 include!{"hex.rs"}
 include!{"ini.rs"}
 include!{"time.rs"}

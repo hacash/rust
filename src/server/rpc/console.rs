@@ -36,6 +36,11 @@ async fn console(State(ctx): State<ApiCtx>, req: Request) -> impl IntoResponse {
         ));
     }
 
+    let poworkers = { 
+        let n = ctx.miner_worker_notice_count.lock().unwrap();
+        *n
+    };
+
 
     // render
     (html_headers(), format!(r#"<html><head><title>Hacash node console</title></head><body>
@@ -43,11 +48,13 @@ async fn console(State(ctx): State<ApiCtx>, req: Request) -> impl IntoResponse {
         <p>Latest height {} time {}</p>
         <p>Block span times: {}</p>
         <p>{}</p>
+        <p>Miner worker notice connected: {}</p>
     </body></html>"#, 
         latest.height().uint(),
         timeshow(latest.timestamp().uint()),
         target_time.join(", "),
         ctx.hcshnd.tx_pool().print(),
+        poworkers,
     ))
 }
 

@@ -8,7 +8,7 @@ pub struct BlockMintChecker {
 
 impl BlockMintChecker {
     pub fn new(ini: &IniObj) -> BlockMintChecker {
-        let cnf = NewMintConf(ini);
+        let cnf = MintConf::new(ini);
         BlockMintChecker{
             cnf: cnf.clone(),
             difficulty: DifficultyGnr::new(cnf),

@@ -8,16 +8,21 @@ pub struct MintConf {
 
 
 
+impl MintConf {
 
-pub fn NewMintConf(ini: &IniObj) -> MintConf {
 
-    let sec = ini_section(ini, "mint");
+    pub fn new(ini: &IniObj) -> MintConf {
 
-    let mut cnf = MintConf{
-        difficulty_adjust_blocks: ini_must_u64(&sec, "difficulty_adjust_blocks", 288), // 1 day
-        each_block_target_time: ini_must_u64(&sec, "each_block_target_time", 300), // 5 mins
-        _test_mul: ini_must_u64(&sec, "_test_mul", 1), // test
-    };
+        let sec = ini_section(ini, "mint");
 
-    cnf
+        let mut cnf = MintConf{
+            difficulty_adjust_blocks: ini_must_u64(&sec, "difficulty_adjust_blocks", 288), // 1 day
+            each_block_target_time: ini_must_u64(&sec, "each_block_target_time", 300), // 5 mins
+            _test_mul: ini_must_u64(&sec, "_test_mul", 1), // test
+        };
+
+        cnf
+    }
+
+    
 }

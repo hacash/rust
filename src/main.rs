@@ -1,6 +1,3 @@
-use std::*;
-use std::path::*;
-use std::sync::{Arc};
 
 #[macro_use]
 extern crate ini;
@@ -25,23 +22,26 @@ mod vm;
 mod chain;
 mod node;
 mod server;
+mod run;
 mod tests;
 
-use crate::sys::*;
-use crate::core::field::*;
-use crate::base::field::*;
-use crate::interface::field::*;
-use crate::interface::chain::*;
-use crate::core::account::Account;
-use crate::mint::checker::*;
-use crate::mint::component::*;
-use crate::chain::engine::*;
-use crate::node::node::*;
-use crate::server::*;
 
-use crate::tests::*;
+use crate::run::*;
 
-/**
+
+fn main() {
+
+    // poworker(); // PoW Miner Worker
+
+    fullnode(); // Hacash Full Node
+
+}
+
+
+
+
+
+/*
 
 sudo apt install g++
 sudo apt install cmake     
@@ -56,93 +56,40 @@ rm -rf ./target/debug/ && cargo clean
 
 
 
-const HACASH_NODE_VERSION: &str = "0.1.0";
-const HACASH_NODE_BUILD_TIME: &str = "2024.8.1-1";
-const HACASH_STATE_DB_UPDT: u32 = 1;
 
 
 
-fn main() {
+
+
+
+
+
+/*
+
+    delete datadir
+    std::fs::remove_dir_all("./hacash_mainnet_data");
+
+    main_test8327459283();
+    main_test_vecspeed387425983();
+    main_test28374659823746892();
+    return;
+    return main_test28374659823746892();
     
-    // delete datadir
-    // std::fs::remove_dir_all("./hacash_mainnet_data");
 
-    // main_test8327459283();
-    // main_test_vecspeed387425983();
-    // main_test28374659823746892();
-    // return;
-    // return main_test28374659823746892();
-    
-
-    // test
+    // test & examples
     let args: Vec<_> = std::env::args().collect();
     // println!("{:?}", args);
-    if args.len() >= 2 && args[1] == "--test" {
-        return rpc_test();
-    }
-
-    // start
-    let inicnf = config::load_config();
-    // deal datadir
-    start_hacash_node(inicnf);
-
-}
-
-
-
-/**
- * create and start hash node
- */
-fn start_hacash_node(iniobj: sys::IniObj) {
-
-    println!("[Version] full node v{}, build time: {}, database type: {}.", 
-        HACASH_NODE_VERSION, HACASH_NODE_BUILD_TIME, HACASH_STATE_DB_UPDT
-    );
-
-    use std::sync::mpsc::channel;
-    let (cltx, clrx) = channel();
-    ctrlc::set_handler(move || cltx.send(()).unwrap()); // ctrl+c to quit
-
-    // println!("startHacashNode ini={:?}", iniobj);
-    // mint
-    crate::mint::action::init_reg();
-
-    let mint_checker = Box::new(BlockMintChecker::new(&iniobj));
-
-    // engine
-    let dbv = HACASH_STATE_DB_UPDT;
-    let engine = BlockEngine::open(&iniobj, dbv, mint_checker);
-    let engptr: Arc<BlockEngine> = Arc::new(engine);
-
-    // node
-    let mut hnode = Arc::new(HacashNode::open(&iniobj, engptr.clone()));
-
-    // server
-    let server = DataServer::open(&iniobj, engptr.clone(), hnode.clone());
-    std::thread::spawn(move||{
-        server.start(); // http rpc 
-    });
-
-    // handle ctr+c to close
-    let hn2 = hnode.clone();
-    std::thread::spawn(move||{ loop{
-        clrx.recv();
-        hn2.close(); // ctrl+c to quit
-    }});
-
-    // start
-    HacashNode::start(hnode);
-
-    // on closed
-    println!("\nHacash node closed.");
-}
-
-
-
-
-
-
-
+    let testmark = match args.len() >= 2 {
+        true => args[1].clone(),
+        _ => s!(""),
+    };
+    match testmark.as_str() {
+        "--test" => return rpc_test(),
+        "--miner_worker" => return miner_worker(),
+        _ => (),
+    };
+    
+*/
 
 
 

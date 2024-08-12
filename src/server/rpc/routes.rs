@@ -17,6 +17,7 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     .route(&query("coin/transfer"), get(scan_coin_transfer))
 
     .route(&query("miner/notice"), get(miner_notice))
+    
     .route(&query("miner/pending"), get(miner_pending))
 
     // create

@@ -182,19 +182,41 @@ fn append_valid_tx_pick_from_txpool(nexthei: u64, trslen: &mut usize, trshxs: &m
 
 ///////////////////////////////////////////////////
 
+struct MWNCount {
+    count: Arc<Mutex<u64>>,
+}
+impl MWNCount {
+    fn new(c: Arc<Mutex<u64>>) -> MWNCount {
+        {
+            *c.lock().unwrap() += 1;
+        }
+        MWNCount {
+            count: c,
+        }
+    }
+}
+impl Drop for MWNCount {
+    fn drop(&mut self) {
+        {
+            *self.count.lock().unwrap() -= 1;
+        }
+    }
+}
+
 
 
 defineQueryObject!{ Q4391,
     height, u64, 0,
+    rqid, String, s!(""), // must random query id
     wait, Option<u64>, None,
-
 }
 
 async fn miner_notice(State(ctx): State<ApiCtx>, q: Query<Q4391>) -> impl IntoResponse {
     ctx_mintstate!(ctx, mintstate);
-    q_must!(q, wait, 15); // 15 sec
-    set_in_range!(wait, 3, 30);
-    //
+    q_must!(q, wait, 45); // 45 sec
+    set_in_range!(wait, 3, 300);
+    // count + 1
+    let mwnc = MWNCount::new(ctx.miner_worker_notice_count.clone());
     let mut lasthei = 0;
     for i in 0..wait {
         lasthei = ctx.engine.latest_block().objc().height().uint();
@@ -203,12 +225,12 @@ async fn miner_notice(State(ctx): State<ApiCtx>, q: Query<Q4391>) -> impl IntoRe
         }
         asleep(1).await; // sleep 1 dec
     }
+    drop(mwnc); // count - 1
     // return data
     let mut data = jsondata!{
         "height", lasthei,
     };
     api_data(data)
-
 }
 
 
@@ -290,7 +312,7 @@ async fn miner_success(State(ctx): State<ApiCtx>, q: Query<Q9347>) -> impl IntoR
             }
             match res {
                 Some(v) => v,
-                None => return api_error(&format!("pending block height {}", q.height)),
+                None => return api_error(&format!("pending block height {} not find", q.height)),
             }
         };
 
@@ -300,7 +322,7 @@ async fn miner_success(State(ctx): State<ApiCtx>, q: Query<Q9347>) -> impl IntoR
             return api_error("coinbase nonce format error");
         };
         if coinbase_nonce.len() != HASH_SIZE {
-            return api_error("coinbase nonce format error");
+            return api_error("coinbase nonce length error");
         }
         
         // check difficulty
