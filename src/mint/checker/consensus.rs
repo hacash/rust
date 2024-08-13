@@ -1,10 +1,13 @@
 
 fn impl_prepare(this: &BlockMintChecker, sto: &dyn Store, curblk: &dyn BlockRead) -> RetErr {
     let curhei = curblk.height().uint(); // u64
-    if curhei < 288*200 {
+    let blkspan = this.cnf.difficulty_adjust_blocks;
+    if curhei <= blkspan {
+        return Ok(()) // not check in first cycle
+    }
+    if this.cnf.chain_id == 0 && curhei < 288*200 {
         return Ok(()) // not check, compatible history code
     }
-    let blkspan = this.cnf.difficulty_adjust_blocks;
     if curhei % blkspan == 0 {
         return Ok(()) // not check, difficulty update
     }
@@ -12,7 +15,7 @@ fn impl_prepare(this: &BlockMintChecker, sto: &dyn Store, curblk: &dyn BlockRead
     let (_, diffhx) = this.difficulty.req_cycle_block(curhei, sto);
     let cblkhx = curblk.hash();
     if hash_big_than(cblkhx.as_ref(), &diffhx) {
-        return errf!("block {} PoW difficulty check failed need less than {} but got {}", 
+        return errf!("block {} PoW hashrates check failed cannot more than {} but got {}", 
             curhei, hex::encode(diffhx),  hex::encode(cblkhx))
     }
     // check success
@@ -23,6 +26,7 @@ fn impl_prepare(this: &BlockMintChecker, sto: &dyn Store, curblk: &dyn BlockRead
 
 fn impl_consensus(this: &BlockMintChecker, sto: &dyn Store, prevblk: &dyn BlockRead, curblk: &dyn BlockRead) -> RetErr {
     let curhei = curblk.height().uint(); // u64
+    let blkspan = this.cnf.difficulty_adjust_blocks;
     if this.cnf.chain_id==0 && curhei < 288*200 {
         return Ok(()) // not check, compatible history code
     }
@@ -38,8 +42,15 @@ fn impl_consensus(this: &BlockMintChecker, sto: &dyn Store, prevblk: &dyn BlockR
         curhei, tarn, curn, hex::encode(&tarhx), hex::encode(u32_to_hash(curn)));
         return errf!("curbign != tarbign")
     }*/
-    if curbign > tarbign {
-        return errf!("block {} PoW difficulty check failed need less than {} but got {}", curhei, tarn, curn)
+    if tarn != curn {
+        return errf!("height {} PoW difficulty check failed need be {} but got {}", curhei, tarn, curn)
+    }
+    if curhei % blkspan == 0 {
+        // check hashrate s
+        if  hash_big_than(curblk.hash().as_ref(), &tarhx) {
+            return errf!("height {} PoW hashrates check failed cannot more than {} but got {}", 
+                curhei, hex::encode(tarhx),  hex::encode(curblk.hash()))
+        }
     }
     // success
     Ok(())
