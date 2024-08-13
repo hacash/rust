@@ -2,9 +2,6 @@
 use crate::mint::difficulty::*;
 
 
-const BLOCK_TARGET_TIME: u64 = 300;  // seconds
-const BLOCK_ADJUST_CYCLE: u64 = 288; // blocks
-
 
 defineQueryObject!{ Q5295,
     __nnn_, Option<bool>, None,
@@ -13,8 +10,11 @@ defineQueryObject!{ Q5295,
 async fn hashrate(State(ctx): State<ApiCtx>, q: Query<Q5295>) -> impl IntoResponse {
     ctx_store!(ctx, store);
     ctx_state!(ctx, state);
-    let btt = BLOCK_TARGET_TIME;
-    let bac = BLOCK_ADJUST_CYCLE;
+
+    let mtckr = ctx.engine.mint_checker();
+    let mtcnf = mtckr.config();
+    let btt = mtcnf.each_block_target_time; // 300
+    let bac = mtcnf.difficulty_adjust_blocks; // 288
     //
     let lastblk = ctx.engine.latest_block();
     let lastblk = lastblk.objc();
@@ -64,7 +64,8 @@ async fn hashrate_logs(State(ctx): State<ApiCtx>, q: Query<Q9314>) -> impl IntoR
     ctx_store!(ctx, store);
     ctx_state!(ctx, state);
     q_must!(q, days, 200);
-    let bac = BLOCK_ADJUST_CYCLE;
+    let mtckr = ctx.engine.mint_checker();
+    let bac = mtckr.config().difficulty_adjust_blocks; // 300
     //
     if days > 500 {
         return api_error("param days cannot more than 500")
@@ -102,7 +103,8 @@ async fn hashrate_logs(State(ctx): State<ApiCtx>, q: Query<Q9314>) -> impl IntoR
 fn get_blk_rate(ctx: &ApiCtx, store: &CoreStoreDisk, hei: u64) -> u128 {
     let key = hei.to_string();
     let difn = ctx.load_block(store, &key).unwrap().objc().difficulty().uint();
-    u32_to_rates(difn, BLOCK_TARGET_TIME)
+    let mtckr = ctx.engine.mint_checker();
+    u32_to_rates(difn, mtckr.config().each_block_target_time) // 300s
 }
 
 fn drop_right_ff(hx: &[u8]) -> Vec<u8> {

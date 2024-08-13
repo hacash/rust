@@ -27,7 +27,7 @@ impl MintChecker for BlockMintChecker {
         let pdif = prev.difficulty().uint();
         let ptim = prev.timestamp().uint();
         let nhei = prev.height().uint() + 1;
-        let (difn, ..) = self.difficulty.target(pdif, ptim, nhei, sto);
+        let (difn, ..) = self.difficulty.target(&self.cnf, pdif, ptim, nhei, sto);
         difn
     }
 

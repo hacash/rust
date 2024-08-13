@@ -50,7 +50,7 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: 
     let heispan = engcnf.unstable_block;
     let latest = eng.latest_block();
     let lathei = latest.objc().height().uint();
-    if blkhei < lathei - heispan {
+    if blkhei > heispan && blkhei < lathei - heispan {
         return // height too late
     }
     let mintckr = eng.mint_checker();

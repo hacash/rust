@@ -17,7 +17,7 @@ impl PoWorkConf {
         let mut cnf = PoWorkConf{
             rpcaddr: ini_must(sec, "connect", "127.0.0.1:8081"),
             supervene: ini_must_u64(sec, "supervene", 2) as u32,
-            noncemax: ini_must_u64(sec, "noncemax", u32::MAX as u64) as u32,
+            noncemax: ini_must_u64(sec, "nonce_max", u32::MAX as u64) as u32,
             noticewait: ini_must_u64(sec, "notice_wait", 45),
         };
     

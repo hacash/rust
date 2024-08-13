@@ -38,11 +38,17 @@ fn update_miner_pending_block(block: BlockV1, cbtx: TransactionCoinbase) {
 fn get_miner_pending_block_stuff() -> (HeaderMap, String) {
     let mut stuff = MINER_PENDING_BLOCK.lock().unwrap();
     if stuff.len() == 0 {
-        panic!("get_miner_pending_block_stuff error: block not init!");
+        panic!("get miner pending block stuff error: block not init!");
     };
     let stuff = &mut stuff[0];
     
+    // update mkrl
     stuff.coinbase_nonce.increase(); // + 1
+    stuff.coinbase_tx.set_nonce(stuff.coinbase_nonce);
+    let cbhx = stuff.coinbase_tx.hash();
+    let mkrl = calculate_mrkl_coinbase_update(cbhx, &stuff.mrklrts);
+    stuff.block.set_mrklroot( mkrl );
+    let intro_data = stuff.block.intro.serialize().hex();
 
     // return data
     let mut data = jsondata!{
@@ -50,7 +56,7 @@ fn get_miner_pending_block_stuff() -> (HeaderMap, String) {
         "reward_address", stuff.coinbase_tx.address().unwrap().readable(),
         "transaction_count", stuff.block.transaction_count().uint() - 1, // real tx
         "coinbase_nonce", stuff.coinbase_nonce.hex(),
-        "block_intro", stuff.block.intro.serialize().hex(),
+        "block_intro", intro_data,
         "target_hash", stuff.target_hash.hex(),
     };
     api_data(data)
@@ -79,18 +85,18 @@ fn miner_reset_next_new_block(sto: &dyn Store, engine: ChainEngine, hnode: Chain
     
     let prevhash = oldblk.hash();
     let mut newdifn = oldblk.difficulty().clone();
+    if newdifn == 0 {
+        newdifn = Uint4::from(LOWEST_DIFFICULTY);
+    }
     let nexthei = oldblk.height().uint() + 1;
-
     // update difficulty number
-    if nexthei == mtchr.config().difficulty_adjust_blocks {
+    if nexthei % mtchr.config().difficulty_adjust_blocks == 0 {
         let difn = mtchr.next_difficulty(oldblk.as_read(), sto);
         newdifn = Uint4::from(difn);
     }
-
     // create coinbase tx
     let mut cbtx = create_coinbase_tx(nexthei, engcnf.miner_message.clone(), 
         engcnf.miner_reward_address.clone());
-    
     // create block v1
     let mut intro = BlockIntro {
         head: BlockHead {
@@ -214,18 +220,22 @@ defineQueryObject!{ Q4391,
 async fn miner_notice(State(ctx): State<ApiCtx>, q: Query<Q4391>) -> impl IntoResponse {
     ctx_mintstate!(ctx, mintstate);
     q_must!(q, wait, 45); // 45 sec
-    set_in_range!(wait, 3, 300);
+    set_in_range!(wait, 1, 300);
+    let mut lasthei = 0;
+    let mut getlasthei = || {
+        lasthei = ctx.engine.latest_block().objc().height().uint();
+        lasthei
+    };
     // count + 1
     let mwnc = MWNCount::new(ctx.miner_worker_notice_count.clone());
-    let mut lasthei = 0;
     for i in 0..wait {
-        lasthei = ctx.engine.latest_block().objc().height().uint();
-        if lasthei >= q.height {
+        if getlasthei() >= q.height {
             break // finish!
         }
         asleep(1).await; // sleep 1 dec
     }
     drop(mwnc); // count - 1
+    getlasthei();
     // return data
     let mut data = jsondata!{
         "height", lasthei,
@@ -382,6 +392,8 @@ fn hash_diff(dst: &Hash, tar: &Hash) -> i8 {
 }
 
 
+
+
 /*
 
 
@@ -412,9 +424,5 @@ f80108
 
 
 
-
-
-
-
-
 */
+

@@ -8,10 +8,11 @@ use crate::mint::difficulty::*;
 
 
 
+const STPSEC: u64 = 3; // 3 secs
 
-const API_NOTICE: &str = "http://{}/miner/notice?height={}&rpid={}";
-const API_PENDING: &str = "http://{}/miner/pending?";
-const API_SUCCESS: &str = "http://{}/miner/success?";
+const API_NOTICE: &str = "http://{}/query/miner/notice?height={}&rpid={}";
+const API_PENDING: &str = "http://{}/query/miner/pending?";
+const API_SUCCESS: &str = "http://{}/submit/miner/success?";
 
 
 
@@ -30,9 +31,33 @@ struct MiningResult {
     stuff: Arc<BlockStuff>,
     space: u32,
     nonce: u32,
+    mnper: u16,
     hash: Vec<u8>,
 }
 
+#[derive(Clone, Default)]
+struct MiningSuccess {
+    stuff: Arc<BlockStuff>,
+    nonce: u32,
+    hash: Vec<u8>,
+}
+
+
+#[derive(Clone, Default)]
+struct MostPower {
+    hash: Vec<u8>,
+    secs: u64, // time secs
+}
+impl MostPower {
+    fn clear(&mut self) {
+        self.hash = vec![255].repeat(32);
+        self.secs = 0;
+    }
+}
+
+
+
+type MostPwr = Arc<Mutex<MostPower>>;
 
 type StuffSender = Arc<Mutex<spmc::Sender<Arc<BlockStuff>>>>;
 
@@ -51,8 +76,9 @@ pub fn poworker() {
     let mut cnfobj = PoWorkConf::new(&inicnf);
 
     // test start
-    cnfobj.supervene = 2;
-    cnfobj.noncemax = u32::MAX / 10;
+    // cnfobj.supervene = 1;
+    // cnfobj.noncemax = u32::MAX / 200;
+    // cnfobj.noticewait = 5;
     // test end
 
 
@@ -65,6 +91,11 @@ fn start_pow_worker(cnf: PoWorkConf) {
 
     // let mut current_height = 0;
 
+    let mostpwr: MostPwr = Arc::default();
+    {
+        mostpwr.lock().unwrap().clear(); // default
+    }
+
     let (print_tx, print_rx) = mpsc::channel();
     let (stuff_tx, stuff_rx) = spmc::channel::<Arc<BlockStuff>>();
     let stuff_tx = Arc::new(Mutex::new(stuff_tx));
@@ -75,9 +106,11 @@ fn start_pow_worker(cnf: PoWorkConf) {
     // pull new block from full node rpc api
     {
         let cnf = cnf.clone();
+        let prtx = print_tx.clone();
         let sftx = stuff_tx.clone();
+        let mstp = mostpwr.clone();
         spawn(move || {
-            pull_new_block(cnf, sftx);
+            pull_new_block(cnf, mstp, prtx, sftx);
         });
     }
 
@@ -97,8 +130,9 @@ fn start_pow_worker(cnf: PoWorkConf) {
     {
         let cnf = cnf.clone();
         let prtx = print_tx.clone();
+        let mstp = mostpwr.clone();
         spawn(move || {
-            get_all_results(cnf, prtx, reslt_rx);
+            get_all_results(cnf, mstp, prtx, reslt_rx);
         });
 
     }
@@ -106,9 +140,11 @@ fn start_pow_worker(cnf: PoWorkConf) {
     // listen finish
     {
         let cnf = cnf.clone();
+        let prtx = print_tx.clone();
         let sftx = stuff_tx.clone();
+        let mstp = mostpwr.clone();
         spawn(move || {
-            listen_finish_event(cnf, fnish_rx, sftx)
+            listen_finish_event(cnf, mstp, prtx, fnish_rx, sftx)
         });
     }
 
@@ -116,9 +152,11 @@ fn start_pow_worker(cnf: PoWorkConf) {
 
     // print all notes
     drop(print_tx);
+    let mut termwide = || termsize::get().unwrap().cols as usize - 1;
     let mut prev_line_is_floating: bool = false;
-    for line in print_rx {
+    for mut line in print_rx {
         let clisflt: bool = !line.ends_with("\n");
+        print!("\r{}\r", " ".repeat( termwide() ));
         match clisflt {
             true => flush!("\r{}", line),
             false => match prev_line_is_floating {
@@ -154,17 +192,15 @@ fn start_pow_worker(cnf: PoWorkConf) {
 * 
 */
 fn get_all_results(cnf: PoWorkConf, 
+    mostpwr: MostPwr,
     prtx: mpsc::Sender<String>,
     rsrx: mpsc::Receiver<MiningResult>,
 ) {
-
     let mut mnres = MiningResult::default();
     loop {
-        
         let mut power_space = 0u32;
         let mut power_nonce = 0u32;
         let mut power_hash = vec![255u8].repeat(32);
-
         for i in 0..cnf.supervene {
             let res = rsrx.recv().unwrap();
             if power_big_than(&res.hash, &power_hash) {
@@ -174,18 +210,28 @@ fn get_all_results(cnf: PoWorkConf,
             }
             mnres = res;
         }
-
         // check success
         if power_big_than(&power_hash, &mnres.stuff.target_hash) {
             // TODO: mining success
+            push_mining_success(&cnf, MiningSuccess{
+                stuff: mnres.stuff.clone(),
+                nonce: power_nonce,
+                hash: power_hash.clone(),
+            }, prtx.clone());
         }
-
+        {
+            let mut pwr = mostpwr.lock().unwrap();
+            pwr.secs += STPSEC;
+            if power_big_than(&power_hash, &pwr.hash) {
+                pwr.hash = power_hash.clone();
+            }
+        }
         // print
-        let hashrate = hash_to_rateshow(&power_hash[0..32].try_into().unwrap(), 3); // 3s
-        prtx.send(format!("mining {} - {}... ({}) {}", mnres.stuff.height, 
-            hex::encode(&power_hash[0..16]), power_space, hashrate,
+        let mnper = mnres.mnper as f32 / 100.0;
+        let hashrate = hash_to_rateshow(&power_hash[0..32].try_into().unwrap(), STPSEC); // 3s
+        prtx.send(format!("do mining {} {}... {} ({}%) {}", mnres.stuff.height, 
+            hex::encode(&power_hash[0..10]), power_space, mnper, hashrate,
         )).unwrap();
-
     }
 }
 
@@ -232,15 +278,18 @@ fn start_pow_workers(cnf: PoWorkConf,
                 let (tms, nn, nhx) = do_group_mining(stfobj.height, nonce_offset, step_group, stfobj.block_intro.clone(), stfobj.clone());
                 // println!("#{} mining height {} step_group {} result {} {} in {}ms", 
                 //     thid, stfobj.height, step_group, nn, nhx.hex(), tms);
+                let mnper = ((nonce_offset - nonce_start) as f32 / nonce_span as f32 * 10000.0) as u16;
                 rstx.send(MiningResult {
                     stuff: stfobj.clone(),
                     space: step_group,
                     nonce: nn,
+                    mnper: mnper,
                     hash: nhx,
                 }).unwrap();
                 // sleep(Duration::from_secs(1));
                 // next
-                step_group = (step_group as f64 * 3000.0 / tms) as u32; // target time = 3s
+                let mss = STPSEC as f64 * 1000.0;
+                step_group = (step_group as f64 * mss / tms) as u32; // target time = 3s
                 let next_offset = nonce_offset + step_group;
                 if next_offset >= nonce_end - 1{
                     fntx.send(1).unwrap();
@@ -287,17 +336,36 @@ fn do_group_mining(hei: u64, start: u32, cnum: u32,
 /*
 *
 */
-fn broadcast_new_block(cnf: &PoWorkConf, res: &JV, stuff_tx: StuffSender) {
-
+fn broadcast_new_block(cnf: &PoWorkConf, res: &JV, 
+    mostpwr: MostPwr,
+    prtx: mpsc::Sender<String>,
+    stuff_tx: StuffSender,
+) {
+    {
+        let mut pwr = mostpwr.lock().unwrap();
+        if pwr.secs > 0 {
+            let hashrate = hash_to_rateshow(&pwr.hash[0..32].try_into().unwrap(), pwr.secs);
+            prtx.send(format!("hashrates {}/{}s = {}\n", 
+                pwr.hash[..13].to_vec().hex(), pwr.secs, hashrate,
+            )).unwrap();
+            pwr.clear(); // clear
+        }
+    }
     let jstr = |k| { res[k].as_str().unwrap_or("") };
     let jnum = |k| { res[k].as_u64().unwrap_or(0) };
+    let curhei = jnum("height");
+    let cbnc = hex::decode(jstr("coinbase_nonce")).unwrap();
+    let tarhx = hex::decode(jstr("target_hash")).unwrap();
+    prtx.send(format!("req block {} cbn ...{} tarhx {}...\n", curhei, 
+        cbnc[28..].to_vec().hex(), tarhx.to_vec().hex().trim_end_matches('f'),
+    )).unwrap();
+    // notice all workers
     let stuff = BlockStuff {
-        height: jnum("height"),
-        coinbase_nonce: hex::decode(jstr("coinbase_nonce")).unwrap(),
-        target_hash: hex::decode(jstr("target_hash")).unwrap(),
+        height: curhei,
+        coinbase_nonce: cbnc,
+        target_hash: tarhx,
         block_intro: hex::decode(jstr("block_intro")).unwrap(),
     };
-
     let stfptr = Arc::new(stuff);
     let mut stx = stuff_tx.lock().unwrap();
     for _ in 0..cnf.supervene {
@@ -312,6 +380,8 @@ fn broadcast_new_block(cnf: &PoWorkConf, res: &JV, stuff_tx: StuffSender) {
 * 
 */
 fn listen_finish_event(cnf: PoWorkConf, 
+    mostpwr: MostPwr,
+    prtx: mpsc::Sender<String>,
     fnrx: mpsc::Receiver<u8>,
     stuff_tx: StuffSender,
 ) {
@@ -322,8 +392,8 @@ fn listen_finish_event(cnf: PoWorkConf,
         let res = HttpClient::new().get(&urlapi_pending).send();
         if let Ok(repv) = res {
             if let Ok(res) = serde_json::from_str(&repv.text().unwrap()) {
-                println!("listen_finish_event - broadcast_new_block - {}", &urlapi_pending);
-                broadcast_new_block(&cnf, &res, stuff_tx.clone());
+                // println!("listen_finish_event - broadcast_new_block - {}", &urlapi_pending);
+                broadcast_new_block(&cnf, &res, mostpwr.clone(), prtx.clone(), stuff_tx.clone());
             }
         };
         // ignore other
@@ -340,7 +410,10 @@ fn listen_finish_event(cnf: PoWorkConf,
 *
 */
 fn pull_new_block(cnf: PoWorkConf, 
-    stuff_tx: StuffSender) {
+    mostpwr: MostPwr,
+    prtx: mpsc::Sender<String>,
+    stuff_tx: StuffSender,
+) {
     let urlapi_pending = format!("http://{}/query/miner/pending", &cnf.rpcaddr);
     let mut current_height = 0;
     loop {
@@ -365,27 +438,36 @@ fn pull_new_block(cnf: PoWorkConf,
         };
         current_height = jnum("height");
         // new block
-        println!("pull_new_block - broadcast_new_block - {}", &urlapi_pending);
-        broadcast_new_block(&cnf, &res, stuff_tx.clone());
+        // println!("pull_new_block - broadcast_new_block - {}", &urlapi_pending);
+        broadcast_new_block(&cnf, &res, mostpwr.clone(), prtx.clone(), stuff_tx.clone());
         // wait notice
-        let next_hei = current_height + 1;
         let mut rpid = vec![0].repeat(16);
         loop {
             getrandom::getrandom(&mut rpid).unwrap();
-            let urlapi_notice = format!("http://{}/query/miner/notice?height={}&rpid={}", &cnf.rpcaddr, next_hei, &hex::encode(&rpid));
-            let res = HttpClient::new().get(&urlapi_notice).send();
+            let urlapi_notice = format!("http://{}/query/miner/notice?wait={}&height={}&rqid={}", 
+            &cnf.rpcaddr, &cnf.noticewait, current_height, &hex::encode(&rpid));
+            // println!("\n-------- {} -------- {}\n", &ctshow(), &urlapi_notice);
+            let res = HttpClient::new().get(&urlapi_notice).timeout(Duration::from_secs(99999)).send();
             let Ok(repv) = res else {
                 println!("Error: cannot get miner notice at {}", &urlapi_notice);
                 retry!();
             };
-            let res: JV = serde_json::from_str(&repv.text().unwrap()).unwrap();
-            let jnum = |k| { res[k].as_u64().unwrap_or(0) };
+            let  Ok(jsdata) = repv.text() else {
+                println!("Error: cannot read miner notice at {}", &urlapi_notice);
+                retry!();
+            };
+            let Ok(res2) = serde_json::from_str::<JV>(&jsdata) else {
+                // println!("{}", &jsdata);
+                panic!("miner notice error: {}", &jsdata);
+            };
+            let jnum = |k| { res2[k].as_u64().unwrap_or(0) };
             let res_hei = jnum("height");
-            if res_hei < next_hei {
-                continue // continue to wait
+            // println!("\n++++++++ {} {} {}\n", &jsdata, res_hei, current_height);
+            if res_hei >= current_height {
+                // next block discover
+                break 
             }
-            // next block discover
-            break
+            // continue to wait
         }
     }
 
@@ -393,6 +475,28 @@ fn pull_new_block(cnf: PoWorkConf,
 
 
 
+}
+
+
+
+
+/*
+*
+*/
+fn push_mining_success(cnf: &PoWorkConf, 
+    success: MiningSuccess,
+    prtx: mpsc::Sender<String>,
+) {
+    let urlapi_success = format!(
+        "http://{}/submit/miner/success?height={}&block_nonce={}&coinbase_nonce={}", 
+        &cnf.rpcaddr, success.stuff.height, success.nonce, success.stuff.coinbase_nonce.hex()
+    );
+    HttpClient::new().get(&urlapi_success).send();
+    // println!("{} {}", &urlapi_success, HttpClient::new().get(&urlapi_success).send().unwrap().text().unwrap());
+    // print
+    flush!("\n████████ [MINING SUCCESS] Find a block height {} hash {} to submit.\n",
+        success.stuff.height, success.hash.hex()
+    );
 }
 
 

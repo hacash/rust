@@ -23,7 +23,7 @@ fn impl_prepare(this: &BlockMintChecker, sto: &dyn Store, curblk: &dyn BlockRead
 
 fn impl_consensus(this: &BlockMintChecker, sto: &dyn Store, prevblk: &dyn BlockRead, curblk: &dyn BlockRead) -> RetErr {
     let curhei = curblk.height().uint(); // u64
-    if curhei < 288*200 {
+    if this.cnf.chain_id==0 && curhei < 288*200 {
         return Ok(()) // not check, compatible history code
     }
     // check
@@ -31,7 +31,7 @@ fn impl_consensus(this: &BlockMintChecker, sto: &dyn Store, prevblk: &dyn BlockR
     let curbign = u32_to_biguint(curn);
     let prevn = prevblk.difficulty().uint(); // u32
     let prevtime = prevblk.timestamp().uint(); // u64
-    let (tarn, tarhx, tarbign) = this.difficulty.target(prevn, prevtime, curhei, sto);
+    let (tarn, tarhx, tarbign) = this.difficulty.target(&this.cnf, prevn, prevtime, curhei, sto);
     // check
     /*if curbign!=tarbign || tarn!=curn || tarhx!=u32_to_hash(curn) {
         println!("\nheight: {}, {} {}, tarhx: {}  curhx: {} ----------------", 
