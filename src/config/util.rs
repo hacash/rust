@@ -62,7 +62,7 @@ fn ini_must_bool(sec: &HashMap<String, Option<String>>, key: &str, dv: bool) -> 
 
 
 fn ini_must_address(sec: &HashMap<String, Option<String>>, key: &str) -> Address {
-    let adr = ini_must(sec, key, "");
+    let adr = ini_must(sec, key, "1AVRuFXNFi3rdMrPH4hdqSgFrEBnWisWaS");
     let Ok(addr) = Address::from_readable(&adr) else {
         panic!("[Config Error] address {} format error.", &adr)
     };
