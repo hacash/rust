@@ -355,9 +355,11 @@ fn broadcast_new_block(cnf: &PoWorkConf, res: &JV,
     let jnum = |k| { res[k].as_u64().unwrap_or(0) };
     let curhei = jnum("height");
     let cbnc = hex::decode(jstr("coinbase_nonce")).unwrap();
-    let tarhx = hex::decode(jstr("target_hash")).unwrap();
+    let tarhxstr = jstr("target_hash");
+    let tarhx = hex::decode(tarhxstr).unwrap();
+    let tarhxshort = tarhxstr.trim_end_matches('f').trim_end_matches('0');
     prtx.send(format!("req block {} cbn ...{} tarhx {}...\n", curhei, 
-        cbnc[28..].to_vec().hex(), tarhx.to_vec().hex().trim_end_matches('f'),
+        cbnc[28..].to_vec().hex(), tarhxshort,
     )).unwrap();
     // notice all workers
     let stuff = BlockStuff {

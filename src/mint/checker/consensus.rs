@@ -1,6 +1,7 @@
 
 fn impl_prepare(this: &BlockMintChecker, sto: &dyn Store, curblk: &dyn BlockRead) -> RetErr {
     let curhei = curblk.height().uint(); // u64
+    let curdifnum = curblk.difficulty().uint();
     let blkspan = this.cnf.difficulty_adjust_blocks;
     if curhei <= blkspan {
         return Ok(()) // not check in first cycle
@@ -9,10 +10,13 @@ fn impl_prepare(this: &BlockMintChecker, sto: &dyn Store, curblk: &dyn BlockRead
         return Ok(()) // not check, compatible history code
     }
     if curhei % blkspan == 0 {
-        return Ok(()) // not check, difficulty update
+        return Ok(()) // not check, difficulty change to update
     }
     // check
-    let (_, diffhx) = this.difficulty.req_cycle_block(curhei, sto);
+    let (_, difnum, diffhx) = this.difficulty.req_cycle_block(curhei, sto);
+    if difnum != curdifnum {
+        return errf!("block {} PoW difficulty must be {} but got {}", curhei, difnum, curdifnum)
+    }
     let cblkhx = curblk.hash();
     if hash_big_than(cblkhx.as_ref(), &diffhx) {
         return errf!("block {} PoW hashrates check failed cannot more than {} but got {}", 
@@ -43,10 +47,10 @@ fn impl_consensus(this: &BlockMintChecker, sto: &dyn Store, prevblk: &dyn BlockR
         return errf!("curbign != tarbign")
     }*/
     if tarn != curn {
-        return errf!("height {} PoW difficulty check failed need be {} but got {}", curhei, tarn, curn)
+        return errf!("height {} PoW difficulty check failed must be {} but got {}", curhei, tarn, curn)
     }
     if curhei % blkspan == 0 {
-        // check hashrate s
+        // must check hashrates cuz impl_prepare not do check
         if  hash_big_than(curblk.hash().as_ref(), &tarhx) {
             return errf!("height {} PoW hashrates check failed cannot more than {} but got {}", 
                 curhei, hex::encode(tarhx),  hex::encode(curblk.hash()))

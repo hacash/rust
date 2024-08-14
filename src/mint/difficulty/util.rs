@@ -39,7 +39,7 @@ pub fn u32_to_hash(num: u32) -> [u8; HASH_WIDTH] {
         byte_to_bits(numbts[3]).to_vec(),
     ].concat();
     bits.append( &mut bits2 );
-    bits.append( &mut vec![1u8; 256-bits.len()] );
+    bits.append( &mut vec![0u8; 256-bits.len()] );
     // ok
     bits_to_bytes(bits.as_slice().try_into().unwrap())
 }
