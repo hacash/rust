@@ -18,7 +18,7 @@ impl RPCServer {
 
 async fn server_listen(mut ser: RPCServer) {
     let port = ser.cnf.listen;
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
     let listener = TcpListener::bind(addr).await;
     if let Err(ref e) = listener {
         println!("\n[Error] RPC Server bind port {} error: {}\n", port, e);
