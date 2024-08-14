@@ -1,7 +1,6 @@
 
 
 defineQueryObject!{ Q5396,
-    hex, Option<bool>, None,
     tx_hash, Option<String>, None,
     fee, String, s!(""),
     fee_prikey, String, s!(""),
@@ -26,7 +25,7 @@ async fn raise_fee(State(ctx): State<ApiCtx>, q: Query<Q5396>, body: Bytes) -> i
         },
         // tx body data
         false => {
-            q_data_may_hex!(q, body.to_vec())
+            q_body_data_may_hex!(q, body)
         }
     };
     

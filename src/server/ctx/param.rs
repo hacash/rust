@@ -78,14 +78,15 @@ macro_rules! q_must {
 }
 
 #[macro_export]
-macro_rules! q_data_may_hex {
+macro_rules! q_body_data_may_hex {
     ( $q: ident, $d: expr) => (
         { 
-            q_must!($q, hex, false);
-            match hex {
-                false => $d,
+            q_must!($q, hexbody, false);
+            let bddt = $d.to_vec();
+            match hexbody {
+                false => bddt,
                 true => {
-                    let res = hex::decode(&$d);
+                    let res = hex::decode(&bddt);
                     if let Err(_) = res {
                         return api_error("hex format error")
                     }
@@ -165,6 +166,7 @@ macro_rules! defineQueryObject{
             )+
             unit: Option<String>,
             coinkind: Option<String>,
+            hexbody: Option<bool>,
         }
 
         impl Default for $name {
@@ -175,6 +177,7 @@ macro_rules! defineQueryObject{
                     )+
                     unit: None,
                     coinkind: None,
+                    hexbody: None,
                 }
             }
         }
