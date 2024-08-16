@@ -50,14 +50,25 @@ fn get_miner_pending_block_stuff() -> (HeaderMap, String) {
     stuff.block.set_mrklroot( mkrl );
     let intro_data = stuff.block.intro.serialize().hex();
 
+    // get raw tx
+    let tx_data = stuff.block.transactions();
+    let mut tx_list = Vec::with_capacity(tx_data.len());
+    for tx in tx_data {
+        tx_list.push(tx.serialize().hex());
+    };
+
     // return data
     let mut data = jsondata!{
         "height", stuff.height.uint(),
+        "version", Uint1::from(1).uint(),
         "reward_address", stuff.coinbase_tx.address().unwrap().readable(),
         "transaction_count", stuff.block.transaction_count().uint() - 1, // real tx
+        "prevhash", stuff.block.prevhash().hex(),
+        "timestamp", stuff.block.timestamp().uint(),
         "coinbase_nonce", stuff.coinbase_nonce.hex(),
         "block_intro", intro_data,
         "target_hash", stuff.target_hash.hex(),
+        "transactions", tx_list,
     };
     api_data(data)
 }
