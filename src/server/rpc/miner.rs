@@ -76,7 +76,7 @@ fn get_miner_pending_block_stuff(is_detail: bool, is_transaction: bool, is_base6
             "reward_address", stuff.coinbase_tx.address().unwrap().readable(),
         };
         // data.append(&mut addition);
-        addition.into_iter().map(|(k, v)| data.insert(k, v));
+        addition.into_iter().map(|(k, v)| data.insert(k, v) ).collect::<Vec<_>>();
     }
 
     if is_transaction {
@@ -282,7 +282,6 @@ async fn miner_notice(State(ctx): State<ApiCtx>, q: Query<Q4391>) -> impl IntoRe
 defineQueryObject!{ Q2954,
     detail, Option<bool>, None,
     transaction, Option<bool>, None,
-    base64, Option<bool>, None,
 }
 
 

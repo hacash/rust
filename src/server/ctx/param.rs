@@ -167,6 +167,7 @@ macro_rules! defineQueryObject{
             unit: Option<String>,
             coinkind: Option<String>,
             hexbody: Option<bool>,
+            base64: Option<bool>,
         }
 
         impl Default for $name {
@@ -178,6 +179,7 @@ macro_rules! defineQueryObject{
                     unit: None,
                     coinkind: None,
                     hexbody: None,
+                    base64: None,
                 }
             }
         }
