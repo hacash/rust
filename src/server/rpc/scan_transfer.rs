@@ -2,6 +2,8 @@
 defineQueryObject!{ Q4538,
     height, u64, 1,
     txposi, usize, 0,
+    filter_from, Option<String>, None,
+    filter_to, Option<String>, None,
 }
 
 async fn scan_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q4538>) -> impl IntoResponse {

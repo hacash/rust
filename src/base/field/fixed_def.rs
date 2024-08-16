@@ -185,8 +185,16 @@ impl FieldHex for $class {
     }
     */
 
+}
+
+impl FieldBase64 for $class {
+
+    fn base64(&self) -> String {
+        BASE64_STANDARD.encode(&self.bytes)
+    }
 
 }
+
 
 /*
 impl FieldBytes for $class {

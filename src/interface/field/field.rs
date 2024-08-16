@@ -12,9 +12,15 @@ pub trait Field : Serialize + Parse { // Default
 }
 
 pub trait FieldHex : Field {
-    fn hex(&self) -> String { panic_never_call_this!(); }
+    fn hex(&self) -> String;
     fn from_hex(_: &[u8]) -> Self where Self: Sized { panic_never_call_this!(); } // maybe panic!
     fn create_by_hex(_: &[u8]) -> Ret<(Self, usize)> where Self: Sized { panic_never_call_this!(); }
+}
+
+pub trait FieldBase64 : Field {
+    fn base64(&self) -> String;
+    fn from_base64(_: &[u8]) -> Self where Self: Sized { panic_never_call_this!(); } // maybe panic!
+    fn create_by_base64(_: &[u8]) -> Ret<(Self, usize)> where Self: Sized { panic_never_call_this!(); }
 }
 
 pub trait FieldUint : Field {

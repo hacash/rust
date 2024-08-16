@@ -35,7 +35,7 @@ fn update_miner_pending_block(block: BlockV1, cbtx: TransactionCoinbase) {
 }
 
 
-fn get_miner_pending_block_stuff() -> (HeaderMap, String) {
+fn get_miner_pending_block_stuff(is_detail: bool, is_transaction: bool, is_base64: bool) -> (HeaderMap, String) {
     let mut stuff = MINER_PENDING_BLOCK.lock().unwrap();
     if stuff.len() == 0 {
         panic!("get miner pending block stuff error: block not init!");
@@ -50,26 +50,47 @@ fn get_miner_pending_block_stuff() -> (HeaderMap, String) {
     stuff.block.set_mrklroot( mkrl );
     let intro_data = stuff.block.intro.serialize().hex();
 
-    // get raw tx
-    let tx_data = stuff.block.transactions();
-    let mut tx_list = Vec::with_capacity(tx_data.len());
-    for tx in tx_data {
-        tx_list.push(tx.serialize().hex());
+    macro_rules! hex_or_hase64 {
+        ($v: expr) => {
+            match is_base64 {
+                true => $v.base64(),
+                false => $v.hex(),
+            }
+        }
     };
 
     // return data
     let mut data = jsondata!{
         "height", stuff.height.uint(),
-        "version", Uint1::from(1).uint(),
-        "reward_address", stuff.coinbase_tx.address().unwrap().readable(),
-        "transaction_count", stuff.block.transaction_count().uint() - 1, // real tx
-        "prevhash", stuff.block.prevhash().hex(),
-        "timestamp", stuff.block.timestamp().uint(),
-        "coinbase_nonce", stuff.coinbase_nonce.hex(),
+        "coinbase_nonce", hex_or_hase64!(stuff.coinbase_nonce),
         "block_intro", intro_data,
-        "target_hash", stuff.target_hash.hex(),
-        "transactions", tx_list,
+        "target_hash", hex_or_hase64!(stuff.target_hash),
     };
+
+    if is_detail {
+        let mut addition = jsondata!{
+            "version", stuff.block.version().uint(),
+            "prevhash", hex_or_hase64!(stuff.block.prevhash()),
+            "timestamp",stuff.block.timestamp().uint(),
+            "transaction_count", stuff.block.transaction_count().uint() - 1, // real tx
+            "reward_address", stuff.coinbase_tx.address().unwrap().readable(),
+        };
+        // data.append(&mut addition);
+        addition.into_iter().map(|(k, v)| data.insert(k, v));
+    }
+
+    if is_transaction {
+        // get raw tx
+        let txs = stuff.block.transactions();
+        let mut tx_raws = Vec::with_capacity(txs.len());
+        for tx in txs {
+            let raw = hex_or_hase64!(tx.serialize());
+            tx_raws.push(raw);
+        };
+        data.insert("transaction_body_list", json!{tx_raws});
+    }
+
+    // ok
     api_data(data)
 }
 
@@ -259,12 +280,18 @@ async fn miner_notice(State(ctx): State<ApiCtx>, q: Query<Q4391>) -> impl IntoRe
 
 
 defineQueryObject!{ Q2954,
-    __nnn_, Option<u64>, None,
+    detail, Option<bool>, None,
+    transaction, Option<bool>, None,
+    base64, Option<bool>, None,
 }
 
 
 async fn miner_pending(State(ctx): State<ApiCtx>, q: Query<Q2954>) -> impl IntoResponse {
     // ctx_mintstate!(ctx, mintstate);
+    q_must!(q, detail, false);
+    q_must!(q, transaction, false);
+    q_must!(q, base64, false);
+
     if ! ctx.engine.config().miner_enable {
         return api_error("miner not enable")
     }
@@ -294,7 +321,7 @@ async fn miner_pending(State(ctx): State<ApiCtx>, q: Query<Q2954>) -> impl IntoR
     }
 
     // return data
-    get_miner_pending_block_stuff()
+    get_miner_pending_block_stuff(detail, transaction, base64)
 }
 
 

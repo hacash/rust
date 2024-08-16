@@ -5,6 +5,7 @@ pub trait BlockRead : Serialize + Send + Sync + dyn_clone::DynClone {
 
     fn hash(&self) -> Hash { panic_never_call_this!() }
 
+    fn version(&self) -> &Uint1 { panic_never_call_this!() }
     fn height(&self) -> &BlockHeight { panic_never_call_this!() }
     fn timestamp(&self) -> &Timestamp { panic_never_call_this!() }
     fn nonce(&self) -> &Uint4 { panic_never_call_this!() }

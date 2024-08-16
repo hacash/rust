@@ -14,6 +14,7 @@ include!{"error.rs"}
 include!{"number.rs"}
 include!{"slice.rs"}
 include!{"hex.rs"}
+include!{"base64.rs"}
 include!{"ini.rs"}
 include!{"time.rs"}
 

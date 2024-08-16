@@ -1,5 +1,5 @@
 
-pub fn bytes_from_hex(stuff: &[u8], len: usize) -> Result<Vec<u8>, Error> {
+pub fn bytes_from_hex(stuff: &[u8], len: usize) -> Ret<Vec<u8>> {
     let rsz = stuff.len();
     let tsz = len * 2;
     if rsz < tsz {

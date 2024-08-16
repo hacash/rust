@@ -9,6 +9,8 @@ use std::convert::TryInto;
 // use num_bigint::Sign::{Minus, Plus};
 // use num_traits::{FromPrimitive, ToPrimitive, Num};
 
+use base64::prelude::*;
+
 use concat_idents::concat_idents;
 
 

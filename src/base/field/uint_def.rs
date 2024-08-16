@@ -233,6 +233,14 @@ impl Field for $name {
 
 }
 
+impl FieldBase64 for $name {
+
+    fn base64(&self) -> String {
+        BASE64_STANDARD.encode(&self.serialize())
+    }
+
+}
+
 impl FieldReadable for $name {
     fn readable(&self) -> String {
         format!("{}", self.value)

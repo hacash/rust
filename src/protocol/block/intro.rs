@@ -51,6 +51,10 @@ impl BlockRead for BlockHeadMeta {
         Hash::must(&hx[..])
     }
 
+    fn version(&self) -> &Uint1 {
+        &self.head.version
+	}
+
     fn height(&self) -> &BlockHeight {
         &self.head.height
     }

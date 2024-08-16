@@ -67,10 +67,20 @@ impl Parse for $class {
 
 }
 
+
 impl Field for $class {
     
     // must & create function
     fnFieldMustCreate!($class);
+}
+
+
+impl FieldBase64 for $class {
+
+    fn base64(&self) -> String {
+        BASE64_STANDARD.encode(&self.bytes)
+    }
+
 }
 
 

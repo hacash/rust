@@ -45,6 +45,7 @@ impl BlockRead for BlockV1 {
         self.intro.hash()
     }
 
+    block_intro_fn_mount!{version, Uint1}
     block_intro_fn_mount!{height, BlockHeight}
     block_intro_fn_mount!{timestamp, Timestamp}
     block_intro_fn_mount!{difficulty, Uint4}
