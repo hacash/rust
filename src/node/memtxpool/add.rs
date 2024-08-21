@@ -20,7 +20,7 @@ impl TxGroup {
         }
         if gnum >= self.maxsz {
             // tt's full, check the lowest fees
-            let lowfp = self.txpkgs[0].fee_purity();
+            let lowfp = self.txpkgs.last().unwrap().fee_purity();
             if feep <= lowfp {
                 return errf!("tx pool is full and your tx fee is too low")
             }
@@ -28,7 +28,7 @@ impl TxGroup {
         // do insert
         let mut rxl = 0;
         let mut rxr = gnum; 
-        if gnum >= 20 {
+        if gnum > 10 {
             (rxl, rxr) = scan_group_rng_by_feep(&self.txpkgs, feep, (rxl, rxr));
         }
         // inser with rng
@@ -36,23 +36,27 @@ impl TxGroup {
         // check full
         if self.txpkgs.len() > self.maxsz {
             // drop lowest
-            self.txpkgs.remove(0);
+            self.txpkgs.pop();
         }
         Ok(())
     }
 
     fn insert_rng(&mut self, txp: Box<dyn TxPkg>, feep: u64, rng: (usize, usize)) ->RetErr {
         let (rxl, rxr) = rng;
-        let mut istx = 0usize;
+        let mut istx = usize::MAX;
         for i in rxl .. rxr {
             let ctx = &self.txpkgs[i];
-            if feep <= ctx.fee_purity() {
+            if feep > ctx.fee_purity() {
                 istx = i; // scan ok
                 break;
             }
         }
         // do
-        self.txpkgs.insert(istx, txp);
+        if istx == usize::MAX {
+            self.txpkgs.push(txp); // tail
+        }else{
+            self.txpkgs.insert(istx, txp);
+        }
         Ok(())
     }
 

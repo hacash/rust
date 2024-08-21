@@ -76,9 +76,16 @@ impl P2PManage {
     }
 
     fn print_conn_peers(&self) {
-        let l1 = self.backbones.lock().unwrap().len();
+        let p1 = self.backbones.lock().unwrap();
+        let mut l1names = vec![];
+        for li in p1.iter() {
+            l1names.push(format!("{}({})", li.nick(), li.key[0..2].to_vec().hex()));
+        }
+        let l1 = p1.len();
         let l2 = self.offshoots.lock().unwrap().len();
-        flush!("[P2P] {} public and {} subnet nodes connected.\n", l1, l2);
+        let mykp = self.cnf.node_key[0..2].to_vec().hex();
+        flush!("[P2P] {} public {} subnet nodes connected, key({}) => {}.\n", 
+            l1, l2, mykp, l1names.join(", "));
     }
 
     pub fn close(&self) {

@@ -250,7 +250,7 @@ defineQueryObject!{ Q4391,
 }
 
 async fn miner_notice(State(ctx): State<ApiCtx>, q: Query<Q4391>) -> impl IntoResponse {
-    ctx_mintstate!(ctx, mintstate);
+    // ctx_mintstate!(ctx, mintstate);
     q_must!(q, wait, 45); // 45 sec
     set_in_range!(wait, 1, 300);
     let mut lasthei = 0;

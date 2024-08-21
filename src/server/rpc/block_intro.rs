@@ -1,5 +1,9 @@
 
 
+/******************* block intro *******************/
+
+
+
 defineQueryObject!{ Q2953,
     height, Option<u32>, None,
     hash, Option<String>, None,
@@ -33,4 +37,37 @@ async fn block_intro(State(ctx): State<ApiCtx>, q: Query<Q2953>) -> impl IntoRes
         "transaction", txnum,
     };
     api_data(data)
+}
+
+
+
+/******************* block recents *******************/
+
+
+defineQueryObject!{ Q7456,
+    __nnn__, Option<u32>, None,
+}
+
+async fn block_recents(State(ctx): State<ApiCtx>, q: Query<Q7456>) -> impl IntoResponse {
+    q_unit!(q, unit);
+    let mut datalist = vec![];
+
+    for li in  ctx.engine.recent_blocks() {
+        datalist.push(jsondata!{
+            "height", *li.height,
+            "hash", li.hash.hex(),
+            "prev", li.prev.hex(),
+            "txs", *li.txs - 1,
+            "miner", li.miner.readable(),
+            "message", li.message.readable(),
+            "reward", li.reward.to_unit_string(&unit),
+            "time", *li.time,
+            "arrive", *li.arrive,
+        });
+    }
+
+    // ok
+    api_data(jsondata!{
+        "list", datalist,
+    })
 }

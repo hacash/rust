@@ -1,4 +1,7 @@
 
+use crate::protocol::block::RecentBlockInfo;
+
+
 pub trait EngineRead: Send + Sync {
     // key is height or hash
     // fn block(&self, _: &dyn Serialize) -> Option<Box<dyn BlockPkg>> { panic_never_call_this!() }
@@ -12,9 +15,11 @@ pub trait EngineRead: Send + Sync {
     fn latest_block(&self) -> Arc<dyn BlockPkg> { panic_never_call_this!() }
     fn mint_checker(&self) -> Arc<dyn MintChecker> { panic_never_call_this!() }
 
-    fn try_execute_tx(&self, _: &dyn TransactionRead) -> RetErr{ panic_never_call_this!() }
+    fn try_execute_tx(&self, _: &dyn TransactionRead) -> RetErr { panic_never_call_this!() }
     // realtime average fee purity
     // fn avgfee(&self) -> u32 { 0 }
+
+    fn recent_blocks(&self) -> Vec<Arc<RecentBlockInfo>> { panic_never_call_this!() }
 }
 
 pub trait Engine : EngineRead + Send + Sync {

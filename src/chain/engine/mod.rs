@@ -1,4 +1,5 @@
 // use std::rc::{Rc, Weak};
+use std::collections::{ VecDeque };
 use std::sync::{Arc, Weak, Mutex, RwLock};
 use std::cell::RefCell;
 use std::path::{Path, PathBuf};
@@ -20,6 +21,7 @@ use crate::core::db::*;
 use crate::core::state::*;
 use crate::core::component::*;
 use crate::protocol::{self, *};
+use crate::protocol::block::*;
 
 use crate::mint::checker::*;
 
@@ -32,6 +34,7 @@ use crate::vm;
 
 
 include!("engine.rs");
+include!("recent.rs");
 include!("init.rs");
 include!("read.rs");
 include!("insert.rs");

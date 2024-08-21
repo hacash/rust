@@ -16,7 +16,8 @@ impl P2PManage {
 async fn do_insert_new_nodes(this: &P2PManage, mearest_addrs: Vec<SocketAddr>, first: &PeerKey) {
     let nodelen = mearest_addrs.len();
     if nodelen == 0 {
-        println!("not find any nearest.");
+        let publen = this.backbones.lock().unwrap().len();
+        println!("connected {} public nodes, not find any nearest.", publen);
         return
     }
     println!("find {} nearest nodes, try connect...", nodelen);

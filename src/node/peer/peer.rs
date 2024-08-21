@@ -17,8 +17,6 @@ pub struct Peer {
     pub knows: Knowledge,
 }
 
-
-
 impl Peer {
 
     pub fn name(&self) -> &str {

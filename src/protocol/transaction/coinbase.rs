@@ -44,6 +44,11 @@ impl TransactionRead for TransactionCoinbase {
     fn reward(&self) -> &Amount {
         &self.reward
     }
+
+    fn message(&self) -> &StringTrim16 {
+        &self.message
+    }
+    
     
 }
 

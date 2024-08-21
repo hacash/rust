@@ -36,7 +36,7 @@ impl TxPkg for TxPackage {
 
     fn fee_purity(&self) -> u64 {
 		let txsz = self.data.length() as u64;
-		let feeshuo = self.objc.fee().to_shuo_unsafe() as u64;
+		let feeshuo = self.objc.fee_got().to_shuo_unsafe() as u64;
 		feeshuo / txsz
 	}
 

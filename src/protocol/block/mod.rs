@@ -19,6 +19,7 @@ pub const BLOCK_VERSION_1: u8 = 1;
 
 include!("util.rs");
 include!("origin.rs");
+include!("recent.rs");
 include!("intro.rs");
 include!("v1.rs");
 include!("block.rs");

@@ -36,5 +36,11 @@ impl EngineRead for BlockEngine {
         tx.execute(height, &mut sub_state)
     } 
 
+    fn recent_blocks(&self) -> Vec<Arc<RecentBlockInfo>> {
+        let vs = self.rctblks.lock().unwrap();   
+        let res: Vec<_> = vs.iter().map(|x|x.clone()).collect();
+        res
+    }
+
 
 }

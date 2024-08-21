@@ -4,7 +4,9 @@ use  std::time::{ Duration, Instant };
 impl Engine for BlockEngine {
 
 
-    fn insert(&self, blkpkg: Box<dyn BlockPkg>) -> RetErr {    
+    fn insert(&self, blkpkg: Box<dyn BlockPkg>) -> RetErr {
+        self.insert_to_recents(blkpkg.objc().as_read());
+        // insert to block chain
         self.isrlck.lock();
         self.insert_unsafe(blkpkg)
     }

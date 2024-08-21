@@ -12,9 +12,9 @@ fn scan_group_rng_by_feep(txpkgs: &Vec<Box<dyn TxPkg>>, feep: u64, wsz: (usize, 
         let ct = &txpkgs[fct];
         let cfp = ct.fee_purity();
         if feep > cfp {
-            rxl = fct; // in right
-        } else if feep < cfp {
             rxr = fct; // in left
+        } else if feep < cfp {
+            rxl = fct; // in right
         }else {
             // feep == cfp
             break // end

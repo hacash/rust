@@ -22,6 +22,8 @@ pub fn operate(p: &str) -> String {
 /**************************/
 
 
+pub type JsonObject = HashMap::<&'static str, Value>;
+
 
 
 pub fn html_headers() -> HeaderMap {
@@ -64,12 +66,44 @@ pub fn api_data(jsdts: HashMap<&'static str, Value>) -> (HeaderMap, String){
 macro_rules! jsondata{
     ( $( $key: expr, $dv: expr,)+ ) => (
         {
-            let mut data = HashMap::<&'static str, Value>::new();
+            let mut data = JsonObject::new();
             $(
                 data.insert($key, json!($dv));
             )+
             data
         }
     )
+}
+
+
+/**************************/
+
+
+// auto drop <= 0
+pub fn get_id_range(max: i64, page: i64, limit: i64, instart: i64, decs: bool) -> Vec<i64> {
+    let mut rng = Vec::<i64>::new();
+    let mut start = 1;
+    if decs {
+        start = max;
+    }
+    if page > 1 {
+        if decs {
+            start -= (page - 1) * limit;
+        }else{
+            start += (page - 1) * limit;
+        }
+    }
+    let mut end = start + limit;
+    if decs {
+        end = start - limit;
+    }
+    // rev
+    rng = (start..end).collect();
+    if decs {
+        rng = (end+1..start+1).rev().collect();
+    }
+    // ok
+    rng.retain(|&x| x>=1 || x<=max);
+    rng
 }
 

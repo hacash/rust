@@ -32,6 +32,8 @@ pub struct BlockEngine {
 
     // insert lock
     isrlck: Mutex<bool>,
+
+    rctblks: Mutex<VecDeque<Arc<RecentBlockInfo>>>,
 }
 
 
@@ -62,6 +64,7 @@ impl BlockEngine {
             klctx: Mutex::new(roller),
             mintk: mintk,
             isrlck: Mutex::new(true),
+            rctblks: Mutex::default(),
         };
         // rebuild unstable blocks
         // if database upgrade, rebuild all block

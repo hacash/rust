@@ -14,10 +14,14 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     .route(&query("balance"), get(balance))
     .route(&query("diamond"), get(diamond))
     .route(&query("block/intro"), get(block_intro))
+    .route(&query("block/recents"), get(block_recents))
     .route(&query("coin/transfer"), get(scan_coin_transfer))
 
-    .route(&query("miner/notice"), get(miner_notice))
+    .route(&query("diamond/bidding"), get(diamond_bidding))
+    .route(&query("diamond/views"), get(diamond_views))
     
+
+    .route(&query("miner/notice"), get(miner_notice))
     .route(&query("miner/pending"), get(miner_pending))
 
     // create
