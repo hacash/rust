@@ -167,6 +167,8 @@ macro_rules! defineQueryObject{
             unit: Option<String>,
             coinkind: Option<String>,
             hexbody: Option<bool>,
+            base64body: Option<bool>,
+            hex: Option<bool>,
             base64: Option<bool>,
         }
 
@@ -179,6 +181,8 @@ macro_rules! defineQueryObject{
                     unit: None,
                     coinkind: None,
                     hexbody: None,
+                    base64body: None,
+                    hex: None,
                     base64: None,
                 }
             }

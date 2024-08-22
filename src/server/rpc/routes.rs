@@ -17,6 +17,7 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     .route(&query("block/intro"), get(block_intro))
     .route(&query("block/recents"), get(block_recents))
     .route(&query("block/views"), get(block_views))
+    .route(&query("block/datas"), get(block_datas))
 
     .route(&query("diamond"), get(diamond))
     .route(&query("diamond/bidding"), get(diamond_bidding))

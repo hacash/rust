@@ -47,7 +47,7 @@ include!("hashrate.rs");
 include!("supply.rs");
 include!("balance.rs");
 include!("diamond.rs");
-include!("block_intro.rs");
+include!("block.rs");
 
 include!("scan_transfer.rs");
 

@@ -77,7 +77,7 @@ async fn block_recents(State(ctx): State<ApiCtx>, q: Query<Q7456>) -> impl IntoR
 
 
 
-/******************* diamond views *******************/
+/******************* block views *******************/
 
 
 defineQueryObject!{ Q4935,
@@ -133,6 +133,71 @@ async fn block_views(State(ctx): State<ApiCtx>, q: Query<Q4935>) -> impl IntoRes
         "latest_height", lasthei,
         "list", datalist,
     })
+}
+
+
+
+
+
+/******************* block datas *******************/
+
+
+defineQueryObject!{ Q8538,
+    start_height, Option<u64>, None,
+    limit, Option<usize>, None,
+    max_size, Option<usize>, None,
+    confirm, Option<bool>, None, // only confirm block
+}
+
+async fn block_datas(State(ctx): State<ApiCtx>, q: Query<Q8538>) -> impl IntoResponse {
+    ctx_store!(ctx, store);
+    let unsblk = ctx.engine.config().unstable_block;
+    let mut lasthei = ctx.engine.latest_block().objc().height().uint() as u64;
+    const MB: usize = 1024*1024;
+    q_must!(q, hexbody, false);
+    q_must!(q, base64body, false);
+    q_must!(q, start_height, 0);
+    q_must!(q, limit, u64::MAX);
+    q_must!(q, max_size, MB); // 1mb
+    q_must!(q, confirm, false);
+    if max_size > 10*MB {
+        max_size = 10*MB;
+    }
+    if confirm && lasthei > unsblk {
+        lasthei -= unsblk; // -4
+    }
+
+    // blocks
+    let mut alldatas: Vec<u8> = Vec::with_capacity(max_size);
+
+    let count: u64 = 0;
+    for hei in start_height..u64::MAX {
+        if hei > lasthei {
+            break // end
+        }
+        if count >= limit {
+            break // ok
+        }
+        if alldatas.len() >= max_size {
+            break // ok
+        }
+        // load
+        let Some((_, blkdts)) = store.blockhxdtbyptr(&BlockHeight::from(hei)) else {
+            break
+        };
+        alldatas.append(&mut blkdts.into_vec());
+        count++;
+    }
+
+    // convert
+    if hexbody {
+        alldatas = alldatas.hex().into_bytes();
+    }else if base64body {
+        alldatas = alldatas.base64().into_bytes();
+    }
+
+    // return raw data
+    alldatas
 }
 
 
