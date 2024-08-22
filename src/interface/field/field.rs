@@ -53,6 +53,7 @@ pub trait FieldFloat : Field {
 
 pub trait FieldReadable : Field {
     fn readable(&self) -> String;
+    fn readable_left(&self) -> String { panic_never_call_this!(); }
     fn from_readable(_: &[u8]) -> Self where Self: Sized { panic_never_call_this!(); } // panic
     fn create_by_readable(_: &[u8]) -> Ret<(Self, usize)> where Self: Sized { panic_never_call_this!(); }
 }

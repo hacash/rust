@@ -53,3 +53,15 @@ pub fn check_readable_string(bts: &[u8]) -> bool {
     return true
 }
 
+
+pub fn left_readable_string(bts: &[u8]) -> String {
+    let mut ss: Vec<u8> = vec![];
+    for a in bts {
+        if *a<32 || *a>126 {
+            break // end
+        }
+        ss.push(*a);
+    }
+    String::from_utf8(ss).ok().unwrap().trim_end().to_string()
+}
+

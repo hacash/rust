@@ -21,6 +21,17 @@ impl CoreStoreDisk<'_> {
         }
         self.blockdata(&hx.unwrap())
     }
+    // ret hash & datas
+    pub fn blockhxdtbyptr(&self, hei: &BlockHeight) -> Option<(Hash, BytesW4)> {
+        let hx = self.blockptr(hei);
+        if let None = hx {
+            return None // not find
+        }
+        let Some(dts) = self.blockdata(&hx.unwrap()) else {
+            return None // not find
+        };
+        Some((hx?, dts))
+    }
 }
 
 

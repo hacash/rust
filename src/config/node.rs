@@ -96,17 +96,18 @@ fn read_node_key(ini: &IniObj) -> [u8; 16] {
     // read
     let mut snid = String::new();
     nidfile.read_to_string(&mut snid);
+    // println!("read node id = {}", snid);
     if let Ok(nid) = hex::decode(&snid) {
         if nid.len() == 16 {
             node_key = nid.try_into().unwrap();
         }
     }
-    if node_key[0] == 0 {
+    if node_key[0] == 0 && node_key[15] == 0 {
         // save
         getrandom::getrandom(&mut node_key);
         nidfile.write_all(hex::encode(&node_key).as_bytes());
     }
-    let nidhx = hex::encode(&node_key);
+    // let nidhx = hex::encode(&node_key);
     // println!("node id = {}", nidhx);
     node_key
 }

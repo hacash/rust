@@ -117,7 +117,7 @@ async fn diamond_bidding(State(ctx): State<ApiCtx>, q: Query<Q8346>) -> impl Int
 
 
 
-/******************* diamond bidding *******************/
+/******************* diamond views *******************/
 
 
 defineQueryObject!{ Q5395,

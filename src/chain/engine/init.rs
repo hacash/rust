@@ -49,7 +49,6 @@ fn _do_rebuild(this: &mut BlockEngine) {
     this.isrlck.lock();
     loop {
         next_height += 1;
-        // let blkdts = store.blockdatabyptr(&BlockHeight::from(next_height));
         let resblk = load_block_package(&store, next_height);
         if let Err(..) = resblk {
             println!(" ok.");

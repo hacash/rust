@@ -235,6 +235,10 @@ impl FieldReadable for $class {
         bytes_to_readable_string(&self.bytes[..])
     }
     
+    fn readable_left(&self) -> String { 
+        left_readable_string(&self.bytes[..])
+    }
+
     fn from_readable(stuff: &[u8]) -> Self where Self: Sized {
         let bts = bytes_from_readable_string(stuff, $size).unwrap();
         let mut obj = <$class>::default();
