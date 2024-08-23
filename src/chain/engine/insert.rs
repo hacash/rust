@@ -193,8 +193,7 @@ impl BlockEngine {
 }
 
 
-
 fn sync_warning(e: String) -> String {
-    format!("\n\n[Block Sync Warning] {}\n\n", e)
+    format!("\n[Block Sync Warning] {}\n", e)
 }
 

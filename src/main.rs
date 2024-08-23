@@ -22,9 +22,9 @@ mod vm;
 mod chain;
 mod node;
 mod server;
-mod run;
 mod tests;
 
+pub mod run;
 
 use crate::run::*;
 

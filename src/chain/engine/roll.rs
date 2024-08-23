@@ -48,14 +48,17 @@ fn do_roll(eng: &BlockEngine, cnf: &EngineConf, roller: &mut BlockRoller, append
     if new_root.height.to_u64() != root_height + 1 {
         return errf!("root chunk height error")
     }
+    // extend roll notice
+    let scres = eng.blkscaner.roll(new_root.block.clone(), new_root.state.clone(), eng.store.clone());
+    if let Err(e) = scres {
+        panic!("\n\nBlock scaner error: {}\n\n", e);
+    }
     // change root
     roller.sroot = new_root.clone(); // roll
     // roll root 
     // println!("!!!!!! flush_disk height {}", new_root.height.to_u64());
     new_root.state.flush_disk(); // flush to disk
     // new_root.drop_parent(); // do roll auto drop parent
-    // extend roll notice
-    eng.blkscaner.roll(new_root.block.clone(), new_root.state.clone(), eng.store.clone());
     // ok
     return Ok(rcs_status)
     

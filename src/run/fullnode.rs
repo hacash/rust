@@ -19,7 +19,7 @@ pub fn fullnode(blkscaner: Option<Box<dyn BlockScaner>>) {
     // scaner
     let scaner: Arc<dyn BlockScaner> = match blkscaner {
         Some(mut scan) => {
-            scan.init(&inicnf); // init block scaner
+            scan.init(&inicnf).unwrap(); // init block scaner
             scan.into()
         },
         _ => Arc::new(EmptyBlockScaner{}),
@@ -47,7 +47,7 @@ fn start_hacash_node(iniobj: sys::IniObj, blkscaner: Arc<dyn BlockScaner>) {
     // start block scaner
     let scanercp = blkscaner.clone();
     std::thread::spawn(move||{
-        scanercp.start();
+        scanercp.start().unwrap();
     });
 
     // println!("startHacashNode ini={:?}", iniobj);
