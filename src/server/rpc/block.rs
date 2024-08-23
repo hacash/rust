@@ -144,7 +144,7 @@ async fn block_views(State(ctx): State<ApiCtx>, q: Query<Q4935>) -> impl IntoRes
 
 defineQueryObject!{ Q8538,
     start_height, Option<u64>, None,
-    limit, Option<usize>, None,
+    limit, Option<u64>, None,
     max_size, Option<usize>, None,
     confirm, Option<bool>, None, // only confirm block
 }
@@ -170,7 +170,7 @@ async fn block_datas(State(ctx): State<ApiCtx>, q: Query<Q8538>) -> impl IntoRes
     // blocks
     let mut alldatas: Vec<u8> = Vec::with_capacity(max_size);
 
-    let count: u64 = 0;
+    let mut count: u64 = 0;
     for hei in start_height..u64::MAX {
         if hei > lasthei {
             break // end
@@ -186,7 +186,7 @@ async fn block_datas(State(ctx): State<ApiCtx>, q: Query<Q8538>) -> impl IntoRes
             break
         };
         alldatas.append(&mut blkdts.into_vec());
-        count++;
+        count += 1;
     }
 
     // convert

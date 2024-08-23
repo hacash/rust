@@ -29,17 +29,19 @@ pub struct BlockEngine {
 
     mintk: Box<dyn MintChecker>,
     // actns: Box<dyn >,
+    blkscaner: Arc<dyn BlockScaner>,
 
     // insert lock
     isrlck: Mutex<bool>,
 
     rctblks: Mutex<VecDeque<Arc<RecentBlockInfo>>>,
+    
 }
 
 
 impl BlockEngine {
 
-    pub fn open(ini: &IniObj, dbv: u32, mintk: Box<dyn MintChecker>) -> BlockEngine {
+    pub fn open(ini: &IniObj, dbv: u32, mintk: Box<dyn MintChecker>, blkscaner: Arc<dyn BlockScaner>) -> BlockEngine {
         let cnf = EngineConf::new(ini, dbv);
         // load store
         std::fs::create_dir_all(&cnf.store_data_dir);
@@ -63,12 +65,13 @@ impl BlockEngine {
             store: stoptr.clone(),
             klctx: Mutex::new(roller),
             mintk: mintk,
+            blkscaner: blkscaner,
             isrlck: Mutex::new(true),
             rctblks: Mutex::default(),
         };
         // rebuild unstable blocks
         // if database upgrade, rebuild all block
-        engine.rebuild_unstable_blocks(); // 
+        engine.rebuild_unstable_blocks();
         // ok finish
         engine
     }

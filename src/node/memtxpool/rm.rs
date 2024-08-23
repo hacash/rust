@@ -28,6 +28,7 @@ impl TxGroup {
     }
 
 
+    // remove if true
     fn drain_filter(&mut self, filter: &dyn Fn(&Box<dyn TxPkg>)->bool) -> RetErr {
         self.txpkgs.retain(|a| !filter(a) );
         Ok(())

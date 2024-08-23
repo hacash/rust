@@ -13,6 +13,7 @@ use crate::config;
 use crate::config::*;
 use crate::core::field::*;
 use crate::base::field::*;
+use crate::interface::extend::*;
 use crate::interface::field::*;
 use crate::interface::chain::*;
 use crate::core::account::Account;

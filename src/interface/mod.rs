@@ -5,5 +5,6 @@ pub mod chain;
 pub mod ir;
 pub mod vm;
 pub mod node;
+pub mod extend;
 
 

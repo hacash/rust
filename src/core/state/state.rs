@@ -40,7 +40,8 @@ impl StoreDB for ChainState {
             // read from base
             return basedb.get_at(key) 
         }
-        // no base ptr, check disk db // resd disk final
+        // no base ptr, check disk db
+        // read from disk finally
         match self.disk.get_at(key) {
             Some(rb) => Some(Bytes::Raw(rb)),
             _ => None, // not find

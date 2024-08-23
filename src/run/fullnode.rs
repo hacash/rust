@@ -5,14 +5,28 @@ const HACASH_NODE_BUILD_TIME: &str = "2024.8.1-1";
 const HACASH_STATE_DB_UPDT: u32 = 1;
 
 
-pub fn fullnode() {
+struct EmptyBlockScaner {}
+impl BlockScaner for EmptyBlockScaner {}
+
+
+
+pub fn fullnode(blkscaner: Option<Box<dyn BlockScaner>>) {
 
     // config
     let cnfp = "./hacash.config.ini".to_string();
     let inicnf = config::load_config(cnfp);
 
+    // scaner
+    let scaner: Arc<dyn BlockScaner> = match blkscaner {
+        Some(mut scan) => {
+            scan.init(&inicnf); // init block scaner
+            scan.into()
+        },
+        _ => Arc::new(EmptyBlockScaner{}),
+    };
+
     // start
-    start_hacash_node(inicnf);
+    start_hacash_node(inicnf, scaner);
     
 }
 
@@ -20,7 +34,7 @@ pub fn fullnode() {
 /*
 * create and start hash node
 */
-fn start_hacash_node(iniobj: sys::IniObj) {
+fn start_hacash_node(iniobj: sys::IniObj, blkscaner: Arc<dyn BlockScaner>) {
 
     println!("[Version] full node v{}, build time: {}, database type: {}.", 
         HACASH_NODE_VERSION, HACASH_NODE_BUILD_TIME, HACASH_STATE_DB_UPDT
@@ -30,6 +44,12 @@ fn start_hacash_node(iniobj: sys::IniObj) {
     let (cltx, clrx) = channel();
     ctrlc::set_handler(move || cltx.send(()).unwrap()); // ctrl+c to quit
 
+    // start block scaner
+    let scanercp = blkscaner.clone();
+    std::thread::spawn(move||{
+        scanercp.start();
+    });
+
     // println!("startHacashNode ini={:?}", iniobj);
     // mint
     crate::mint::action::init_reg();
@@ -38,7 +58,7 @@ fn start_hacash_node(iniobj: sys::IniObj) {
 
     // engine
     let dbv = HACASH_STATE_DB_UPDT;
-    let engine = BlockEngine::open(&iniobj, dbv, mint_checker);
+    let engine = BlockEngine::open(&iniobj, dbv, mint_checker, blkscaner);
     let engptr: Arc<BlockEngine> = Arc::new(engine);
 
     // node

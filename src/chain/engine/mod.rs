@@ -7,6 +7,7 @@ use std::io::{stdout, Write};
 
 use crate::sys::*;
 use crate::interface;
+use crate::interface::extend::*;
 use crate::interface::field::*;
 use crate::interface::protocol::*;
 use crate::interface::chain::*;

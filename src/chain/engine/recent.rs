@@ -4,7 +4,10 @@
 impl BlockEngine {
 
 
-    fn insert_to_recents(&self, block: &dyn BlockRead) {
+    fn record_recent(&self, block: &dyn BlockRead) {
+        if !self.cnf.recent_blocks {
+            return // config not open it
+        }
         let chei = block.height().uint() as i128;
         let deln = (self.cnf.unstable_block * 2) as i128;
         let deln = chei - deln;

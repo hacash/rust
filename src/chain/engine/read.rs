@@ -13,6 +13,15 @@ impl EngineRead for BlockEngine {
         self.store.clone()
     }
 
+    /*
+    fn confirm_state(&self) -> (Arc<dyn State>, Arc<dyn BlockPkg>) {
+        let roller = self.klctx.lock().unwrap();
+        let rtstate = roller.sroot.state.clone();
+        let rtblkpkg = roller.sroot.block.clone();
+        (rtstate, rtblkpkg)
+    }
+    */
+
     fn latest_block(&self) -> Arc<dyn BlockPkg> {
         let curctx = self.klctx.lock().unwrap();
         let curchk = curctx.scusp.upgrade().unwrap();

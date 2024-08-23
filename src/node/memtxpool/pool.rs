@@ -73,6 +73,7 @@ impl TxPool for MemTxPool {
         }
     }
 
+    // remove if true
     fn drain_filter_at(&self, filter: &dyn Fn(&Box<dyn TxPkg>)->bool, gi: usize) 
         -> RetErr
     {

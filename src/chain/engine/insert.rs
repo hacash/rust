@@ -5,7 +5,8 @@ impl Engine for BlockEngine {
 
 
     fn insert(&self, blkpkg: Box<dyn BlockPkg>) -> RetErr {
-        self.insert_to_recents(blkpkg.objc().as_read());
+        // is record recent block infos
+        self.record_recent(blkpkg.objc().as_read());
         // insert to block chain
         self.isrlck.lock();
         self.insert_unsafe(blkpkg)
@@ -181,7 +182,7 @@ impl BlockEngine {
     fn roll_store(&self, chunk_ptr: Arc<RollChunk> ) -> RetErr {
         // if do roll and flush state to disk
         let mut roll_root = self.klctx.lock().unwrap();
-        let status = do_roll( &self.cnf, &mut roll_root, chunk_ptr.clone())?;
+        let status = do_roll(self, &self.cnf, &mut roll_root, chunk_ptr.clone())?;
         // println!("{:?}", status);
         // std::thread::sleep(std::time::Duration::from_millis(2)); // test
         do_store(&self.cnf, self.store.as_ref(), &mut roll_root, chunk_ptr, status)?;
@@ -197,22 +198,3 @@ fn sync_warning(e: String) -> String {
     format!("\n\n[Block Sync Warning] {}\n\n", e)
 }
 
-
-
-/*
-// lock
-let rollres;
-{
-    // do insert
-    let (bsck, state) = do_insert(self, &self.cnf, &ctx, self.mintk.as_ref(), blkpkg.as_ref())?;
-    // insert success try do roll
-    rollres = do_roll(&self.cnf, &ctx, blkpkg, bsck, state)?;
-}
-if let Some((scusp, state, sroot)) = rollres {
-    // change ptr
-    let mut ctx = self.klctx.lock().unwrap();
-    do_roll_chunk_state(&mut ctx, scusp, state, sroot)?;
-}
-// ok finish 
-Ok(())
-*/

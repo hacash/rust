@@ -10,6 +10,8 @@ pub struct EngineConf {
     pub store_data_dir: PathBuf, // block data
     pub state_data_dir: PathBuf, // chain state
     //
+    pub recent_blocks: bool,
+    //
     pub miner_enable: bool,
     pub miner_reward_address: Address,
     pub miner_message: StringTrim16,
@@ -26,6 +28,9 @@ impl EngineConf {
         let mut state_data_dir = join_path(&data_path, "state");
         state_data_dir.push(format!("v{}", dbv));
 
+        // server sec
+        let sec_server = &ini_section(ini, "server");
+
         let mut cnf = EngineConf{
             max_block_txs: 1000,
             max_block_size: 1024*1024*1, // 1MB
@@ -35,6 +40,7 @@ impl EngineConf {
             store_data_dir: join_path(&data_path, "store"),
             state_data_dir: state_data_dir,
             data_dir: data_path.to_str().unwrap().to_owned(),
+            recent_blocks: ini_must_bool(sec_server, "recent_blocks", false),
             miner_enable: false,
             miner_reward_address: Address::default(),
             miner_message: StringTrim16::default(),

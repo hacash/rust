@@ -32,7 +32,7 @@ use crate::run::*;
 fn main() {
 
     // poworker(); // PoW Miner Worker
-    fullnode(); // Hacash Full Node
+    fullnode(None); // Hacash Full Node
 
 }
 

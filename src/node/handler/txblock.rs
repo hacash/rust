@@ -123,12 +123,13 @@ fn drain_all_block_txs(sta: Arc<dyn State>, txpool: Arc<dyn TxPool>, txs: Vec<Ha
     }
     // drop all overdue diamond mint tx
     if blkhei % 5 == 0 {
+        // already minted hacd number
         let ldn = MintStateDisk::wrap(sta.as_ref()).latest_diamond().number.uint();
         txpool.drain_filter_at(&|a: &Box<dyn TxPkg>| {
             let tx = a.objc().as_read();
             let dn = get_diamond_mint_number(tx);
             // println!("TXPOOL: drain_filter_at dmint, tx: {}, dn: {}, last dn: {}", tx.hash().hex(), dn, ldn);
-            dn + 1 != ldn // is not next
+            dn <= ldn // is not next, drop
         }, TXPOOL_GROUP_DIAMOND_MINT);
     }
     // drop all exist normal tx
