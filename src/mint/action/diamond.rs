@@ -3,7 +3,7 @@
  * Diamond Transfer
  */
  ActionDefine!{
-    DiamondTransfer : 5, (
+    DiamondSingleTransfer : 5, (
         diamond  : DiamondName
         to       : AddrOrPtr
     ),
@@ -15,23 +15,40 @@
     diamond_transfer(self, ctx, state, store)
 }
 
-fn diamond_transfer(this: &DiamondTransfer, ctx: &mut dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
-
+fn diamond_transfer(this: &DiamondSingleTransfer, ctx: &mut dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
     let from = ctx.main_address().clone();
-    // move
-    let mut state = MintState::wrap(sta);
     let to = this.to.real(ctx.addr_list())?;
-    hacd_move_one_diamond(&mut state, &from, &to, &this.diamond)?;
-    let mut list = DiamondNameListMax200::default();
-    list.push(this.diamond);
-    diamond_owned_move(&mut state, &from, &to, &list)?;
-    drop(state);
-    // transfer
-    let mut core_state = CoreState::wrap(sta);
-    hacd_transfer(ctx, &mut core_state, &from, &to, &DiamondNumber::from(1), &list)
+    let mut diamonds = DiamondNameListMax200::default();
+    diamonds.push(this.diamond);
+    do_diamonds_transfer(&diamonds, from, to, ctx, sta, sto)
 }
 
 
+/**
+ * Diamond Multiple From Transfer
+ */
+ ActionDefine!{
+    DiamondFromTransfer : 8, (
+        from           : AddrOrPtr 
+        diamonds       : DiamondNameListMax200 
+    ),
+    ACTLV_MAIN, // level
+    21, // gas
+    (self, ctx, state, store, gas), // params
+    false, // burn 90
+    [self.from], // req sign
+    {
+        // gas = dia num * 6
+        gas += self.diamonds.count().uint() as i64 * DiamondName::width() as i64;
+        diamond_from_transfer(self, ctx, state, store)
+    }
+}
+
+fn diamond_from_transfer(this: &DiamondFromTransfer, ctx: &mut dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
+    let from = this.from.real(ctx.addr_list())?;
+    let to = ctx.main_address().clone();
+    do_diamonds_transfer(&this.diamonds, from, to, ctx, sta, sto)
+}
 
 
 /**
@@ -56,22 +73,11 @@ fn diamond_transfer(this: &DiamondTransfer, ctx: &mut dyn ExecContext, sta: &mut
 }
 
 fn diamond_from_to_transfer(this: &DiamondFromToTransfer, ctx: &mut dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
-
-    // check
-    let dianum = this.diamonds.check()?;
-    //transfer
-    let mut state = MintState::wrap(sta);
     let from = this.from.real(ctx.addr_list())?;
     let to = this.to.real(ctx.addr_list())?;
-    for dianame in this.diamonds.list() {
-        hacd_move_one_diamond(&mut state, &from, &to, &dianame)?; // move one
-    }
-    diamond_owned_move(&mut state, &from, &to, &this.diamonds)?;
-    drop(state);
-    // transfer
-    let mut core_state = CoreState::wrap(sta);
-    hacd_transfer(ctx, &mut core_state, &from, &to, &DiamondNumber::from(dianum as u32), &this.diamonds)
+    do_diamonds_transfer(&this.diamonds, from, to, ctx, sta, sto)
 }
+
 
 
 
@@ -79,7 +85,7 @@ fn diamond_from_to_transfer(this: &DiamondFromToTransfer, ctx: &mut dyn ExecCont
  * Diamond Multipl Transfer
  */
  ActionDefine!{
-    DiamondMultipleTransfer : 7, (
+    DiamondToTransfer : 7, (
         to             : AddrOrPtr
         diamonds       : DiamondNameListMax200 
     ),
@@ -91,25 +97,35 @@ fn diamond_from_to_transfer(this: &DiamondFromToTransfer, ctx: &mut dyn ExecCont
     {
         // gas = dia num * 6
         gas += self.diamonds.count().uint() as i64 * DiamondName::width() as i64;
-        diamond_multiple_transfer(self, ctx, state, store)
+        diamond_to_transfer(self, ctx, state, store)
     }
 }
 
-fn diamond_multiple_transfer(this: &DiamondMultipleTransfer, ctx: &mut dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
-
-    // check
-    let dianum = this.diamonds.check()?;
-    // from
+fn diamond_to_transfer(this: &DiamondToTransfer, ctx: &mut dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
     let from = ctx.main_address().clone();
+    let to = this.to.real(ctx.addr_list())?;
+    do_diamonds_transfer(&this.diamonds, from, to, ctx, sta, sto)
+}
+
+
+
+/////////////////////////
+
+
+
+fn do_diamonds_transfer(diamonds: &DiamondNameListMax200, from: Address, to: Address, ctx: &mut dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
+    // check
+    let dianum = diamonds.check()?;
     //transfer
     let mut state = MintState::wrap(sta);
-    let to = this.to.real(ctx.addr_list())?;
-    for dianame in this.diamonds.list() {
+    for dianame in diamonds.list() {
         hacd_move_one_diamond(&mut state, &from, &to, &dianame)?; // move one
     }
-    diamond_owned_move(&mut state, &from, &to, &this.diamonds)?;
+    diamond_owned_move(&mut state, &from, &to, diamonds)?;
     drop(state);
     // transfer
     let mut core_state = CoreState::wrap(sta);
-    hacd_transfer(ctx, &mut core_state, &from, &to, &DiamondNumber::from(dianum as u32), &this.diamonds)
+    hacd_transfer(ctx, &mut core_state, &from, &to, &DiamondNumber::from(dianum as u32), &diamonds)
 }
+
+

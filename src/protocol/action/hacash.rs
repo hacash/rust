@@ -3,7 +3,7 @@
  * simple hac to
  */
 ActionDefine!{
-    HacTransfer : 1, (
+    HacToTransfer : 1, (
         to : AddrOrPtr
         amt : Amount
     ),

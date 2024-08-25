@@ -62,11 +62,12 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: 
             return  // difficulty check fail
         }
         // do insert  ◆ ◇ ⊙ ■ □ △ ▽ ❏ ❐ ❑ ❒  ▐ ░ ▒ ▓ ▔ ▕ ■ □ ▢ ▣ ▤ ▥ ▦ ▧ ▨ ▩ ▪ ▫    
-        let hxtail = &blkhx.as_bytes()[24..];
+        let hxstrt = &blkhx.as_bytes()[4..12];
+        let hxtail = &blkhx.as_bytes()[30..];
         let txs = blkhead.transaction_count().uint() - 1;
         let blkts = &timeshow(blkhead.timestamp().uint())[14..];
-        print!("❏ discover block {} …{} txs{:2} time {} inserting at {} ... ", 
-            blkhei, hex::encode(hxtail), txs, blkts, &ctshow()[11..]);
+        print!("❏ block {} …{}…{} txs{:2} insert at {} ", 
+            blkhei, hex::encode(hxstrt), hex::encode(hxtail), txs, &ctshow()[11..]);
         let bodycp = body.clone();
         let engptr = eng.clone();
         let txpool = this.txpool.clone();

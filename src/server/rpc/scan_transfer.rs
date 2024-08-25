@@ -62,8 +62,8 @@ fn append_transfer_scan(mainaddr_readable: &String, unit: &str, ck: &CoinKind, t
         )
     }
 
-    // HacTransfer // 1
-    transfer_scan_action_item!( act, HacTransfer, ck.hacash, json!({
+    // HacToTransfer // 1
+    transfer_scan_action_item!( act, HacToTransfer, ck.hacash, json!({
         "from": mainaddr_readable,
         "to": act.to.readable(),
         "hacash": act.amt.to_unit_string(unit),
@@ -81,8 +81,8 @@ fn append_transfer_scan(mainaddr_readable: &String, unit: &str, ck: &CoinKind, t
         "hacash": act.amt.to_unit_string(unit),
     }));
 
-    // DiamondTransfer          // 5 
-    transfer_scan_action_item!( act, DiamondTransfer, ck.diamond, json!({
+    // DiamondSingleTransfer          // 5 
+    transfer_scan_action_item!( act, DiamondSingleTransfer, ck.diamond, json!({
         "from": mainaddr_readable,
         "to": act.to.readable(),
         "diamond": 1usize,
@@ -95,16 +95,23 @@ fn append_transfer_scan(mainaddr_readable: &String, unit: &str, ck: &CoinKind, t
         "diamond": act.diamonds.count().uint(),
         "diamonds": act.diamonds.readable(),
     }));
-    // DiamondMultipleTransfer  // 7
-    transfer_scan_action_item!( act, DiamondMultipleTransfer, ck.diamond, json!({
+    // DiamondToTransfer  // 7
+    transfer_scan_action_item!( act, DiamondToTransfer, ck.diamond, json!({
         "from": mainaddr_readable,
         "to": act.to.readable(),
         "diamond": act.diamonds.count().uint(),
         "diamonds": act.diamonds.readable(),
     }));
+    // DiamondFromTransfer  // 8
+    transfer_scan_action_item!( act, DiamondFromTransfer, ck.diamond, json!({
+        "from": act.from.readable(),
+        "to": mainaddr_readable,
+        "diamond": act.diamonds.count().uint(),
+        "diamonds": act.diamonds.readable(),
+    }));
 
-    // SatoshiTransfer // 8
-    transfer_scan_action_item!( act, SatoshiTransfer, ck.satoshi, json!({
+    // SatoshiToTransfer // 10
+    transfer_scan_action_item!( act, SatoshiToTransfer, ck.satoshi, json!({
         "from": mainaddr_readable,
         "to": act.to.readable(),
         "satoshi": act.satoshi.uint(),

@@ -2,7 +2,7 @@ use std::time::Instant;
 
 
 fn tdat() -> Box<dyn Action> {
-    let obj = protocol::action::HacTransfer::default();
+    let obj = protocol::action::HacToTransfer::default();
     Box::new(obj)
 }
 
@@ -162,7 +162,7 @@ pub fn main_test8327459283() {
     let act1 = crate::protocol::action::ACTION_KIND_1;
     println!("{}", act1);
 
-    let mut actobj = crate::protocol::action::HacTransfer::default();
+    let mut actobj = crate::protocol::action::HacToTransfer::default();
     println!("{}", hex::encode(actobj.serialize()));
 
 

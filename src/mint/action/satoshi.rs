@@ -3,7 +3,7 @@
  * Satoshi Transfer
  */
  ActionDefine!{
-    SatoshiTransfer : 8, (
+    SatoshiToTransfer : 10, (
         to       : AddrOrPtr
         satoshi  : Satoshi
     ),

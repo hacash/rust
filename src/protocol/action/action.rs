@@ -4,9 +4,9 @@
  */
 pubFnRegActionCreates!{
 
-    HacTransfer
-    HacFromTransfer
-    HacFromToTransfer
+    HacToTransfer      // 1
+    HacFromTransfer    // 13
+    HacFromToTransfer  // 14
 
     SubChainID
 

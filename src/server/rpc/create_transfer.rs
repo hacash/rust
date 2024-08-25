@@ -48,7 +48,7 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
             obj.satoshi = sat;
             act = Box::new(obj);
         }else{
-            let mut obj = SatoshiTransfer::new();
+            let mut obj = SatoshiToTransfer::new();
             obj.to = AddrOrPtr::by_addr(toaddr);
             obj.satoshi = sat;
             act = Box::new(obj);
@@ -71,12 +71,12 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
             act = Box::new(obj);
         }else{
             if dialist.count().uint() == 1 {
-                let mut obj = DiamondTransfer::new();
+                let mut obj = DiamondSingleTransfer::new();
                 obj.to = AddrOrPtr::by_addr(toaddr);
                 obj.diamond = DiamondName::cons(*dialist.list()[0]);
                 act = Box::new(obj);
             }else{
-                let mut obj = DiamondMultipleTransfer::new();
+                let mut obj = DiamondToTransfer::new();
                 obj.to = AddrOrPtr::by_addr(toaddr);
                 obj.diamonds = dialist;
                 act = Box::new(obj);
@@ -99,7 +99,7 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
             obj.amt = hac;
             act = Box::new(obj);
         }else{
-            let mut obj = HacTransfer::new();
+            let mut obj = HacToTransfer::new();
             obj.to = AddrOrPtr::by_addr(toaddr);
             obj.amt = hac;
             act = Box::new(obj);

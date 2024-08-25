@@ -10,9 +10,10 @@ pub const ACTION_KIND_ID_DIAMOND_MINT: u16 = 4;
     ChannelClose     // 3
 
     DiamondMint              // 4
-    DiamondTransfer          // 5 
+    DiamondSingleTransfer    // 5 
     DiamondFromToTransfer    // 6
-    DiamondMultipleTransfer  // 7
+    DiamondToTransfer        // 7
+    DiamondFromTransfer      // 8
 
     DiamondInscription       // 32
     DiamondInscriptionClean  // 33

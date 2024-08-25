@@ -16,25 +16,46 @@ pub fn fullnode(blkscaner: Option<Box<dyn BlockScaner>>) {
     let cnfp = "./hacash.config.ini".to_string();
     let inicnf = config::load_config(cnfp);
 
+    // block scaner
+    let scaner = init_block_scaner(&inicnf, blkscaner);
+
+    // hacash node
+    start_hacash_node(inicnf, scaner);
+}
+
+/*
+* init block scaner
+*/
+fn init_block_scaner(inicnf: &IniObj, blkscaner: Option<Box<dyn BlockScaner>>) -> Arc<dyn BlockScaner> {
+
     // scaner
     let scaner: Arc<dyn BlockScaner> = match blkscaner {
         Some(mut scan) => {
-            scan.init(&inicnf).unwrap(); // init block scaner
+            scan.init(inicnf).unwrap(); // init block scaner
             scan.into()
         },
         _ => Arc::new(EmptyBlockScaner{}),
     };
 
-    // start
-    start_hacash_node(inicnf, scaner);
+    // start block scaner
+    let scanercp1 = scaner.clone();
+    std::thread::spawn(move||{
+        scanercp1.start().unwrap();
+    });
+    let scanercp2 = scaner.clone();
+    std::thread::spawn(move||{
+        scanercp2.serve().unwrap();
+    });
     
+    // ok
+    scaner
 }
 
 
 /*
 * create and start hash node
 */
-fn start_hacash_node(iniobj: sys::IniObj, blkscaner: Arc<dyn BlockScaner>) {
+fn start_hacash_node(iniobj: IniObj, blkscaner: Arc<dyn BlockScaner>) {
 
     println!("[Version] full node v{}, build time: {}, database type: {}.", 
         HACASH_NODE_VERSION, HACASH_NODE_BUILD_TIME, HACASH_STATE_DB_UPDT
@@ -43,12 +64,6 @@ fn start_hacash_node(iniobj: sys::IniObj, blkscaner: Arc<dyn BlockScaner>) {
     use std::sync::mpsc::channel;
     let (cltx, clrx) = channel();
     ctrlc::set_handler(move || cltx.send(()).unwrap()); // ctrl+c to quit
-
-    // start block scaner
-    let scanercp = blkscaner.clone();
-    std::thread::spawn(move||{
-        scanercp.start().unwrap();
-    });
 
     // println!("startHacashNode ini={:?}", iniobj);
     // mint
