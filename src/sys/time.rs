@@ -15,4 +15,9 @@ pub fn timeshow(t: u64) -> String {
     Local.timestamp_opt(t as i64, 0).unwrap().format(TIME_FORMAT).to_string()
 }
 
+// &str = "%Y-%m-%d %H:%M:%S";   %Y%m%d
+pub fn timefmt(t: u64, fmts: &str) -> String {
+    Local.timestamp_opt(t as i64, 0).unwrap().format(fmts).to_string()
+}
+
 
