@@ -73,7 +73,7 @@ fn start_hacash_node(iniobj: IniObj, blkscaner: Arc<dyn BlockScaner>) {
 
     // engine
     let dbv = HACASH_STATE_DB_UPDT;
-    let engine = BlockEngine::open(&iniobj, dbv, mint_checker, blkscaner);
+    let engine = BlockEngine::open(&iniobj, dbv, mint_checker, blkscaner.clone());
     let engptr: Arc<BlockEngine> = Arc::new(engine);
 
     // node
@@ -89,6 +89,7 @@ fn start_hacash_node(iniobj: IniObj, blkscaner: Arc<dyn BlockScaner>) {
     let hn2 = hnode.clone();
     std::thread::spawn(move||{ loop{
         clrx.recv();
+        blkscaner.exit();
         hn2.close(); // ctrl+c to quit
     }});
 

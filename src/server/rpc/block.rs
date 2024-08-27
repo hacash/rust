@@ -7,6 +7,7 @@
 defineQueryObject!{ Q2953,
     height, Option<u32>, None,
     hash, Option<String>, None,
+    tx_hash_list, Option<bool>, None,
 }
 
 async fn block_intro(State(ctx): State<ApiCtx>, q: Query<Q2953>) -> impl IntoResponse {
@@ -14,6 +15,7 @@ async fn block_intro(State(ctx): State<ApiCtx>, q: Query<Q2953>) -> impl IntoRes
     q_unit!(q, unit);
     q_must!(q, hash, s!(""));
     q_must!(q, height, 0);
+    q_must!(q, tx_hash_list, false);
     // read
     let mut key = hash;
     if height > 0 {
@@ -25,17 +27,39 @@ async fn block_intro(State(ctx): State<ApiCtx>, q: Query<Q2953>) -> impl IntoRes
     }
     let blkpkg = blkpkg.unwrap();
     let blkobj = blkpkg.objc();
+    let cbtx = create_recent_block_info(blkobj.as_read());
     
     // return data
-    let txnum = blkobj.transaction_count().uint() - 1; // drop coinbase
+    let txnum = blkobj.transaction_count().uint() as usize - 1; // drop coinbase
     let mut data = jsondata!{
         "hash", blkpkg.hash().hex(),
+        // head
+        "version", blkobj.version().uint(),
         "height", blkobj.height().uint(),
         "timestamp", blkobj.timestamp().uint(),
         "mrklroot", blkobj.mrklroot().hex(),
         "prevhash", blkobj.prevhash().hex(),
-        "transaction", txnum,
+        // meta
+        "nonce", blkobj.nonce().uint(),
+        "difficulty", blkobj.difficulty().uint(),
+        // coinbase
+        "miner", cbtx.miner.readable(),
+        "reward", cbtx.reward.to_unit_string(&unit),
+        "message", cbtx.message.readable_left(),
+        // tx list
+        "transaction", txnum, // no coinbase
     };
+
+    // tx_hash_list
+    if tx_hash_list {
+        let mut txhxs: Vec<String> = vec![];
+        let alltrs = blkobj.transactions();
+        for i in 1..txnum+1 {
+            txhxs.push( alltrs[i].hash().hex() );
+        }
+        data.insert("tx_hash_list", json!(txhxs));
+    }
+    
     api_data(data)
 }
 
@@ -123,7 +147,7 @@ async fn block_views(State(ctx): State<ApiCtx>, q: Query<Q4935>) -> impl IntoRes
             "reward", cbtx.reward().to_unit_string(&unit),
             "miner", cbtx.address().unwrap().readable(),
             "time", intro.timestamp().uint(),
-            "txs", intro.transaction_count().uint() - 1,
+            "tx_count", intro.transaction_count().uint() - 1,
         };
         datalist.push(data);
     }
