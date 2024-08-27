@@ -8,7 +8,8 @@ pubFnRegActionCreates!{
     HacFromTransfer    // 13
     HacFromToTransfer  // 14
 
-    SubChainID
+    SubmitHeightLimit // 29
+    SubChainID  // 30
 
 }
 

@@ -147,7 +147,7 @@ async fn block_views(State(ctx): State<ApiCtx>, q: Query<Q4935>) -> impl IntoRes
             "reward", cbtx.reward().to_unit_string(&unit),
             "miner", cbtx.address().unwrap().readable(),
             "time", intro.timestamp().uint(),
-            "tx_count", intro.transaction_count().uint() - 1,
+            "txs", intro.transaction_count().uint() - 1,
         };
         datalist.push(data);
     }

@@ -15,6 +15,7 @@ pub fn bytes_to_readable_string(bts: &[u8]) -> String {
     resstr.trim_end().to_string()
 }
 
+
 pub fn bytes_from_readable_string(stuff: &[u8], len: usize) -> Ret<Vec<u8>> {
     let mut bts = Vec::with_capacity(len);
     let rs = stuff.to_vec();
@@ -32,15 +33,19 @@ pub fn bytes_from_readable_string(stuff: &[u8], len: usize) -> Ret<Vec<u8>> {
 }
 
 pub fn bytes_try_to_readable_string(bts: &[u8]) -> Option<String> {
-    let mut ss: Vec<u8> = Vec::with_capacity(bts.len());
-    for a in bts {
-        if *a<32 || *a>126 {
-            return None // cannot read
-        }
-        ss.push(*a);
+    if false == check_readable_string(bts) {
+        return None
     }
-    let resstr = String::from_utf8(ss).ok().unwrap();
-    Some(resstr.trim_end().to_string())
+    let resstr = String::from_utf8(bts.to_vec()).ok().unwrap();
+    Some(resstr.to_string())
+}
+
+
+pub fn bytes_to_readable_string_or_hex(bts: &[u8]) -> String {
+    match check_readable_string(bts) {
+        true => String::from_utf8(bts.to_vec()).ok().unwrap().to_string(),
+        false => hex::encode(bts),
+    }
 }
 
 

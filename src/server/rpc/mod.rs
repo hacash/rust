@@ -46,8 +46,10 @@ include!("latest.rs");
 include!("hashrate.rs");
 include!("supply.rs");
 include!("balance.rs");
+include!("channel.rs");
 include!("diamond.rs");
 include!("block.rs");
+include!("transaction.rs");
 
 include!("scan_transfer.rs");
 

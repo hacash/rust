@@ -18,6 +18,10 @@ pub const ACTION_KIND_ID_DIAMOND_MINT: u16 = 4;
     DiamondInscription       // 32
     DiamondInscriptionClean  // 33
 
+    SatoshiToTransfer        // 9
+    SatoshiFromTransfer      // 10
+    SatoshiFromToTransfer    // 11
+
 }
 
 // reg action

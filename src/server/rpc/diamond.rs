@@ -42,12 +42,17 @@ async fn diamond(State(ctx): State<ApiCtx>, q: Query<Q3946>) -> impl IntoRespons
     let mut data = jsondata!{
         "name", dian.readable(),
         "belong", diaobj.address.readable(),
-        "inscripts", diaobj.inscripts.array(),
+        "inscriptions", diaobj.inscripts.array(),
         // smelt
         "number", diasmelt.number.uint(),
-        // "miner", diasmelt.miner_address.readable(),
-        "height", diasmelt.belong_height.uint(), // belong block height
+        "miner", diasmelt.miner_address.readable(),
+        "born", jsondata!{
+            "height", diasmelt.belong_height.uint(), // born block height
+            "hash", diasmelt.belong_hash.hex(), // born block hash
+        },
+        "prev_hash", diasmelt.prev_hash.hex(),
         "bid_fee", diasmelt.bid_fee.to_unit_string(&unit),
+        "average_bid_burn", diasmelt.average_bid_burn.uint(),
         "life_gene", diasmelt.life_gene.hex(),
         "visual_gene", calculate_diamond_visual_gene(&dian, &diasmelt.life_gene).hex(),
     };
@@ -121,6 +126,7 @@ async fn diamond_bidding(State(ctx): State<ApiCtx>, q: Query<Q8346>) -> impl Int
 
 
 defineQueryObject!{ Q5395,
+    name, Option<String>, None,
     limit, Option<i64>, None,
     page, Option<i64>, None,
     start, Option<i64>, None,
@@ -136,6 +142,8 @@ async fn diamond_views(State(ctx): State<ApiCtx>, q: Query<Q5395>) -> impl IntoR
     q_must!(q, page, 1);
     q_must!(q, start, i64::MAX);
     q_must!(q, desc, false);
+    q_must!(q, name, s!(""));
+
     if limit > 200 {
         limit = 200;
     }
@@ -143,27 +151,45 @@ async fn diamond_views(State(ctx): State<ApiCtx>, q: Query<Q5395>) -> impl IntoR
     // load by list
     let mut datalist = vec![];
 
-    // ids
-    let diarng = get_id_range(lastdianum, page, limit, start, desc);
-    // println!("{:?}", diarng);
-    for id in diarng {
-        let Some(dian) = mintstate.diamond_ptr(&DiamondNumber::from(id as u32)) else {
-            continue
+    let mut query_item = |dian: &DiamondName|{
+        let Some(diaobj) = mintstate.diamond(dian) else {
+            return
         };
-        let Some(diaobj) = mintstate.diamond(&dian) else {
-            continue
-        };
-        let Some(diasmelt) = mintstore.diamond_smelt(&dian) else {
-            continue
+        let Some(diasmelt) = mintstore.diamond_smelt(dian) else {
+            return
         };
         let data = jsondata!{
-            "number", id,
             "name", dian.readable(),
+            "number", diasmelt.number.uint(),
             "bid_fee", diasmelt.bid_fee.to_unit_string(&unit),
             "life_gene", diasmelt.life_gene.hex(),
             // "visual_gene", calculate_diamond_visual_gene(&dian, &diasmelt.life_gene).hex(),
         };
         datalist.push(data);
+    };
+
+    if name.len() >= DiamondName::width() {
+
+        let names: Vec<String> = name.replace(" ", "").split(",").map(|s|s.to_string()).collect();
+        for a in names {
+            if a.len() != DiamondName::width() {
+                continue
+            }
+            let dian = DiamondName::must(&a.into_bytes());
+            query_item(&dian);
+        }
+
+    }else{
+
+        // ids
+        let diarng = get_id_range(lastdianum, page, limit, start, desc);
+        // println!("{:?}", diarng);
+        for id in diarng {
+            let Some(dian) = mintstate.diamond_ptr(&DiamondNumber::from(id as u32)) else {
+                continue
+            };
+            query_item(&dian);
+        }
     }
 
     // return data

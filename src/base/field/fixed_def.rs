@@ -234,7 +234,11 @@ impl FieldReadable for $class {
     fn readable(&self) -> String {
         bytes_to_readable_string(&self.bytes[..])
     }
-    
+
+    fn readable_or_hex(&self) -> String {
+        bytes_to_readable_string_or_hex(&self.bytes[..])
+    }
+
     fn readable_left(&self) -> String { 
         left_readable_string(&self.bytes[..])
     }

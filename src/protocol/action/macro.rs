@@ -146,7 +146,7 @@ impl ActExec for $actname {
 
 impl $actname {
 
-    pub fn kid() -> u16 {
+    pub const fn kid() -> u16 {
         $actid
     }
 

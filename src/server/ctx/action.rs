@@ -22,7 +22,7 @@ pub fn action_json_desc(tx: &dyn TransactionRead, act: &dyn Action, unit: &Strin
         resjsonobj =  jsondata!{
             "from", main_addr_str,
             "to", to.readable(),
-            "amount", action.amt.to_unit_string(unit),
+            "hacash", action.amt.to_unit_string(unit),
         };
 
     }else if kind == HacFromTransfer::kid() {
@@ -32,7 +32,7 @@ pub fn action_json_desc(tx: &dyn TransactionRead, act: &dyn Action, unit: &Strin
         resjsonobj =  jsondata!{
             "from", from.readable(),
             "to", main_addr_str,
-            "amount", action.amt.to_unit_string(unit),
+            "hacash", action.amt.to_unit_string(unit),
         };
 
     }else if kind == HacFromToTransfer::kid() {
@@ -43,7 +43,7 @@ pub fn action_json_desc(tx: &dyn TransactionRead, act: &dyn Action, unit: &Strin
         resjsonobj =  jsondata!{
             "from", from.readable(),
             "to", to.readable(),
-            "amount", action.amt.to_unit_string(unit),
+            "hacash", action.amt.to_unit_string(unit),
         };
     
 
@@ -57,7 +57,7 @@ pub fn action_json_desc(tx: &dyn TransactionRead, act: &dyn Action, unit: &Strin
         resjsonobj =  jsondata!{
             "from", main_addr_str,
             "to", to.readable(),
-            "amount", action.satoshi.uint(),
+            "satoshi", action.satoshi.uint(),
         };
 
     }else if kind == SatoshiFromTransfer::kid() {
@@ -67,7 +67,7 @@ pub fn action_json_desc(tx: &dyn TransactionRead, act: &dyn Action, unit: &Strin
         resjsonobj = jsondata!{
             "from", from.readable(),
             "to", main_addr_str,
-            "amount", action.satoshi.uint(),
+            "satoshi", action.satoshi.uint(),
         };
 
     }else if kind == SatoshiFromToTransfer::kid() {
@@ -78,7 +78,7 @@ pub fn action_json_desc(tx: &dyn TransactionRead, act: &dyn Action, unit: &Strin
         resjsonobj = jsondata!{
             "from", from.readable(),
             "to", to.readable(),
-            "amount", action.satoshi.uint(),
+            "satoshi", action.satoshi.uint(),
         };
     
 
@@ -130,7 +130,84 @@ pub fn action_json_desc(tx: &dyn TransactionRead, act: &dyn Action, unit: &Strin
             "diamonds", action.diamonds.readable(),
         };
 
+
+    /*************** Diamond mint & inscription ***************/
+
+
+    }else if kind == DiamondMint::kid() {
+
+        let action = DiamondMint::must(&act.serialize());
+        resjsonobj = jsondata!{
+            "name", action.head.diamond.readable(),
+            "number", action.head.number.uint(),
+            "miner", action.head.address.readable(),
+            "nonce", action.head.nonce.hex(),
+            "prev_hash", action.head.prev_hash.hex(), // prev block hash
+            "custom_message", action.custom_message.hex(),
+        };
+
+    }else if kind == DiamondInscription::kid() {
+
+        let action = DiamondInscription::must(&act.serialize());
+        resjsonobj = jsondata!{
+            "diamonds", action.diamonds.readable(),
+            "protocol_cost", action.protocol_cost.to_unit_string(unit),
+            "engraved_type", action.engraved_type.uint(),
+            "engraved_content", action.engraved_content.readable_or_hex(),
+        };
+
+    }else if kind == DiamondInscriptionClean::kid() {
+
+        let action = DiamondInscriptionClean::must(&act.serialize());
+        resjsonobj = jsondata!{
+            "diamonds", action.diamonds.readable(),
+            "protocol_cost", action.protocol_cost.to_unit_string(unit),
+        };
+
+
+
+    /*************** Channel ***************/
+
+    }else if kind == ChannelOpen::kid() {
+
+        let action = ChannelOpen::must(&act.serialize());
+        resjsonobj = jsondata!{
+            "channel_id", action.channel_id.hex(),
+            "left", jsondata!{
+                "address", action.left_bill.address.readable(),
+                "hacash", action.left_bill.amount.to_unit_string(unit),
+            },
+            "right", jsondata!{
+                "address", action.right_bill.address.readable(),
+                "hacash", action.right_bill.amount.to_unit_string(unit),
+            },
+        };
+
+    }else if kind == ChannelClose::kid() {
+
+        let action = ChannelClose::must(&act.serialize());
+        resjsonobj = jsondata!{
+            "channel_id", action.channel_id.hex(),
+        };
+
+
+    /*************** Others ***************/
+
+    }else if kind == SubmitHeightLimit::kid() {
         
+        let action = SubmitHeightLimit::must(&act.serialize());
+        resjsonobj = jsondata!{
+            "start_height", action.start.uint(),
+            "end_height", action.end.uint(),
+        };
+
+    }else if kind == SubChainID::kid() {
+        
+        let action = SubChainID::must(&act.serialize());
+        resjsonobj = jsondata!{
+            "chain_id", action.chain_id.uint(),
+        };
+
 
     }else{
 
