@@ -85,7 +85,7 @@ fn channel_open(this: &ChannelOpen, ctx: &dyn ExecContext, sta: &mut dyn State, 
     let channel = ChannelSto{
         status: CHANNEL_STATUS_OPENING,
         reuse_version: reuse_version,
-        belong_height: Uint5::from(pd_hei),
+        open_height: Uint5::from(pd_hei),
         arbitration_lock_block: Uint2::from(5000), // lock period is about 17 days
         interest_attribution: CHANNEL_INTEREST_ATTRIBUTION_TYPE_DEFAULT,
         left_bill: AddrHacSat{

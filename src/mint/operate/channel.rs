@@ -52,7 +52,7 @@ pub fn close_channel_with_distribution(pdhei: u64, sta: &mut dyn State, channel_
     if ttamt.is_positive() {
         // calculate_interest
         let (newamt1, newamt2) = calculate_interest_of_height(
-            pdhei, paychan.belong_height.to_u64(), 
+            pdhei, paychan.open_height.to_u64(), 
             paychan.interest_attribution, left_amt, right_amt
         )?;
         let ttnewhac = newamt1.add(&newamt2) ?;
