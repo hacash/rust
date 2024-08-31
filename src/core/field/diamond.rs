@@ -108,7 +108,7 @@ impl DiamondNameListMax200 {
         self.lists.iter().map(|a|a.clone()).collect::<HashSet<_>>()
     }
 
-    pub fn from_string(stuff: &String) -> Ret<DiamondNameListMax200> {
+    pub fn from_readable(stuff: &str) -> Ret<DiamondNameListMax200> {
         let s = stuff.replace(" ","").replace("\n","").replace("|","").replace(",","");
         if s.len() == 0 {
             return errf!("diamond list empty")

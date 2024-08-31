@@ -43,13 +43,13 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
         let sat = Satoshi::from(satoshi);
         if is_from {
             let mut obj = SatoshiFromToTransfer::new();
-            obj.from = AddrOrPtr::by_addr(fromaddr);
-            obj.to = AddrOrPtr::by_addr(toaddr);
+            obj.from = AddrOrPtr::from_addr(fromaddr);
+            obj.to = AddrOrPtr::from_addr(toaddr);
             obj.satoshi = sat;
             act = Box::new(obj);
         }else{
             let mut obj = SatoshiToTransfer::new();
-            obj.to = AddrOrPtr::by_addr(toaddr);
+            obj.to = AddrOrPtr::from_addr(toaddr);
             obj.satoshi = sat;
             act = Box::new(obj);
         }
@@ -58,26 +58,26 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
     // hacd
     if diamonds.len() >= DiamondName::width() {
         let mut act: Box<dyn Action>;
-        let dialist = DiamondNameListMax200::from_string(&diamonds);
+        let dialist = DiamondNameListMax200::from_readable(&diamonds);
         if let Err(e) = dialist {
             return api_error(&format!("diamonds error: {}", &e))
         }
         let dialist = dialist.unwrap();
         if is_from {
             let mut obj = DiamondFromToTransfer::new();
-            obj.from = AddrOrPtr::by_addr(fromaddr);
-            obj.to = AddrOrPtr::by_addr(toaddr);
+            obj.from = AddrOrPtr::from_addr(fromaddr);
+            obj.to = AddrOrPtr::from_addr(toaddr);
             obj.diamonds = dialist;
             act = Box::new(obj);
         }else{
             if dialist.count().uint() == 1 {
                 let mut obj = DiamondSingleTransfer::new();
-                obj.to = AddrOrPtr::by_addr(toaddr);
+                obj.to = AddrOrPtr::from_addr(toaddr);
                 obj.diamond = DiamondName::cons(*dialist.list()[0]);
                 act = Box::new(obj);
             }else{
                 let mut obj = DiamondToTransfer::new();
-                obj.to = AddrOrPtr::by_addr(toaddr);
+                obj.to = AddrOrPtr::from_addr(toaddr);
                 obj.diamonds = dialist;
                 act = Box::new(obj);
             }
@@ -94,14 +94,14 @@ async fn create_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q9374>) -> imp
         let hac = hac.unwrap();
         if is_from {
             let mut obj = HacFromToTransfer::new();
-            obj.from = AddrOrPtr::by_addr(fromaddr);
-            obj.to = AddrOrPtr::by_addr(toaddr);
-            obj.amt = hac;
+            obj.from = AddrOrPtr::from_addr(fromaddr);
+            obj.to = AddrOrPtr::from_addr(toaddr);
+            obj.hacash = hac;
             act = Box::new(obj);
         }else{
             let mut obj = HacToTransfer::new();
-            obj.to = AddrOrPtr::by_addr(toaddr);
-            obj.amt = hac;
+            obj.to = AddrOrPtr::from_addr(toaddr);
+            obj.hacash = hac;
             act = Box::new(obj);
         }
         trsobj.push_action(act);

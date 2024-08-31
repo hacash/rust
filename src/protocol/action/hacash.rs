@@ -5,7 +5,7 @@
 ActionDefine!{
     HacToTransfer : 1, (
         to : AddrOrPtr
-        amt : Amount
+        hacash : Amount
     ),
     ACTLV_MAIN, // level
     21 + 11, // gas = 32
@@ -15,7 +15,7 @@ ActionDefine!{
     {
         let from = ctx.main_address().clone(); 
         let to = self.to.real(ctx.addr_list())?;
-        hac_transfer(ctx, state, &from, &to, &self.amt)
+        hac_transfer(ctx, state, &from, &to, &self.hacash)
     }
 }
 
@@ -26,7 +26,7 @@ ActionDefine!{
  ActionDefine!{
     HacFromTransfer : 13, (
         from : AddrOrPtr
-        amt : Amount
+        hacash : Amount
     ),
     ACTLV_MAIN, // level
     21 + 11, // gas = 32
@@ -36,7 +36,7 @@ ActionDefine!{
     {
         let from = self.from.real(ctx.addr_list())?;
         let to = ctx.main_address().clone(); 
-        hac_transfer(ctx, state, &from, &to, &self.amt)
+        hac_transfer(ctx, state, &from, &to, &self.hacash)
     }
 }
 
@@ -48,7 +48,7 @@ ActionDefine!{
     HacFromToTransfer : 14, (
         from : AddrOrPtr
         to : AddrOrPtr
-        amt : Amount
+        hacash : Amount
     ),
     ACTLV_MAIN, // level
     21 + 21 + 11, // gas = 32
@@ -58,7 +58,7 @@ ActionDefine!{
     { 
         let from = self.from.real(ctx.addr_list())?;
         let to = self.to.real(ctx.addr_list())?;
-        hac_transfer(ctx, state, &from, &to, &self.amt)
+        hac_transfer(ctx, state, &from, &to, &self.hacash)
     }
 }
 

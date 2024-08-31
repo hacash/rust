@@ -54,7 +54,7 @@ impl $class {
         $class{
             ty: Uint1::from($tyid),
             timestamp: Timestamp::from(curtimes()),
-            addrorlist: AddrOrList::by_addr(addr),
+            addrorlist: AddrOrList::from_addr(addr),
             fee: fee,
             actions: DynListAction::default(),
             signs: SignListW2::default(),

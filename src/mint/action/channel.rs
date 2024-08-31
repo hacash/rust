@@ -17,8 +17,8 @@
     (self, ctx, state, store, gas), // params
     false, // burn 90
     [
-        AddrOrPtr::by_addr(self.left_bill.address),
-        AddrOrPtr::by_addr(self.right_bill.address)
+        AddrOrPtr::from_addr(self.left_bill.address),
+        AddrOrPtr::from_addr(self.right_bill.address)
     ], // req sign
     channel_open(self, ctx, state, store)
 }

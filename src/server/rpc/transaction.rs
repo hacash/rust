@@ -97,6 +97,14 @@ defineQueryObject!{ Q2856,
 }
 
 
+/*
+{
+    main_address: "",
+    timestamp: 123,
+    fee: "",
+    actions: [{...}],
+}
+*/
 async fn transaction_build(State(ctx): State<ApiCtx>, q: Query<Q2856>, body: Bytes) -> impl IntoResponse {
     ctx_store!(ctx, store);
     ctx_state!(ctx, state);
@@ -105,18 +113,62 @@ async fn transaction_build(State(ctx): State<ApiCtx>, q: Query<Q2856>, body: Byt
     q_must!(q, signature, false);
     q_must!(q, description, false);
 
-    let txjsonobj = q_body_data_may_hex!(q, body);
-    
-    
-
-
-    let Ok(txp) = transaction::create_pkg(BytesW4::from_vec(txjsonobj)) else {
-        return api_error("transaction body error")
+    let txjsondts = q_body_data_may_hex!(q, body);
+    let Ok(jsonstr) = std::str::from_utf8(&txjsondts) else {
+        return api_error("transaction json body error")
     };
+    let Ok(jsonv) = serde_json::from_str::<serde_json::Value>(jsonstr) else {
+        return api_error("transaction json body error")
+    };
+
+    macro_rules! j_addr {
+        ($k: expr) => ({
+            let Some(adr) = jsonv[$k].as_str() else {
+                return api_error("address format error")
+            };
+            let Ok(adrobj) = Address::from_readable(adr) else {
+                return api_error(&format!("address {} error", adr))
+            };
+            adrobj
+        })
+    }
+
+    macro_rules! j_hac { // hac
+        ($k: expr) => ({
+            let Some(amt) = jsonv[$k].as_str() else {
+                return api_error("amount format error")
+            };
+            let Ok(amtobj) = Amount::from_string_unsafe(amt) else {
+                return api_error(&format!("amount {} error", amt))
+            };
+            amtobj
+        })
+    }
+
+    // create trs
+    let main_addr = j_addr!("main_address");
+    let mut tx = TransactionType2::build(main_addr.clone(), j_hac!("fee"));
+    if let Some(ts) = jsonv["timestamp"].as_u64() {
+        tx.timestamp = Timestamp::from(ts);
+    }
+
+    // insert actions
+    let Some(acts) = jsonv["actions"].as_array() else {
+        return api_error("actions format error")
+    };
+    for act in acts {
+        let a = action_from_json(&main_addr, &act);
+        if let Err(e) = a {
+            return api_error(&format!("push action error: {}", &e))
+        }
+        if let Err(e) = tx.push_action( a.unwrap()) {
+            return api_error(&format!("push action error: {}", &e))
+        }
+    }
 
     // return info
     api_data(
-        render_tx_info(txp.objc().as_read(), None, 0, &unit, true, signature, action, description)
+        render_tx_info(tx.as_read(), None, 0, &unit, true, signature, action, description)
     )
 
 }
@@ -284,7 +336,7 @@ fn render_tx_info(tx: &dyn TransactionRead,
         let acts = tx.actions();
         let mut actobjs = Vec::with_capacity(acts.len());
         for act in acts {
-            actobjs.push( action_json_desc(tx, act.as_ref(), unit, true, description) );
+            actobjs.push( action_to_json_desc(tx, act.as_ref(), unit, true, description) );
         }
         data.insert("actions", json!(actobjs));
     }

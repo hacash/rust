@@ -1,6 +1,245 @@
 
 // json string
-pub fn action_json_desc(tx: &dyn TransactionRead, act: &dyn Action, 
+pub fn action_from_json(main_addr: &Address, jsonv: &serde_json::Value) -> Ret<Box<dyn Action>> {
+    let _ = jsonv.as_object() else {
+        return errf!("action format error")
+    };
+
+    let Some(kind) = jsonv["kind"].as_u64() else {
+        return errf!("kind format error")
+    };
+    if kind > u16::MAX.into(){
+        return errf!("kind {} value overflow", kind)
+    }
+    let kind = kind as u16;
+
+    macro_rules! j_addr {
+        ($k: expr) => ({
+            let Some(adr) = jsonv[$k].as_str() else {
+                return errf!("address format error")
+            };
+            let Ok(adrobj) = Address::from_readable(adr) else {
+                return errf!("address {} error", adr)
+            };
+            AddrOrPtr::from_addr(adrobj)
+        })
+    }
+
+    macro_rules! j_hac { // hac
+        ($k: expr) => ({
+            let Some(amt) = jsonv[$k].as_str() else {
+                return errf!("amount format error")
+            };
+            let Ok(amtobj) = Amount::from_string_unsafe(amt) else {
+                return errf!("amount {} error", amt)
+            };
+            amtobj
+        })
+    }
+
+    macro_rules! j_sat { // satoshi
+        ($k: expr) => ({
+            let Some(sat) = jsonv[$k].as_u64() else {
+                return errf!("satoshi format error")
+            };
+            Satoshi::from(sat)
+        })
+    }
+
+    macro_rules! j_dias { // diamonds
+        ($k: expr) => ({
+            let Some(dias) = jsonv[$k].as_str() else {
+                return errf!("diamonds format error")
+            };
+            let dialist = DiamondNameListMax200::from_readable(dias);
+            if let Err(e) = dialist {
+                return errf!("diamonds {} error",  &e)
+            }
+            dialist.unwrap()
+        })
+    }
+
+    macro_rules! j_uint {
+        ($k: expr, $t1: ty, $t2: ty) => ({
+            let Some(num) = jsonv[$k].as_u64() else {
+                return errf!("{} format error", stringify!($k))
+            };
+            if num > <$t1>::MAX.into() {
+                return errf!("{} value overflow", stringify!($k))
+            }
+            <$t2>::from(num as $t1)
+        })
+    }
+
+    macro_rules! j_uint1 {
+        ($k: expr) => (
+            j_uint!($k, u8, Uint1)
+        )
+    }
+
+    macro_rules! j_uint5 {
+        ($k: expr) => (
+            j_uint!($k, u64, Uint5)
+        )
+    }
+
+    macro_rules! j_uint8 {
+        ($k: expr) => (
+            j_uint!($k, u64, Uint8)
+        )
+    }
+
+    macro_rules! j_bytes {
+        ($k: expr, $t1: ty, $t2: ty) => ({
+            let Some(btstr) = jsonv[$k].as_str() else {
+                return errf!("{} format error", stringify!($k))
+            };
+            let Ok(bts) = hex::decode(btstr) else {
+                return errf!("{} hex data error", stringify!($k))
+            };
+            if bts.len() > <$t1>::MAX.into() {
+                return errf!("{} length overflow", stringify!($k))
+            }
+            <$t2>::from_vec(bts)
+        })
+    }
+
+    macro_rules! j_bytes1 {
+        ($k: expr) => (
+            j_bytes!($k, u8, BytesW1)
+        )
+    }
+
+    macro_rules! ret_act {
+        ( $cls: ident, $( $k: ident, $v: expr)+ ) => {
+            Ok(Box::new($cls {
+                kind: Uint2::from(<$cls>::kid()),
+                $(
+                    $k: $v,
+                )+
+            }))
+        }
+    }
+
+    macro_rules! if_ret_act {
+        ( $cls: ident, $( $k: ident, $v: expr)+ ) => {
+            if kind == <$cls>::kid() {
+                return ret_act!{ $cls, 
+                    $(
+                        $k, $v
+                    )+
+                }
+            }
+        }
+    }
+    macro_rules! if_ret_act_ns {
+        ( $cls: ident, $( $k: ident, $g: ident)+ ) => {
+            if kind == <$cls>::kid() {
+                return ret_act!{ $cls, 
+                    $(
+                        $k, $g!( stringify!($k) )
+                    )+
+                }
+            }
+        }
+    }
+
+    /*********** Hacash ***********/
+
+    if_ret_act_ns!{ HacToTransfer,
+        to,       j_addr
+        hacash,   j_hac
+    }
+
+    if_ret_act_ns!{ HacFromTransfer, 
+        from,     j_addr
+        hacash,   j_hac
+    }
+
+    if_ret_act_ns!{ HacFromToTransfer, 
+        from,     j_addr
+        to,       j_addr
+        hacash,   j_hac
+    }
+
+    /*********** Satoshi ***********/
+
+    if_ret_act_ns!{ SatoshiToTransfer,
+        to,       j_addr
+        satoshi,  j_sat
+    }
+
+    if_ret_act_ns!{ SatoshiFromTransfer, 
+        from,     j_addr
+        satoshi,  j_sat
+    }
+
+    if_ret_act_ns!{ SatoshiFromToTransfer, 
+        from,     j_addr
+        to,       j_addr
+        satoshi,  j_sat
+    }
+
+    /*********** Diamond ***********/
+
+    if_ret_act!{ DiamondSingleTransfer,
+        to,       j_addr!("to")
+        diamond,  j_dias!("diamond")[0]
+    }
+
+    if_ret_act_ns!{ DiamondToTransfer,
+        to,       j_addr
+        diamonds, j_dias
+    }
+
+    if_ret_act_ns!{ DiamondFromTransfer, 
+        from,     j_addr
+        diamonds, j_dias
+    }
+
+    if_ret_act_ns!{ DiamondFromToTransfer, 
+        from,     j_addr
+        to,       j_addr
+        diamonds, j_dias
+    }
+
+    if_ret_act_ns!{ DiamondInscription,
+        diamonds,         j_dias
+        protocol_cost,    j_hac
+        engraved_type,    j_uint1
+        engraved_content, j_bytes1
+    }
+
+    if_ret_act_ns!{ DiamondInscriptionClean,
+        diamonds,         j_dias
+        protocol_cost,    j_hac
+    }
+
+
+    /*********** Other ***********/
+
+
+    if_ret_act_ns!{ SubmitHeightLimit,
+        start,         j_uint5
+        end,           j_uint5
+    }
+
+    if_ret_act_ns!{ SubChainID,
+        chain_id,      j_uint8
+    }
+
+
+
+
+
+    // not support
+    return errf!("kind {} not support", kind)
+}
+
+
+
+// json string
+pub fn action_to_json_desc(tx: &dyn TransactionRead, act: &dyn Action, 
     unit: &String, ret_kind: bool, ret_desc: bool
 ) -> JsonObject {
 
@@ -21,7 +260,7 @@ pub fn action_json_desc(tx: &dyn TransactionRead, act: &dyn Action,
 
         let action = HacToTransfer::must(&act.serialize());
         let to_addr = action.to.real(adrs).unwrap().readable();
-        let amt_str = action.amt.to_unit_string(unit);
+        let amt_str = action.hacash.to_unit_string(unit);
         resjsonobj = jsondata!{
             "from", main_addr,
             "to", to_addr,
@@ -38,7 +277,7 @@ pub fn action_json_desc(tx: &dyn TransactionRead, act: &dyn Action,
 
         let action = HacFromTransfer::must(&act.serialize());
         let from_addr = action.from.real(adrs).unwrap().readable();
-        let amt_str = action.amt.to_unit_string(unit);
+        let amt_str = action.hacash.to_unit_string(unit);
         resjsonobj = jsondata!{
             "from", from_addr,
             "to", main_addr,
@@ -56,7 +295,7 @@ pub fn action_json_desc(tx: &dyn TransactionRead, act: &dyn Action,
         let action = HacFromToTransfer::must(&act.serialize());
         let from_addr = action.from.real(adrs).unwrap().readable();
         let to_addr = action.to.real(adrs).unwrap().readable();
-        let amt_str = action.amt.to_unit_string(unit);
+        let amt_str = action.hacash.to_unit_string(unit);
         resjsonobj = jsondata!{
             "from", from_addr,
             "to", to_addr,

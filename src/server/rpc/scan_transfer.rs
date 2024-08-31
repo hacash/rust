@@ -79,6 +79,6 @@ fn append_transfer_scan(tx: &dyn TransactionRead, act: &dyn Action,
 
     // append
     if trace {
-        transfers.push( action_json_desc(tx, act, unit, false, false) );
+        transfers.push( action_to_json_desc(tx, act, unit, false, false) );
     }
 }

@@ -77,7 +77,7 @@ impl Copy for AddrOrPtr { }
 
 impl AddrOrPtr {
 
-    pub fn by_addr(adr: Address) -> AddrOrPtr {
+    pub fn from_addr(adr: Address) -> AddrOrPtr {
         Self::Addr(adr)
     }
 
@@ -96,7 +96,7 @@ StructFieldRevMarkEnum!{ AddrOrList,
 
 impl AddrOrList {
 
-    pub fn by_addr(adr: Address) -> AddrOrList {
+    pub fn from_addr(adr: Address) -> AddrOrList {
         AddrOrList::Addr(adr)
     }
 

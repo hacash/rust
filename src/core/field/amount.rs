@@ -97,7 +97,7 @@ impl Field for Amount {
 
 impl Parse for Amount {
 
-    fn parse(&mut self, buf: &[u8], seek: usize) -> Result<usize, Error> {
+    fn parse(&mut self, buf: &[u8], seek: usize) -> Ret<usize> {
         let mut seek = seek;
         // get unit
         let btv = buf_clip_mvsk!(buf[seek..], 1);
@@ -160,7 +160,7 @@ impl Amount {
         amt
     }
 
-    pub fn from_unit_byte(unit: u8, byte: Vec<u8>) -> Result<Amount, String> {
+    pub fn from_unit_byte(unit: u8, byte: Vec<u8>) -> Ret<Amount> {
         let bl = byte.len();
         if bl > 127 {
             return Err("amount bytes len overflow 127.".to_string())
@@ -172,7 +172,7 @@ impl Amount {
         })
     }
 
-    pub fn from_i64(mut num: i64, mut unit: u8) -> Result<Amount, String> {
+    pub fn from_i64(mut num: i64, mut unit: u8) -> Ret<Amount> {
         let mut amt = Amount::default();
         if num == 0 {
             return Ok(amt);
@@ -204,19 +204,19 @@ impl Amount {
         return Ok(amt);
     }
 
-    pub fn from_mei(mei: i64) -> Result<Amount, String> {
+    pub fn from_mei(mei: i64) -> Ret<Amount> {
         return Amount::from_i64(mei, _MEI_UNIT);
     }
 
-    pub fn from_zhu(zhu: i64) -> Result<Amount, String> {
+    pub fn from_zhu(zhu: i64) -> Ret<Amount> {
         return Amount::from_i64(zhu, _ZHU_UNIT);
     }
 
-    pub fn from_shuo(shuo: i64) -> Result<Amount, String> {
+    pub fn from_shuo(shuo: i64) -> Ret<Amount> {
         return Amount::from_i64(shuo, _SHUO_UNIT);
     }
 
-    pub fn from_string_unsafe(v: &String) -> Result<Amount, String> {
+    pub fn from_string_unsafe(v: &str) -> Ret<Amount> {
         if let Some(t) = v.find(":") {
             Amount::from_fin_string(v)
         }else{
@@ -224,12 +224,12 @@ impl Amount {
         }
     }
 
-    pub fn from_mei_string_unsafe(v: &String) -> Result<Amount, String> {
+    pub fn from_mei_string_unsafe(v: &str) -> Ret<Amount> {
         let mayerr = ||{
             errf!("Amount.from_mei_string_unsafe `{}` format error.", v)
         };
         // let mut amt = Amount::default();
-        let nums: Vec<&str> = v.as_str().trim().split(".").collect();
+        let nums: Vec<&str> = v.trim().split(".").collect();
         if 1 == nums.len() {
             // int
             let ii = match v.parse::<i64>() {
@@ -258,7 +258,7 @@ impl Amount {
         
     }
 
-    pub fn from_fin_string(v: &String) -> Result<Amount, String> {
+    pub fn from_fin_string(v: &str) -> Ret<Amount> {
         let v = v.to_uppercase().replace("ㄜ", " ").replace("HAC", " ");
         let v = v.as_str().trim().to_string();
         let vs:Vec<&str> = v.split(":").collect();
@@ -340,7 +340,7 @@ impl Amount {
 // from / to bigint 
 impl Amount {
 
-    pub fn from_bigint( bignum: &BigInt ) -> Result<Amount, String> {
+    pub fn from_bigint( bignum: &BigInt ) -> Ret<Amount> {
         let numstr = bignum.to_string();
         if numstr == "0" {
             return Ok(Amount::default())
@@ -450,28 +450,28 @@ impl Amount {
 
 
 pub trait CptMul<T> {
-    fn mul(&self, val: T) -> Result<Amount, String>;
+    fn mul(&self, val: T) -> Ret<Amount>;
 }
 impl CptMul<i32> for Amount {
-    fn mul(&self, val: i32) -> Result<Amount, String> {
+    fn mul(&self, val: i32) -> Ret<Amount> {
         self.mul_u64(val as u64)
     }
 }
 impl CptMul<u64> for Amount {
-    fn mul(&self, val: u64) -> Result<Amount, String> {
+    fn mul(&self, val: u64) -> Ret<Amount> {
         self.mul_u64(val as u64)
     }
 }
 pub trait CptDiv<T> {
-    fn div(&self, val: T) -> Result<Amount, String>;
+    fn div(&self, val: T) -> Ret<Amount>;
 }
 impl CptDiv<i32> for Amount {
-    fn div(&self, val: i32) -> Result<Amount, String> {
+    fn div(&self, val: i32) -> Ret<Amount> {
         self.div_u64(val as u64)
     }
 }
 impl CptDiv<u64> for Amount {
-    fn div(&self, val: u64) -> Result<Amount, String> {
+    fn div(&self, val: u64) -> Ret<Amount> {
         self.div_u64(val as u64)
     }
 }
@@ -496,33 +496,33 @@ impl Amount {
         self.unit -= v;
     }
 
-    pub fn mul_u64(&self, val: u64) -> Result<Amount, String> {
+    pub fn mul_u64(&self, val: u64) -> Ret<Amount> {
         let mut v = self.to_bigint();
         v = v.mul(val);
         Amount::from_bigint(&v)
     }
 
-    pub fn div_u64(&self, val: u64) -> Result<Amount, String> {
+    pub fn div_u64(&self, val: u64) -> Ret<Amount> {
         let mut v = self.to_bigint();
         v = v.div(val);
         Amount::from_bigint(&v)
     }
 
-    pub fn add(&self, amt: &Amount) -> Result<Amount, String> {
+    pub fn add(&self, amt: &Amount) -> Ret<Amount> {
         let var1 = self.to_bigint();
         let var2 = amt.to_bigint();
         let varres = var1 + var2;
         Amount::from_bigint(&varres)
     }
 
-    pub fn sub(&self, amt: &Amount) -> Result<Amount, String> {
+    pub fn sub(&self, amt: &Amount) -> Ret<Amount> {
         let var1 = self.to_bigint();
         let var2 = amt.to_bigint();
         let varres = var1 - var2;
         Amount::from_bigint(&varres)
     }
 
-    pub fn compress(&self, nummaxlen: usize, upper: bool) -> Result<Amount, String> {
+    pub fn compress(&self, nummaxlen: usize, upper: bool) -> Ret<Amount> {
         let mut useamt = self.clone();
         loop {
             let (_, numstr, _) = useamt.to_strings();
