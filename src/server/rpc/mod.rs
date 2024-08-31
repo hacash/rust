@@ -17,6 +17,7 @@ use crate::base::field::*;
 use crate::core::*;
 use crate::core::field::*;
 use crate::core::component::*;
+use crate::core::account::*;
 use crate::core::state::{ CoreStateDisk, CoreStoreDisk };
 use crate::protocol::block::{ self, * };
 use crate::protocol::transaction::{ self, * };

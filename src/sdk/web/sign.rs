@@ -11,10 +11,10 @@ pub fn sign(acckey: String, msg: String) -> String {
         return "[ERROR] message must size 32".to_string()
     }
     let msgbts: &[u8; 32] = msghx[..].try_into().unwrap();
-    let signature = acc.do_sign(msgbts);
+    let sigdts = acc.do_sign(msgbts);
     // ok
-    let res = format!(r##""address":"{}","message":"{}","pubkey":"{}","signature":"{}""##, 
-        acc.readable(), msg, hex::encode(accpub), hex::encode(signature));
+    let res = format!(r##""address":"{}","message":"{}","pubkey":"{}","sigdts":"{}""##, 
+        acc.readable(), msg, hex::encode(accpub), hex::encode(sigdts));
     format!("{{{}}}", res)
 }
 

@@ -5,7 +5,14 @@
 
 
 defineQueryObject!{ Q8375,
-    ___nnn___, Option<bool>, None,
+    // do sign
+    prikey, Option<String>, None,
+    // append
+    pubkey, Option<String>, None,
+    sigdts, Option<String>, None,
+    //
+    signature, Option<bool>, None,
+    description, Option<bool>, None,
 }
 
 
@@ -13,20 +20,65 @@ async fn transaction_sign(State(ctx): State<ApiCtx>, q: Query<Q8375>, body: Byte
     ctx_store!(ctx, store);
     ctx_state!(ctx, state);
     q_unit!(q, unit);
+    q_must!(q, prikey, s!(""));
+    q_must!(q, pubkey, s!(""));
+    q_must!(q, sigdts, s!(""));
+    q_must!(q, signature, false);
+    q_must!(q, description, false);
 
     let lasthei = ctx.engine.latest_block().objc().height().uint();
 
     let txdts = q_body_data_may_hex!(q, body);
-
-
-    let Ok(txp) = transaction::create_pkg(BytesW4::from_vec(txdts)) else {
+    let Ok((mut tx, _)) = transaction::create(&txdts) else {
         return api_error("transaction body error")
     };
 
+    let (address, signobj) = match prikey.len() == 64 {
+        true => {
+            let Ok(prik) = hex::decode(&prikey) else {
+                return api_error("prikey format error")
+            };
+            let Ok(acc) = Account::create_by_secret_key_value(prik.try_into().unwrap()) else {
+                return api_error("prikey data error")
+            };
+            let fres = tx.fill_sign(&acc);
+            if let Err(e) = fres {
+                return api_error(&format!("fill sign error: {}", e))
+            }
+            (Address::cons(*acc.address()), fres.unwrap())
+        },
+        false => {
+            // replace
+            if pubkey.len() != 33*2 || sigdts.len() != 64*2 {
+                return api_error("pubkey or signature data error")
+            }
+            let Ok(pbk) = hex::decode(&pubkey) else {
+                return api_error("pubkey format error")
+            };
+            let Ok(sig) = hex::decode(&sigdts) else {
+                return api_error("sigdts format error")
+            };
+            let pbk: [u8; 33] = pbk.try_into().unwrap();
+            let sig: [u8; 64] = sig.try_into().unwrap();
+            let signobj = Sign{
+                publickey: Fixed33::cons( pbk ),
+                signature: Fixed64::cons( sig ),
+            };
+            if let Err(e) = tx.push_sign(signobj.clone()) {
+                return api_error(&format!("fill sign error: {}", e))
+            }
+            (Address::cons(Account::get_address_by_public_key(pbk)), signobj)
+        },
+    };
+
     // return info
-    api_data(
-        render_tx_info(txp.objc().as_read(), None, lasthei, &unit, false, false, false, false)
-    )
+    let mut data = render_tx_info(tx.as_read(), None, lasthei, &unit, true, signature, false, description);
+    data.insert("sign_data", json!(jsondata!{
+        "address", address.readable(),
+        "pubkey", signobj.publickey.hex(),
+        "sigdts", signobj.signature.hex(),
+    }));
+    api_data(data)
 
 }
 
@@ -39,7 +91,9 @@ async fn transaction_sign(State(ctx): State<ApiCtx>, q: Query<Q8375>, body: Byte
 
 
 defineQueryObject!{ Q2856,
-    ___nnn___, Option<bool>, None,
+    action, Option<bool>, None,
+    signature, Option<bool>, None,
+    description, Option<bool>, None,
 }
 
 
@@ -47,10 +101,14 @@ async fn transaction_build(State(ctx): State<ApiCtx>, q: Query<Q2856>, body: Byt
     ctx_store!(ctx, store);
     ctx_state!(ctx, state);
     q_unit!(q, unit);
-
-    let lasthei = ctx.engine.latest_block().objc().height().uint();
+    q_must!(q, action, false);
+    q_must!(q, signature, false);
+    q_must!(q, description, false);
 
     let txjsonobj = q_body_data_may_hex!(q, body);
+    
+    
+
 
     let Ok(txp) = transaction::create_pkg(BytesW4::from_vec(txjsonobj)) else {
         return api_error("transaction body error")
@@ -58,7 +116,7 @@ async fn transaction_build(State(ctx): State<ApiCtx>, q: Query<Q2856>, body: Byt
 
     // return info
     api_data(
-        render_tx_info(txp.objc().as_read(), None, lasthei, &unit, false, false, false, false)
+        render_tx_info(txp.objc().as_read(), None, 0, &unit, true, signature, action, description)
     )
 
 }
@@ -85,18 +143,14 @@ async fn transaction_check(State(ctx): State<ApiCtx>, q: Query<Q9764>, body: Byt
     q_must!(q, signature, false);
     q_must!(q, description, false);
 
-    let lasthei = ctx.engine.latest_block().objc().height().uint();
-
     let txdts = q_body_data_may_hex!(q, body);
-
-
     let Ok(txp) = transaction::create_pkg(BytesW4::from_vec(txdts)) else {
         return api_error("transaction body error")
     };
 
     // return info
     api_data(
-        render_tx_info(txp.objc().as_read(), None, lasthei, &unit, false, signature, true, description)
+        render_tx_info(txp.objc().as_read(), None, 0, &unit, false, signature, true, description)
     )
 
 }
@@ -110,7 +164,7 @@ async fn transaction_check(State(ctx): State<ApiCtx>, q: Query<Q9764>, body: Byt
 defineQueryObject!{ Q3457,
     hash, Option<String>, None,
     body, Option<bool>, None,
-    actions, Option<bool>, None,
+    action, Option<bool>, None,
     signature, Option<bool>, None,
     description, Option<bool>, None,
 }
@@ -122,7 +176,7 @@ async fn transaction_exist(State(ctx): State<ApiCtx>, q: Query<Q3457>) -> impl I
     q_unit!(q, unit);
     q_must!(q, hash, s!(""));
     q_must!(q, body, false);
-    q_must!(q, actions, false);
+    q_must!(q, action, false);
     q_must!(q, signature, false);
     q_must!(q, description, false);
 
@@ -165,7 +219,7 @@ async fn transaction_exist(State(ctx): State<ApiCtx>, q: Query<Q3457>) -> impl I
     // return info
     api_data(
         render_tx_info(tx.as_read(), Some(blkobj.as_read()), lasthei, &unit, 
-            body, signature, actions, description
+            body, signature, action, description
         )
     )
 }
@@ -180,9 +234,9 @@ async fn transaction_exist(State(ctx): State<ApiCtx>, q: Query<Q3457>) -> impl I
 /*
 * params: belong_block_obj, 
 */
-fn render_tx_info(tx: &dyn TransactionRead, blblk: Option<&dyn BlockRead>, 
-    lasthei: u64, unit: &String, 
-    body: bool, signature: bool, actions: bool, description: bool,
+fn render_tx_info(tx: &dyn TransactionRead, 
+    blblk: Option<&dyn BlockRead>, lasthei: u64, unit: &String, 
+    body: bool, signature: bool, action: bool, description: bool,
 ) -> JsonObject {
 
 
@@ -226,7 +280,7 @@ fn render_tx_info(tx: &dyn TransactionRead, blblk: Option<&dyn BlockRead>,
         data.insert("confirm", json!(lasthei - txblkhei));
     }
 
-    if actions {
+    if action {
         let acts = tx.actions();
         let mut actobjs = Vec::with_capacity(acts.len());
         for act in acts {
@@ -248,10 +302,10 @@ fn check_signature(data: &mut JsonObject, tx: &dyn TransactionRead) {
     for (adr, sg) in sigstats {
         sigchs.push(jsondata!{
             "address", *adr,
-            "status", sg,
+            "complete", sg, // is sign ok
         });
     }
-    data.insert("signature", json!(sigchs));
+    data.insert("signatures", json!(sigchs));
 }
 
 

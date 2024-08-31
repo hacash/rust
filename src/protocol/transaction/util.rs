@@ -28,6 +28,10 @@ pub fn check_tx_signature(tx: &dyn TransactionRead) -> Ret<HashMap<Address, bool
     let main_addr = tx.address()?;
     let txty = tx.ty();
     let mut ckres = HashMap::new();
+    for sig in signs {
+        let adr = Address::cons(Account::get_address_by_public_key(*sig.publickey));
+        ckres.insert(adr, true);
+    }
     for adr in addrs {
         let mut ckhx = &hx;
         if adr == main_addr && txty != TX_TYPE_1_DEPRECATED {
@@ -60,10 +64,11 @@ pub fn verify_target_signature(adr: &Address, tx: &dyn TransactionRead) -> Ret<b
 
 
 fn verify_one_sign(hash: &Hash, addr: &Address, signs: &Vec<Sign>) -> Ret<bool> {
+    let adrary = addr.into_array();
     for sig in signs {
         let curpubkey = sig.publickey.into_array();
         let curaddr = Account::get_address_by_public_key(curpubkey);
-        if addr.into_array() == curaddr {
+        if adrary == curaddr {
             if Account::verify_signature(&hash.into_array(), &curpubkey, &sig.signature.into_array()) {
                 return Ok(true)
             }

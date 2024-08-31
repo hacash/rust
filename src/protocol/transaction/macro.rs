@@ -80,6 +80,39 @@ impl $class {
         Hash::must(&hx[..])
     }
 
+    fn insert_sign(&mut self, signobj: Sign) -> RetErr {
+        let plen = self.signs.count().uint() as usize;
+        if plen >= u16::MAX as usize - 1 {
+            return errf!("sign object too much")
+        }
+        let curaddr = Address::cons(Account::get_address_by_public_key(*signobj.publickey));
+        // insert
+        let apbk = signobj.publickey.as_ref();
+        let mut istid = usize::MAX;
+        let sglist = self.signs.list();
+        for i in 0..plen {
+            let pbk = sglist[i].publickey.as_bytes();
+            if apbk == pbk {
+                istid = i;
+                break
+            }
+        }
+        // append
+        if istid == usize::MAX {
+            self.signs.push(signobj);
+        }else{
+            // replace
+            self.signs.as_mut()[istid] = signobj;
+        }
+        if let Ok(yes) = verify_target_signature(&curaddr, self) {
+            if yes {
+                return Ok(())
+            }
+        }
+        // verify error
+        errf!("address {} verify signature failed", curaddr.readable())
+    }
+
 }
 
 impl TransactionRead for $class {
@@ -172,7 +205,7 @@ impl Transaction for $class {
         self.fee = fee;
     }
 
-    fn fill_sign(&mut self, acc: &Account) -> RetErr {
+    fn fill_sign(&mut self, acc: &Account) -> Ret<Sign> {
         let mut fhx = self.hash();
         if acc.address() == self.address()?.as_bytes() {
             fhx = self.hash_with_fee();
@@ -184,23 +217,12 @@ impl Transaction for $class {
             signature: Fixed64::cons( acc.do_sign(&fhx) ),
         };
         // insert
-        let plen = self.signs.count().uint() as usize;
-        let mut istid = plen;
-        let sglist = self.signs.list();
-        for i in 0..plen {
-            let pbk = sglist[i].publickey.as_bytes();
-            if apbk == pbk {
-                istid = i;
-                break
-            }
-        }
-        // append
-        if istid == plen {
-            return self.signs.push(signobj)
-        }
-        // replace
-        self.signs.as_mut()[istid] = signobj;
-        Ok(())
+        self.insert_sign(signobj.clone())?;
+        Ok(signobj)
+    }
+
+    fn push_sign(&mut self, signobj: Sign) -> RetErr {
+        self.insert_sign(signobj)
     }
 
     fn push_action(&mut self, act: Box<dyn Action>) -> RetErr {

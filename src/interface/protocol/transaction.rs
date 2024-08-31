@@ -40,7 +40,8 @@ pub trait Transaction : TransactionRead + Send + Sync {
     fn set_fee(&mut self, _: Amount) { panic_never_call_this!(); }
     fn set_nonce(&mut self, _: Hash) { panic_never_call_this!(); }
 
-    fn fill_sign(&mut self,_: &Account) -> RetErr { panic_never_call_this!() }
+    fn fill_sign(&mut self,_: &Account) -> Ret<Sign> { panic_never_call_this!() }
+    fn push_sign(&mut self,_: Sign) -> RetErr { panic_never_call_this!() }
     fn push_action(&mut self, _: Box<dyn Action>) -> RetErr { panic_never_call_this!() }
 
 }
