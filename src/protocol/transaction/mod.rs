@@ -1,5 +1,5 @@
 use std::fmt::*;
-use std::collections::{ HashSet };
+use std::collections::{ HashMap, HashSet };
 
 use crate::x16rs;
 use crate::sys::*;

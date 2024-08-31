@@ -19,6 +19,32 @@ pub fn verify_tx_signature(tx: &dyn TransactionRead) -> RetErr {
     Ok(())
 }
 
+
+pub fn check_tx_signature(tx: &dyn TransactionRead) -> Ret<HashMap<Address, bool>> {
+    let hx = tx.hash();
+    let hxwf = tx.hash_with_fee();
+    let signs = tx.signs();
+    let addrs = tx.req_sign()?;
+    let main_addr = tx.address()?;
+    let txty = tx.ty();
+    let mut ckres = HashMap::new();
+    for adr in addrs {
+        let mut ckhx = &hx;
+        if adr == main_addr && txty != TX_TYPE_1_DEPRECATED {
+            ckhx = &hxwf;
+        }
+        let mut sigok = false;
+        if let Ok(yes) = verify_one_sign(ckhx, &adr, signs) {
+            if yes {
+                sigok = true;
+            }
+        }
+        ckres.insert(adr, sigok);
+    }
+    Ok(ckres)
+}
+
+
 pub fn verify_target_signature(adr: &Address, tx: &dyn TransactionRead) -> Ret<bool> {
     let hx = tx.hash();
     let hxwf = tx.hash_with_fee();

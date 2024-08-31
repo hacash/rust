@@ -37,16 +37,20 @@ pub struct CoinKind {
     pub hacash: bool,
     pub satoshi: bool,
     pub diamond: bool,
-    pub diamonds: bool,
 }
 impl CoinKind {
     pub fn new(mut s: String) -> CoinKind {
-        let s = s.to_lowercase();
-        CoinKind {
-            hacash: s.contains("h"),
-            satoshi: s.contains("s"),
-            diamond: s.contains("d"),
-            diamonds: s.contains("n"),
+        match s.to_lowercase().as_str() {
+            "all" | "hsd" => CoinKind {
+                hacash: true,
+                satoshi: true,
+                diamond: true,
+            },
+            _ => CoinKind {
+                hacash: s.contains("h"),
+                satoshi: s.contains("s"),
+                diamond: s.contains("d"),
+            }
         }
     }
 }

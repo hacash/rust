@@ -20,7 +20,10 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     .route(&query("block/views"), get(block_views))
     .route(&query("block/datas"), get(block_datas))
 
-    .route(&query("transaction/desc"), get(transaction_desc))
+    .route(&query("transaction/exist"), get(transaction_exist))
+    .route(&query("transaction/check"), get(transaction_check))
+    .route(&query("transaction/build"), get(transaction_build))
+    .route(&query("transaction/sign"), get(transaction_sign))
 
     .route(&query("diamond"), get(diamond))
     .route(&query("diamond/bidding"), get(diamond_bidding))

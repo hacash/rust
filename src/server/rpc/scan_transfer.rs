@@ -24,13 +24,12 @@ async fn scan_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q4538>) -> impl 
     if q.txposi >= trs.len() {
         return api_error("txposi overflow")
     }
-    let tartrs = &trs[q.txposi];
+    let tartrs = trs[q.txposi].as_read();
     let mainaddr_readable = tartrs.address().unwrap().readable();
-    let mut dtlist = json!([]);
-    let dtlistptr = dtlist.as_array_mut().unwrap();
+    let mut dtlist = Vec::new();
     // scan actions
     for act in tartrs.actions()  {
-        append_transfer_scan(&mainaddr_readable, &unit, &coinkind, dtlistptr, act.as_ref());
+        append_transfer_scan(tartrs, act.as_ref(), &mut dtlist, &unit, &coinkind );
     }
     // ok
     let mut data = jsondata!{
@@ -46,88 +45,40 @@ async fn scan_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q4538>) -> impl 
 
 
 
-fn append_transfer_scan(mainaddr_readable: &String, unit: &str, ck: &CoinKind, transfers: &mut Vec<Value>, act: &dyn Action) {
+fn append_transfer_scan(tx: &dyn TransactionRead, act: &dyn Action, 
+    transfers: &mut Vec<JsonObject>, unit: &String, ck: &CoinKind,
+) {
     let kid = act.kind();
 
-    macro_rules! transfer_scan_action_item {
-        ( $actname: ident, $acty: ty, $ck: expr, $jsonobj: expr ) => (
-            if kid == <$acty>::kid(){
-                if false == $ck {
-                    return
-                }
-                let $actname = <$acty>::build(&act.serialize()).unwrap();
-                transfers.push($jsonobj);
-                return
-            }
-        )
+    let trace = match act.kind() {
+
+        /*
+        HacToTransfer:     1
+        HacFromTransfer:   13
+        HacFromToTransfer: 14
+        */
+        1 | 13 | 14 => ck.hacash,
+
+        /*
+        DiamondSingleTransfer: 5
+        DiamondFromToTransfer: 6
+        DiamondToTransfer:     7
+        DiamondFromTransfer:   8
+        */
+        5 ..= 8 =>     ck.diamond,
+
+        /*
+        SatoshiToTransfer:     9
+        SatoshiFromTransfer:   10
+        SatoshiFromToTransfer: 11
+        */
+        9 ..= 11 =>    ck.satoshi,
+
+        _ => false,
+    };
+
+    // append
+    if trace {
+        transfers.push( action_json_desc(tx, act, unit, false, false) );
     }
-
-    // HacToTransfer // 1
-    transfer_scan_action_item!( act, HacToTransfer, ck.hacash, json!({
-        "from": mainaddr_readable,
-        "to": act.to.readable(),
-        "hacash": act.amt.to_unit_string(unit),
-    }));
-    // HacFromTransfer // 13
-    transfer_scan_action_item!( act, HacFromTransfer, ck.hacash, json!({
-        "from": act.from.readable(),
-        "to": mainaddr_readable,
-        "hacash": act.amt.to_unit_string(unit),
-    }));
-    // HacFromToTransfer // 14
-    transfer_scan_action_item!( act, HacFromToTransfer, ck.hacash, json!({
-        "from": act.from.readable(),
-        "to": act.to.readable(),
-        "hacash": act.amt.to_unit_string(unit),
-    }));
-
-    // DiamondSingleTransfer          // 5 
-    transfer_scan_action_item!( act, DiamondSingleTransfer, ck.diamond, json!({
-        "from": mainaddr_readable,
-        "to": act.to.readable(),
-        "diamond": 1usize,
-        "diamonds": act.diamond.readable(),
-    }));
-    // DiamondFromToTransfer    // 6
-    transfer_scan_action_item!( act, DiamondFromToTransfer, ck.diamond, json!({
-        "from": act.from.readable(),
-        "to": act.to.readable(),
-        "diamond": act.diamonds.count().uint(),
-        "diamonds": act.diamonds.readable(),
-    }));
-    // DiamondToTransfer  // 7
-    transfer_scan_action_item!( act, DiamondToTransfer, ck.diamond, json!({
-        "from": mainaddr_readable,
-        "to": act.to.readable(),
-        "diamond": act.diamonds.count().uint(),
-        "diamonds": act.diamonds.readable(),
-    }));
-    // DiamondFromTransfer  // 8
-    transfer_scan_action_item!( act, DiamondFromTransfer, ck.diamond, json!({
-        "from": act.from.readable(),
-        "to": mainaddr_readable,
-        "diamond": act.diamonds.count().uint(),
-        "diamonds": act.diamonds.readable(),
-    }));
-
-    // SatoshiToTransfer // 10
-    transfer_scan_action_item!( act, SatoshiToTransfer, ck.satoshi, json!({
-        "from": mainaddr_readable,
-        "to": act.to.readable(),
-        "satoshi": act.satoshi.uint(),
-    }));
-    // SatoshiFromToTransfer // 11
-    transfer_scan_action_item!( act, SatoshiFromToTransfer, ck.satoshi, json!({
-        "from": act.from.readable(),
-        "to": act.to.readable(),
-        "satoshi": act.satoshi.uint(),
-    }));
-    // SatoshiFromTransfer // 28
-    transfer_scan_action_item!( act, SatoshiFromTransfer, ck.satoshi, json!({
-        "from": act.from.readable(),
-        "to": mainaddr_readable,
-        "satoshi": act.satoshi.uint(),
-    }));
-
-
 }

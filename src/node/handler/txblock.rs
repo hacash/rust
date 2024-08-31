@@ -84,7 +84,7 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: 
             }else{
                 println!("ok.");
                 if is_open_miner {
-                    drain_all_block_txs(engptr.state().clone(), txpool, thsx, blkhei);
+                    drain_all_block_txs(engptr.clone(), txpool, thsx, blkhei);
                 }
             }
         });
@@ -118,24 +118,52 @@ fn check_know(mine: &Knowledge, hxkey: &Hash, peer: Option<Arc<Peer>>) -> (bool,
 
 
 // drain_all_block_txs
-fn drain_all_block_txs(sta: Arc<dyn State>, txpool: Arc<dyn TxPool>, txs: Vec<Hash>, blkhei: u64) {
+fn drain_all_block_txs(eng: Arc<dyn EngineRead>, txpool: Arc<dyn TxPool>, txs: Vec<Hash>, blkhei: u64) {
     if blkhei % 15 == 0 {
         println!("{}.", txpool.print());
     }
+    // drop all exist normal tx
+    if txs.len() > 0 {
+        txpool.drain(&txs);
+    }
     // drop all overdue diamond mint tx
     if blkhei % 5 == 0 {
-        // already minted hacd number
-        let ldn = MintStateDisk::wrap(sta.as_ref()).latest_diamond().number.uint();
-        txpool.drain_filter_at(&|a: &Box<dyn TxPkg>| {
-            let tx = a.objc().as_read();
-            let dn = get_diamond_mint_number(tx);
-            // println!("TXPOOL: drain_filter_at dmint, tx: {}, dn: {}, last dn: {}", tx.hash().hex(), dn, ldn);
-            dn <= ldn // is not next, drop
-        }, TXPOOL_GROUP_DIAMOND_MINT);
+        clean_invalid_diamond_mint_txs(eng.clone(), txpool.clone(), blkhei);
     }
-    // drop all exist normal tx
-    txpool.drain(&txs);
+    // drop invalid normal
+    if blkhei % 48 == 0 { // 4 hours
+        clean_invalid_normal_txs(eng, txpool, blkhei);
+    }
 }
+
+
+// clean_
+fn clean_invalid_normal_txs(eng: Arc<dyn EngineRead>, txpool: Arc<dyn TxPool>, blkhei: u64) {
+    // already minted hacd number
+    let sta = eng.state();
+    let ldn = MintStateDisk::wrap(sta.as_ref()).latest_diamond().number.uint();
+    txpool.drain_filter_at(&|a: &Box<dyn TxPkg>| {
+        match eng.try_execute_tx( a.objc().as_read() ) {
+            Err(..) => true, // delete
+            _ => false,
+        }
+    }, TXPOOL_GROUP_NORMAL);
+}
+
+
+// clean_
+fn clean_invalid_diamond_mint_txs(eng: Arc<dyn EngineRead>, txpool: Arc<dyn TxPool>, blkhei: u64) {
+    // already minted hacd number
+    let sta = eng.state();
+    let curdn = MintStateDisk::wrap(sta.as_ref()).latest_diamond().number.uint();
+    txpool.drain_filter_at(&|a: &Box<dyn TxPkg>| {
+        let tx = a.objc().as_read();
+        let dn = get_diamond_mint_number(tx);
+        // println!("TXPOOL: drain_filter_at dmint, tx: {}, dn: {}, last dn: {}", tx.hash().hex(), dn, ldn);
+        dn <= curdn // is not next diamond, delete
+    }, TXPOOL_GROUP_DIAMOND_MINT);
+}
+
 
 
 // for diamond create action
