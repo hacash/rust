@@ -19,7 +19,9 @@ async fn submit_transaction(State(ctx): State<ApiCtx>, q: Query<Q4396>, body: By
         return api_error(&e)
     }
     // ok
-    api_ok()
+    api_data(jsondata!{
+        "hash", txpkg.hash().hex(),
+    })
 }
 
 /*
