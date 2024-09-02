@@ -1,10 +1,11 @@
-# Hacash by rust
+# Hacash by Rust
 Hacash Fullnode, PoWorker etc.
 
 ### Build and use documentation
 
 - [Build_compilation.md](https://github.com/hacash/doc/blob/main/build/build_compilation.md)
 - [Configuration description](https://github.com/hacash/doc/blob/main/build/config_description.md)
+- [Fullnode API Doc](https://github.com/hacash/doc/blob/main/server/fullnode_api_doc.md)
 
 
 ### Project code engineering architecture
