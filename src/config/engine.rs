@@ -11,6 +11,7 @@ pub struct EngineConf {
     pub state_data_dir: PathBuf, // chain state
     //
     pub recent_blocks: bool,
+    pub average_fee_purity: bool,
     //
     pub miner_enable: bool,
     pub miner_reward_address: Address,
@@ -41,6 +42,7 @@ impl EngineConf {
             state_data_dir: state_data_dir,
             data_dir: data_path.to_str().unwrap().to_owned(),
             recent_blocks: ini_must_bool(sec_server, "recent_blocks", false),
+            average_fee_purity: ini_must_bool(sec_server, "average_fee_purity", false),
             miner_enable: false,
             miner_reward_address: Address::default(),
             miner_message: StringTrim16::default(),

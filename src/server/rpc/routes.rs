@@ -20,20 +20,20 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     .route(&query("block/views"), get(block_views))
     .route(&query("block/datas"), get(block_datas))
 
-    .route(&query("transaction/exist"), get(transaction_exist))
-    .route(&query("transaction/check"), get(transaction_check))
-    .route(&query("transaction/build"), get(transaction_build))
-    .route(&query("transaction/sign"), get(transaction_sign))
+    .route(&query("transaction"), get(transaction_exist))
 
     .route(&query("diamond"), get(diamond))
     .route(&query("diamond/bidding"), get(diamond_bidding))
     .route(&query("diamond/views"), get(diamond_views))
+
+    .route(&query("fee/average"), get(fee_average))
 
     .route(&query("miner/notice"), get(miner_notice))
     .route(&query("miner/pending"), get(miner_pending))
 
     // create
     .route(&create("account"), get(account))
+    .route(&create("transaction"), post(transaction_build))
     .route(&create("coin/transfer"), get(create_coin_transfer))
     
     // submit
@@ -42,7 +42,14 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     .route(&submit("miner/success"), get(miner_success))
 
     // operate
-    .route(&operate("fee/raise"), post(raise_fee));
+    .route(&operate("fee/raise"), post(raise_fee))
+
+    // util
+    .route(&util("transaction/check"), post(transaction_check))
+    .route(&util("transaction/sign"), post(transaction_sign))
+
+
+    ;
 
     // merge unstable & extend
     Router::new().merge(lrt)

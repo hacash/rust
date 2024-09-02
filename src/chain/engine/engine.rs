@@ -35,6 +35,7 @@ pub struct BlockEngine {
     isrlck: Mutex<bool>,
 
     rctblks: Mutex<VecDeque<Arc<RecentBlockInfo>>>,
+    avgfees: Mutex<VecDeque<u64>>,
     
 }
 
@@ -68,6 +69,7 @@ impl BlockEngine {
             blkscaner: blkscaner,
             isrlck: Mutex::new(true),
             rctblks: Mutex::default(),
+            avgfees: Mutex::default(),
         };
         // rebuild unstable blocks
         // if database upgrade, rebuild all block

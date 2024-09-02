@@ -183,27 +183,54 @@ async fn transaction_build(State(ctx): State<ApiCtx>, q: Query<Q2856>, body: Byt
 
 
 defineQueryObject!{ Q9764,
+    set_fee, Option<String>, None,
+    sign_address, Option<String>, None,
+    body, Option<bool>, None,
     signature, Option<bool>, None,
     description, Option<bool>, None,
 }
 
 
-async fn transaction_check(State(ctx): State<ApiCtx>, q: Query<Q9764>, body: Bytes) -> impl IntoResponse {
+async fn transaction_check(State(ctx): State<ApiCtx>, q: Query<Q9764>, bodydata: Bytes) -> impl IntoResponse {
     ctx_store!(ctx, store);
     ctx_state!(ctx, state);
     q_unit!(q, unit);
+    q_must!(q, set_fee, s!(""));
+    q_must!(q, sign_address, s!(""));
+    q_must!(q, body, false);
     q_must!(q, signature, false);
     q_must!(q, description, false);
 
-    let txdts = q_body_data_may_hex!(q, body);
-    let Ok(txp) = transaction::create_pkg(BytesW4::from_vec(txdts)) else {
+    let txdts = q_body_data_may_hex!(q, bodydata);
+    let Ok((mut tx, _)) = transaction::create(&txdts) else {
         return api_error("transaction body error")
     };
 
+    // if set fee
+    if set_fee.len() > 0 {
+        let fee = q_amt!(set_fee);
+        tx.set_fee(fee);
+    }
+
+    let tx = tx.as_read();
+    let Ok(main_addr) = tx.address() else {
+        return api_error("transaction typeerror")
+    };
+
+    let mut data = render_tx_info(tx, None, 0, &unit, body, signature, true, description);
+
+    // sign_address
+    if sign_address.len() > 0 {
+        let addr = q_addr!(sign_address);
+        let sign_hash = match main_addr == addr {
+            true => tx.hash_with_fee(),
+            false => tx.hash(),
+        };
+        data.insert("sign_hash", json!(sign_hash.hex()));
+    }
+
     // return info
-    api_data(
-        render_tx_info(txp.objc().as_read(), None, 0, &unit, false, signature, true, description)
-    )
+    api_data(data)
 
 }
 
@@ -234,6 +261,15 @@ async fn transaction_exist(State(ctx): State<ApiCtx>, q: Query<Q3457>) -> impl I
 
     let lasthei = ctx.engine.latest_block().objc().height().uint();
 
+    macro_rules! tx_info {
+        ($tx: expr, $ifblk: expr) => {
+            render_tx_info($tx.as_read(), $ifblk, lasthei, &unit, 
+                body, signature, action, description
+            )
+        }
+    }
+
+    // parse tx hash
     let Ok(hx) = hex::decode(&hash) else {
         return api_error("transaction hash format error")
     };
@@ -241,10 +277,19 @@ async fn transaction_exist(State(ctx): State<ApiCtx>, q: Query<Q3457>) -> impl I
         return api_error("transaction hash format error")
     }
     let txhx = Hash::must(&hx);
+
+    // find from txpool
+    let txpool = ctx.hcshnd.tx_pool();
+    if let Some(txp) = txpool.find(&txhx) {
+        let mut info = tx_info!(txp.objc(), None);
+        info.insert("pending", json!(true));
+        return api_data(info)
+    }
+
+    // load from disk block data
     let Some(txp) = state.txexist(&txhx) else {
         return api_error("transaction not find")
     };
-    // read block
     let bkey = txp.height.to_string();
     let blkpkg = ctx.load_block(&store, &bkey);
     if let Err(_) = blkpkg {
@@ -269,11 +314,7 @@ async fn transaction_exist(State(ctx): State<ApiCtx>, q: Query<Q3457>) -> impl I
     };
 
     // return info
-    api_data(
-        render_tx_info(tx.as_read(), Some(blkobj.as_read()), lasthei, &unit, 
-            body, signature, action, description
-        )
-    )
+    api_data(tx_info!(tx, Some(blkobj.as_read())))
 }
 
 
@@ -316,7 +357,7 @@ fn render_tx_info(tx: &dyn TransactionRead,
 
     if description {
         data.insert("description", json!(format!(
-            "Main addr {} pay {} HAC tx fee",
+            "Main account {} pay {} HAC tx fee",
             main_addr, fee_str
         )));
     }
@@ -353,7 +394,7 @@ fn check_signature(data: &mut JsonObject, tx: &dyn TransactionRead) {
     let mut sigchs = vec![];
     for (adr, sg) in sigstats {
         sigchs.push(jsondata!{
-            "address", *adr,
+            "address", adr.readable(),
             "complete", sg, // is sign ok
         });
     }

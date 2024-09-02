@@ -102,25 +102,39 @@ macro_rules! q_body_data_may_hex {
 }
 
 #[macro_export]
-macro_rules! q_data_addr {
-    ( $q: ident, $adr: ident) => ({
-        let adr = Address::from_readable(&$q.$adr);
+macro_rules! q_addr {
+    ($adr: expr) => ({
+        let adr = Address::from_readable(&$adr);
         if let Err(e) = adr {
-            return api_error(&format!("address {} format error: {}", &$q.$adr, &e))
+            return api_error(&format!("address {} format error: {}", &$adr, &e))
         }
         adr.unwrap()
     })
 }
 
 #[macro_export]
-macro_rules! q_data_amt {
-    ( $q: ident, $amt: ident) => ({
-        let amt = Amount::from_string_unsafe(&$q.$amt);
+macro_rules! q_data_addr {
+    ( $q: ident, $adr: ident) => (
+        q_addr!(&$q.$adr)
+    )
+}
+
+#[macro_export]
+macro_rules! q_amt {
+    ( $amt: expr) => ({
+        let amt = Amount::from_string_unsafe(&$amt);
         if let Err(e) = amt {
-            return api_error(&format!("amount {} format error: {}", &$q.$amt, &e))
+            return api_error(&format!("amount {} format error: {}", &$amt, &e))
         }
         amt.unwrap()
     })
+}
+
+#[macro_export]
+macro_rules! q_data_amt {
+    ( $q: ident, $amt: ident) => (
+        q_amt!($q.$amt)
+    )
 }
 
 #[macro_export]

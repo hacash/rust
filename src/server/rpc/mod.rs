@@ -60,7 +60,7 @@ include!("create_transfer.rs");
 include!("submit_transaction.rs");
 include!("submit_block.rs");
 
-include!("raise_fee.rs");
+include!("fee.rs");
 
 include!("miner.rs");
 

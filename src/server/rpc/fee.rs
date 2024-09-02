@@ -1,18 +1,48 @@
 
 
+/******************** fee average ********************/
+
+
+defineQueryObject!{ Q7365,
+    consumption, Option<u64>, None, // tx size or gas use
+}
+
+async fn fee_average(State(ctx): State<ApiCtx>, q: Query<Q7365>, body: Bytes) -> impl IntoResponse {
+    q_unit!(q, unit);
+    q_must!(q, consumption, 0);
+
+    let mut avgfeep = ctx.engine.average_fee_purity(); // unit: shuo
+
+    let mut data = jsondata!{
+        "purity", avgfeep, // shuo
+    };
+
+    if consumption > 0 {
+        let Ok(setfee) = Amount::from_shuo((avgfeep * consumption) as i64) else {
+            return api_error("consumption set failed")
+        };
+        data.insert("feasible", json!(setfee.to_unit_string(&unit)));
+    }
+    // ok
+    api_data(data)
+}
+
+
+/******************** raise fee ********************/
+
 defineQueryObject!{ Q5396,
-    tx_hash, Option<String>, None,
     fee, String, s!(""),
     fee_prikey, String, s!(""),
+    hash, Option<String>, None, // find by tx hash
 }
 
 async fn raise_fee(State(ctx): State<ApiCtx>, q: Query<Q5396>, body: Bytes) -> impl IntoResponse {
     // ctx_store!(ctx, store);
-    q_must!(q, tx_hash, s!(""));
+    q_must!(q, hash, s!(""));
     let fee = q_data_amt!(q, fee);
     let acc = q_data_acc!(q, fee_prikey);
 
-    let txhxstr = &tx_hash;
+    let txhxstr = &hash;
     let bddts = match txhxstr.len() > 0 {
         // find from tx pool
         true => {

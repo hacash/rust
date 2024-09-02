@@ -51,5 +51,22 @@ impl EngineRead for BlockEngine {
         res
     }
 
+    /* 
+    * 1w zhu(shuo) / 200byte
+    * 
+    */
+    fn average_fee_purity(&self) -> u64 {
+        let avgfs = self.avgfees.lock().unwrap();
+        let al = avgfs.len();
+        if al == 0 {
+            return DEFAULT_AVERAGE_FEE_PURITY
+        }
+        let mut allfps = 0u64;
+        for a in avgfs.iter() {
+            allfps += a;
+        }
+        allfps / al as u64
+    }
+
 
 }

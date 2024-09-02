@@ -17,6 +17,10 @@ pub fn operate(p: &str) -> String {
     "/operate/".to_owned() + p
 }
 
+pub fn util(p: &str) -> String {
+    "/util/".to_owned() + p
+}
+
 
 
 /**************************/

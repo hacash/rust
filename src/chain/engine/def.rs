@@ -1,0 +1,7 @@
+
+
+pub const DEFAULT_AVERAGE_FEE_PURITY: u64 = 10000_00000000 / 200;
+
+
+
+

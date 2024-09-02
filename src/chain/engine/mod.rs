@@ -34,6 +34,7 @@ use super::execute::*;
 use crate::vm;
 
 
+include!("def.rs");
 include!("engine.rs");
 include!("recent.rs");
 include!("init.rs");
