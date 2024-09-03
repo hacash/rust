@@ -46,8 +46,8 @@ StructFieldStruct!{ DiamondSto,
 StructFieldStruct!{ DiamondSmelt, 
 	diamond                   : DiamondName
 	number                    : DiamondNumber
-	belong_height             : BlockHeight
-	belong_hash               : Hash // block
+	born_height               : BlockHeight
+	born_hash                 : Hash // block
 	prev_hash                 : Hash // block
 	miner_address             : Address
 	bid_fee                   : Amount

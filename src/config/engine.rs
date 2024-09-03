@@ -12,10 +12,17 @@ pub struct EngineConf {
     //
     pub recent_blocks: bool,
     pub average_fee_purity: bool,
-    //
+    // HAC miner
     pub miner_enable: bool,
     pub miner_reward_address: Address,
     pub miner_message: StringTrim16,
+    // Diamond miner
+    pub dmer_enable: bool,
+    pub dmer_reward_address: Address,
+    pub dmer_bid_account: Account,
+    pub dmer_bid_min:  Amount,
+    pub dmer_bid_max:  Amount,
+    pub dmer_bid_step: Amount,
 }
 
 
@@ -43,9 +50,17 @@ impl EngineConf {
             data_dir: data_path.to_str().unwrap().to_owned(),
             recent_blocks: ini_must_bool(sec_server, "recent_blocks", false),
             average_fee_purity: ini_must_bool(sec_server, "average_fee_purity", false),
+            // HA Cminer
             miner_enable: false,
             miner_reward_address: Address::default(),
             miner_message: StringTrim16::default(),
+            // Diamond miner
+            dmer_enable: false,
+            dmer_reward_address: Address::default(),
+            dmer_bid_account: Account::create_by_password("123456").unwrap(),
+            dmer_bid_min:  Amount::new_coin(1),
+            dmer_bid_max:  Amount::new_coin(10),
+            dmer_bid_step: Amount::new_small(5, 247),
         };
 
         let sec = &ini_section(ini, "node");
@@ -54,6 +69,7 @@ impl EngineConf {
         let sec_mint = &ini_section(ini, "mint");
         cnf.chain_id = ini_must_u64(sec_mint, "chain_id", 0);
 
+        // HAC miner
         let sec_miner = &ini_section(ini, "miner");
         cnf.miner_enable = ini_must_bool(sec_miner, "enable", false);
         if cnf.miner_enable {
@@ -63,6 +79,16 @@ impl EngineConf {
             let msg: [u8; 16] = vec![msg.as_bytes().to_vec(), msgapp].concat().try_into().unwrap();
             cnf.miner_message = StringTrim16::from_readable(&msg);
         }
+
+        // Diamond miner
+        let sec_dmer = &ini_section(ini, "diamondminer");
+        cnf.dmer_enable = ini_must_bool(sec_dmer, "enable", false);
+        if cnf.dmer_enable {
+            // TODO::   
+
+
+        }
+
 
         // ok
         cnf

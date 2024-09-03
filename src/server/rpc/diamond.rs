@@ -47,8 +47,8 @@ async fn diamond(State(ctx): State<ApiCtx>, q: Query<Q3946>) -> impl IntoRespons
         "number", diasmelt.number.uint(),
         "miner", diasmelt.miner_address.readable(),
         "born", jsondata!{
-            "height", diasmelt.belong_height.uint(), // born block height
-            "hash", diasmelt.belong_hash.hex(), // born block hash
+            "height", diasmelt.born_height.uint(), // born block height
+            "hash", diasmelt.born_hash.hex(), // born block hash
         },
         "prev_hash", diasmelt.prev_hash.hex(),
         "bid_fee", diasmelt.bid_fee.to_unit_string(&unit),

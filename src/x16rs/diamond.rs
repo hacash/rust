@@ -10,26 +10,26 @@ fn search_dhxchar(c: u8) -> u8 {
     0
 }
 
-pub fn check_diamond_hash_result(stuff: impl AsRef<[u8]>) -> (bool, Option<[u8; 6]>) {
+pub fn check_diamond_hash_result(stuff: impl AsRef<[u8]>) -> Option<[u8; 6]> {
     let hxval = stuff.as_ref().to_vec();
     if hxval.len() != 16 {
-        return (false, None)
+        return None
     }
     for i in 0..10 {
         if hxval[i] != b'0' {
-            return (false, None)
+            return None
         }
     }
     for i in 10..16 {
         if hxval[i] == b'0' {
-            return (false, None)
+            return None
         }
         if search_dhxchar(hxval[i]) <= 0 {
-            return (false, None)
+            return None
         }
     }
     // ok
-    (true, Some(hxval[10..16].try_into().unwrap()))
+    Some(hxval[10..16].try_into().unwrap())
 }
 
 pub fn check_diamond_difficulty(number: u32, sha3hx: &[u8; HASH_SIZE], diareshx: &[u8; HASH_SIZE]) -> bool {
@@ -80,10 +80,7 @@ pub fn check_diamond_difficulty(number: u32, sha3hx: &[u8; HASH_SIZE], diareshx:
 
 pub fn mine_diamond_hash_repeat(number: u32) -> i32 {
 	let mut repeat = number/8192 + 1; // adjust the hashing times every 8192 diamonds (about 140 days and half a year)
-	if repeat > 16 {
-		repeat = 16; // atmost 16 round due to x16rs algorithm
-	}
-	return repeat as i32
+	return repeat as i32 // max 2048
 }
 
 
@@ -112,10 +109,10 @@ pub fn mine_diamond(number: u32, prevblockhash: &[u8; HASH_SIZE], nonce: &[u8; 8
         address.to_vec(),
         custom_message.as_ref().to_vec()
     ].concat();
-    let repeat = mine_diamond_hash_repeat(number);
 	/* get ssshash by sha3 algrotithm */
     let ssshash = calculate_hash(stuff); // SHA3
 	/* get diamond hash value by HashX16RS algorithm */
+    let repeat = mine_diamond_hash_repeat(number);
     let reshash = x16rs_hash(repeat, &ssshash);
 	/* get diamond name by DiamondHash function */
     let diastr = diamond_hash(&reshash);

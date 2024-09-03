@@ -142,8 +142,8 @@ fn diamond_mint(this: &DiamondMint, ctx: &dyn ExecContext, sta: &mut dyn State, 
             return errf!("diamond number need {} but got {}", neednextnumber, dianum)
         }
         // prev hash
-        if dianum > 1 && prevdia.belong_hash != prev_hash {
-            return errf!("diamond prev hash need {} but got {}", prevdia.belong_hash, prev_hash)
+        if dianum > 1 && prevdia.born_hash != prev_hash {
+            return errf!("diamond prev hash need {} but got {}", prevdia.born_hash, prev_hash)
         }
 
         // latest
@@ -160,15 +160,15 @@ fn diamond_mint(this: &DiamondMint, ctx: &dyn ExecContext, sta: &mut dyn State, 
         }
 
         // name
-        let (diaok, dianame) = x16rs::check_diamond_hash_result(diahx);
-        if ! diaok {
+        let dianame = x16rs::check_diamond_hash_result(diahx);
+        let Some(dianame) = dianame else {
             let dhx = match String::from_utf8(diahx.to_vec()) {
                 Err(_) => hex::encode(diahx),
                 Ok(d) => d
             };
             return errf!("diamond hash result {} not a valid diamond name", dhx)
-        }
-        let dianame = Fixed6::cons(dianame.unwrap());
+        };
+        let dianame = Fixed6::cons(dianame);
         if name != dianame {
             return errf!("diamond name need {} but got {}", dianame.readable(), namestr)
         }
@@ -206,8 +206,8 @@ fn diamond_mint(this: &DiamondMint, ctx: &dyn ExecContext, sta: &mut dyn State, 
     let diasmelt = DiamondSmelt {
         diamond: name.clone(),
         number: number.clone(),
-        belong_height: BlockHeight::from_u64(pending_height),
-        belong_hash: pending_hash.clone(),
+        born_height: BlockHeight::from_u64(pending_height),
+        born_hash: pending_hash.clone(),
         prev_hash: prev_hash.clone(),
         miner_address: this.head.address.clone(),
         bid_fee: tx_bid_fee.clone(),

@@ -63,6 +63,7 @@ include!("submit_block.rs");
 include!("fee.rs");
 
 include!("miner.rs");
+include!("diamond_miner.rs");
 
 
 

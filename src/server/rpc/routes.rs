@@ -30,6 +30,7 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
 
     .route(&query("miner/notice"), get(miner_notice))
     .route(&query("miner/pending"), get(miner_pending))
+    .route(&query("diamondminer/init"), get(diamondminer_init))
 
     // create
     .route(&create("account"), get(account))
@@ -40,6 +41,7 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     .route(&submit("transaction"), post(submit_transaction))
     .route(&submit("block"), post(submit_block))
     .route(&submit("miner/success"), get(miner_success))
+    .route(&submit("diamondminer/success"), get(diamondminer_success))
 
     // operate
     .route(&operate("fee/raise"), post(raise_fee))

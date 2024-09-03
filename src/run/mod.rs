@@ -23,10 +23,15 @@ use crate::node::node::*;
 use crate::server::*;
 
 
+use reqwest::blocking::Client as HttpClient;
+use serde_json::{ Value as JV };
 
 
-include!("fullnode.rs");
-include!("poworker.rs");
+
+
+include!("fullnode.rs");  // Fullnode
+include!("poworker.rs");  // HAC PoW worker
+include!("diaworker.rs"); // Diamond worker
 
 
 

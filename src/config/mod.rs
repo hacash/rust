@@ -8,8 +8,9 @@ use std::collections::HashMap;
 use ini::ini;
 
 use crate::sys::{self, *};
-use crate::base::field::StringTrim16;
-use crate::core::field::Address;
+use crate::base::field::{ StringTrim16 };
+use crate::core::field::{ Address, Amount };
+use crate::core::account::*;
 use crate::interface::field::FieldReadable;
 
 
@@ -19,5 +20,6 @@ include!("mint.rs");
 include!("node.rs");
 include!("server.rs");
 include!("poworker.rs");
+include!("diaworker.rs");
 include!("vm.rs");
 include!("config.rs");

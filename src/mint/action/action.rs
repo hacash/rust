@@ -6,8 +6,8 @@ pub const ACTION_KIND_ID_DIAMOND_MINT: u16 = 4;
  */
  pubFnRegExtendActionCreates!{
 
-    ChannelOpen      // 2
-    ChannelClose     // 3
+    ChannelOpen              // 2
+    ChannelClose             // 3
 
     DiamondMint              // 4
     DiamondSingleTransfer    // 5 
@@ -15,12 +15,12 @@ pub const ACTION_KIND_ID_DIAMOND_MINT: u16 = 4;
     DiamondToTransfer        // 7
     DiamondFromTransfer      // 8
 
-    DiamondInscription       // 32
-    DiamondInscriptionClean  // 33
-
     SatoshiToTransfer        // 9
     SatoshiFromTransfer      // 10
     SatoshiFromToTransfer    // 11
+
+    DiamondInscription       // 32
+    DiamondInscriptionClean  // 33
 
 }
 
@@ -30,3 +30,5 @@ pub fn init_reg() {
         crate::protocol::action::EXTEND_ACTIONS_TRY_CREATE_FUNC = Some(try_create);   
     }
 }
+
+
