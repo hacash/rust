@@ -2,6 +2,7 @@
 
 async fn handle_new_tx(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: Vec<u8>) {
     // println!("1111111 handle_txblock_arrive Tx, peer={} len={}", peer.nick(), body.clone().len());
+    let engcnf = this.engine.config();
     // parse
     let txpkg = transaction::create_pkg(BytesW4::from_vec(body));
     if let Err(e) = txpkg {
@@ -15,8 +16,7 @@ async fn handle_new_tx(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: Vec
         return  // alreay know it
     }
     let txdatas = txpkg.body().clone().into_vec();
-    let is_open_miner = this.engine.config().miner_enable;
-    if is_open_miner {
+    if engcnf.is_open_miner() {
         // try execute tx
         if let Err(..) = this.engine.try_execute_tx(txpkg.objc().as_ref().as_read()) {
             return // tx execute fail
@@ -46,7 +46,7 @@ async fn handle_new_block(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: 
     // check height and difficulty (mint consensus)
     let eng = this.engine.clone();
     let engcnf = eng.config();
-    let is_open_miner = engcnf.miner_enable;
+    let is_open_miner = engcnf.is_open_miner();
     let heispan = engcnf.unstable_block;
     let latest = eng.latest_block();
     let lathei = latest.objc().height().uint();

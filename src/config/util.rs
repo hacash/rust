@@ -68,3 +68,20 @@ pub fn ini_must_address(sec: &HashMap<String, Option<String>>, key: &str) -> Add
     };
     addr
 }
+
+
+pub fn ini_must_account(sec: &HashMap<String, Option<String>>, key: &str) -> Account {
+    let pass = ini_must(sec, key, "123456");
+    let Ok(acc) = Account::create_by(&pass) else {
+        panic!("[Config Error] account password {} error.", &pass)
+    };
+    acc
+}
+
+pub fn ini_must_amount(sec: &HashMap<String, Option<String>>, key: &str) -> Amount {
+    let amt = ini_must(sec, key, "1:248");
+    let Ok(amount) = Amount::from_string_unsafe(&amt) else {
+        panic!("[Config Error] amount {} format error.", &amt)
+    };
+    amount
+}

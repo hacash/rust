@@ -27,6 +27,10 @@ pub struct EngineConf {
 
 
 impl EngineConf {
+
+    pub fn is_open_miner(&self) -> bool {
+        self.miner_enable || self.dmer_enable
+    }
     
     pub fn new(ini: &IniObj, dbv: u32) -> EngineConf {
     
@@ -59,7 +63,7 @@ impl EngineConf {
             dmer_reward_address: Address::default(),
             dmer_bid_account: Account::create_by_password("123456").unwrap(),
             dmer_bid_min:  Amount::new_coin(1),
-            dmer_bid_max:  Amount::new_coin(10),
+            dmer_bid_max:  Amount::new_coin(11),
             dmer_bid_step: Amount::new_small(5, 247),
         };
 
@@ -84,9 +88,11 @@ impl EngineConf {
         let sec_dmer = &ini_section(ini, "diamondminer");
         cnf.dmer_enable = ini_must_bool(sec_dmer, "enable", false);
         if cnf.dmer_enable {
-            // TODO::   
-
-
+            cnf.dmer_reward_address = ini_must_address(sec_dmer, "reward");
+            cnf.dmer_bid_account = ini_must_account(sec_dmer, "bid_password");
+            cnf.dmer_bid_min = ini_must_amount(sec_dmer, "bid_min");
+            cnf.dmer_bid_max = ini_must_amount(sec_dmer, "bid_max");
+            cnf.dmer_bid_step = ini_must_amount(sec_dmer, "bid_step");
         }
 
 

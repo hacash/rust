@@ -2,7 +2,7 @@
 
 impl HNode for HacashNode {
 
-    fn submit_transaction(&self, txpkg: &Box<dyn TxPkg>, is_async: bool) -> RetErr {
+    fn submit_transaction(&self, txpkg: &Box<dyn TxPkg>, in_async: bool) -> RetErr {
         // try execute tx
         self.engine.try_execute_tx(txpkg.objc().as_ref().as_read())?;
         // add to pool
@@ -11,7 +11,7 @@ impl HNode for HacashNode {
         let runobj = async move {
             msghdl.submit_transaction(txbody).await;
         };
-        if is_async {
+        if in_async {
             tokio::spawn(runobj);
         }else{
             new_current_thread_tokio_rt().block_on(runobj);
@@ -20,7 +20,7 @@ impl HNode for HacashNode {
     }
 
 
-    fn submit_block(&self, blkpkg: &Box<dyn BlockPkg>, is_async: bool) -> RetErr {
+    fn submit_block(&self, blkpkg: &Box<dyn BlockPkg>, in_async: bool) -> RetErr {
         // NOT do any check
         // insert
         let msghdl = self.msghdl.clone();
@@ -28,7 +28,7 @@ impl HNode for HacashNode {
         let runobj = async move {
             msghdl.submit_block(blkbody).await;
         };
-        if is_async {
+        if in_async {
             tokio::spawn(runobj);
         }else{
             new_current_thread_tokio_rt().block_on(runobj);

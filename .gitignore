@@ -1,3 +1,7 @@
+hacash_*
+*.ini
+
+
 test/
 *_data/
 *.loc.rs

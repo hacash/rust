@@ -17,6 +17,7 @@ async fn diamondminer_init(State(ctx): State<ApiCtx>, q: Query<Q7846>) -> impl I
     }
 
     let data = jsondata!{
+        "bid_address", cnf.dmer_bid_account.readable(),
         "reward_address", cnf.dmer_reward_address.readable(),
     };
 
@@ -46,12 +47,14 @@ async fn diamondminer_success(State(ctx): State<ApiCtx>, q: Query<Q6396>, body: 
         return api_error("upload action error");
     };
 
+    let mint_number = mint.head.number.uint();
+
     // check number and hash
     let lastdia = mintstate.latest_diamond();
-    if mint.head.number.uint() != lastdia.number.uint() + 1 {
+    if mint_number != lastdia.number.uint() + 1 {
         return api_error("diamond number error");
     }
-    if mint.head.prev_hash != lastdia.born_hash {
+    if mint_number > 1 && mint.head.prev_hash != lastdia.born_hash {
         return api_error("diamond prev hash error");
     }
 
@@ -66,8 +69,8 @@ async fn diamondminer_success(State(ctx): State<ApiCtx>, q: Query<Q6396>, body: 
     // add to tx pool
     let txpkg: Box<dyn TxPkg> = Box::new(TxPackage::new(Box::new(tx)));
     // try submit
-    let is_async = true;
-    if let Err(e) = ctx.hcshnd.submit_transaction(&txpkg, is_async) {
+    let in_async = true;
+    if let Err(e) = ctx.hcshnd.submit_transaction(&txpkg, in_async) {
         return api_error(&e)
     }
 
