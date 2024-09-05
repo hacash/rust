@@ -15,7 +15,7 @@ pub fn check_diamond_hash_result(stuff: impl AsRef<[u8]>) -> Option<[u8; 6]> {
     if hxval.len() != 16 {
         return None
     }
-    for i in 0..7 {
+    for i in 0..10 {
         if hxval[i] != b'0' {
             return None
         }

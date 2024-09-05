@@ -1,5 +1,5 @@
-const HASH_WIDTH: usize = 32;
-const BITS_WIDTH: usize = HASH_WIDTH * 8;
+pub const HASH_WIDTH: usize = 32;
+pub const BITS_WIDTH: usize = HASH_WIDTH * 8;
 
 /******************/
 

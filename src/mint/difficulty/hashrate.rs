@@ -2,21 +2,24 @@
 pub const HASHRATE_VALUE_BASE: [u8; HASH_WIDTH] = [0,0,0,0,0,0,0,0,
     255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255];
 
-const VK: u128 = 1000; 
-const VM: u128 = VK * VK;
-const VG: u128 = VM * VK;
-const VT: u128 = VG * VK;
-const VP: u128 = VT * VK;
-const VE: u128 = VP * VK;
-const VZ: u128 = VE * VK;
-const VY: u128 = VZ * VK;
-const VB: u128 = VY * VK;
+const VK: f64 = 1000.0; 
+const VM: f64 = VK * VK;
+const VG: f64 = VM * VK;
+const VT: f64 = VG * VK;
+const VP: f64 = VT * VK;
+const VE: f64 = VP * VK;
+const VZ: f64 = VE * VK;
+const VY: f64 = VZ * VK;
+const VB: f64 = VY * VK;
 
 const HNS: [&str; 9] = ["K","M","G","T","P","E","Z","Y","B"];
-const HVS: [u128; 9] = [VK, VM, VG, VT, VP, VE, VZ, VY, VB];
+const HVS: [f64;  9] = [VK, VM, VG, VT, VP, VE, VZ, VY, VB];
 
 
-pub fn rates_to_show(rates: u128) -> String {
+pub fn rates_to_show(rates: f64) -> String {
+    if rates < VK {
+        return format!("{:.2}c/s", rates)
+    }
     let mut hsx = HVS.len() - 1;
     for i in 0..HVS.len() {
         if rates / HVS[i] < VK {
@@ -24,7 +27,7 @@ pub fn rates_to_show(rates: u128) -> String {
             break
         }
     }
-    let num = (rates as f64) / (HVS[hsx] as f64);
+    let num = rates / HVS[hsx];
     let unit = HNS[hsx];
     format!("{:.2}{}c/s", num, unit)
 }
@@ -39,20 +42,25 @@ pub fn u32_to_rateshow(num: u32, secs: u64) -> String {
     rates_to_show(rates)
 }
 
-pub fn u32_to_rates(num: u32, secs: u64) -> u128 {
+pub fn u32_to_rates(num: u32, secs: u64) -> f64 {
     let hx = u32_to_hash(num);
     hash_to_rates(&hx, secs)
 }
 
-pub fn hash_to_rates(hx: &[u8; HASH_WIDTH], secs: u64) -> u128 {
-    hash_to_power(&hx) / (secs as u128)
+pub fn hash_to_rates(hx: &[u8; HASH_WIDTH], secs: u64) -> f64 {
+    hash_to_power(&hx) / (secs as f64)
 }
 
-pub fn hash_to_power(hx: &[u8; HASH_WIDTH]) -> u128 {
+pub fn hash_to_power_u128(hx: &[u8; HASH_WIDTH]) -> u128 {
+    let power = hash_to_power(hx);
+    power as u128
+}
+
+pub fn hash_to_power(hx: &[u8; HASH_WIDTH]) -> f64 {
     let bigv = BigInt::from_bytes_be(BigSign::Plus, &hx[..]);
     let base = BigInt::from_bytes_be(BigSign::Plus, &HASHRATE_VALUE_BASE[..]);
     let power = base.to_f64().unwrap() / bigv.to_f64().unwrap() * (u64::MAX as f64 + 1.0);
-    power as u128
+    power
 }
 
 
