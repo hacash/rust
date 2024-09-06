@@ -36,8 +36,12 @@ impl HNode for HacashNode {
         Ok(())
     }
 
-    fn tx_pool(&self) -> &dyn TxPool {
-        self.txpool.as_ref()
+    fn engine(&self) -> Arc<dyn Engine> {
+        self.engine.clone()
+    }
+
+    fn tx_pool(&self) -> Arc<dyn TxPool> {
+        self.txpool.clone()
     }
 
 }

@@ -27,6 +27,12 @@ impl MemTxPool {
 
 impl TxPool for MemTxPool {
 
+    fn count_at(&self, gi: usize) -> Ret<usize> {
+        check_group_id(gi)?;
+        let count = self.groups[gi].lock().unwrap().txpkgs.len();
+        Ok(count)
+    }
+
     fn iter_at(&self, scan: &mut dyn FnMut(&Box<dyn TxPkg>)->bool, gi: usize) -> RetErr {
         check_group_id(gi)?;
         let grp = self.groups[gi].lock().unwrap();

@@ -173,7 +173,7 @@ fn miner_reset_next_new_block(sto: &dyn Store, engine: ChainEngine, hnode: Chain
 
 // park txs to block
 fn append_valid_tx_pick_from_txpool(nexthei: u64, trslen: &mut usize, trshxs: &mut Vec<Hash>, 
-    trs: &mut DynVecTransaction, engine: ChainEngine, txpool: &dyn TxPool,
+    trs: &mut DynVecTransaction, engine: ChainEngine, txpool: Arc<dyn TxPool>,
 ) {
     let engcnf = engine.config();
     let txmaxn = engcnf.max_block_txs;

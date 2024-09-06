@@ -9,6 +9,9 @@ impl HacashNode {
         let p2p = this.p2p.clone();
         let hdl = this.msghdl.clone();
 
+        // diamond auto bid
+        start_diamond_auto_bidding(this.clone());
+
         // handle msg
         std::thread::spawn(move||{
             let rt = new_current_thread_tokio_rt();

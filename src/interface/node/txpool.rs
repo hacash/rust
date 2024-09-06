@@ -1,6 +1,7 @@
 
 
-pub trait TxPool {
+pub trait TxPool: Send + Sync {
+    fn count_at(&self, _: usize) -> Ret<usize> { Ok(0) }
     fn iter_at(&self, _: &mut dyn FnMut(&Box<dyn TxPkg>)->bool, _: usize) -> RetErr { Ok(()) }
     fn insert_at(&self, _: Box<dyn TxPkg>, _: usize) -> RetErr { Ok(()) } // from group id
     fn delete_at(&self, _: &Vec<Hash>, _: usize) -> RetErr { Ok(()) } // from group id

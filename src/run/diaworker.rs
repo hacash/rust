@@ -59,13 +59,13 @@ fn start_all_miner_thread(cnf: &DiaWorkConf) {
 
     let thrnum = cnf.supervene;
 
-    println!("Create #{} miner worker thread.", thrnum);
+    println!("\n[Start] Create #{} miner worker thread.", thrnum);
 
     for i in 0 .. thrnum {
         let thrid = i as usize;
-        let addr = cnf.rewardaddr.clone();
+        let cnf1 = cnf.clone();
         spawn(move || {
-            start_one_worker_thread(thrid, addr)
+            start_one_worker_thread(thrid, cnf1)
         });
     }
 
@@ -73,9 +73,11 @@ fn start_all_miner_thread(cnf: &DiaWorkConf) {
 
 
 // 
-fn start_one_worker_thread(thrid: usize, res_addr: Address) {
+fn start_one_worker_thread(thrid: usize, cnf: DiaWorkConf) {
 
-    const target_mining_period: f64 = 10000.0; // 10 sec
+    let rwd_addr = cnf.rewardaddr.clone();
+
+    const target_mining_period: f64 = 3000.0; // 1 sec
 
     let mut nonce_space: u64 = 15000;
     let mut current_mining_number: u32 = 0;
@@ -98,8 +100,9 @@ fn start_one_worker_thread(thrid: usize, res_addr: Address) {
                 current_mining_number = cmdn;
                 current_mining_block_hash = MINING_STUFF.lock().unwrap().clone();
                 if thrid == 0 {
-                    flush!("[{}] Diamond number {} start mining ... ", &ctshow()[5..], cmdn);
+                    println!("start mining ... ");
                 }
+                break // reaet nonce start
             }
 
             if thrid == 0 {
@@ -107,7 +110,7 @@ fn start_one_worker_thread(thrid: usize, res_addr: Address) {
             }
             let ctn = Instant::now();
             let (mostpower, mres) = do_diamond_group_mining(current_mining_number, &current_mining_block_hash,
-                &res_addr, &custom_nonce,
+                &rwd_addr, &custom_nonce,
                 nonce_start, nonce_space, 
             );
             let mut use_times = Instant::now().duration_since(ctn).as_millis();
@@ -116,7 +119,14 @@ fn start_one_worker_thread(thrid: usize, res_addr: Address) {
                 use_times = 10000; // reset
             }
             if thrid == 0 {
-                flush!("{}, {}s.\n", mostpower, use_times as f64 / 1000.0);
+                let uts = use_times as f64 / 1000.0;
+                let hsrts = rates_to_show((nonce_space * cnf.supervene as u64) as f64 / uts);
+                flush!("{}, hashrates: {}.     ", mostpower, hsrts);
+                if cnf.detailog {
+                    flush!("\n");
+                }else{
+                    flush!("\r");
+                }
             }
             let ns = nonce_start.checked_add(nonce_space);
             if let None = ns {
@@ -182,7 +192,7 @@ fn check_diamer_success(number: u32, firhx: [u8; HASH_SIZE], resxh: [u8; HASH_SI
     }
     // success find a diamond
 
-    flush!("\n✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩\n");
+    flush!("\n\n✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩\n");
     flush!("✩✩✩✩ DIAMOND MINING SUCCESS: {} ({})",  String::from_utf8(diastr.to_vec()).unwrap(), number);
     flush!("\n✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩✩\n");
     Some(diastr[10..].try_into().unwrap())
@@ -259,7 +269,9 @@ fn pull_and_push_loop(cnf: DiaWorkConf) {
                 let prev_hash = res["born"]["hash"].as_str().unwrap_or("");
                 if let Ok(hx) = hex::decode(&prev_hash) {
                     if hx.len() == x16rs::HASH_SIZE {
-                        println!("\nTurn to mining next diamond number {}.", next_num);
+                        flush!("\n\n[{}] Turn to next diamond number {}, ", 
+                            &ctshow()[5..], next_num
+                        );
                         *MINING_STUFF.lock().unwrap() = Hash::cons(hx.try_into().unwrap());
                         MINING_DIAMOND_NUM.store(next_num, Relaxed);
                     }
@@ -282,14 +294,14 @@ fn pull_and_push_loop(cnf: DiaWorkConf) {
                 let res: JV = serde_json::from_str(&repv.text().unwrap()).unwrap();
                 let tx_hash =  res["tx_hash"].as_str().unwrap_or("");
                 if "" != tx_hash {
-                    flush!("\nSubmit diamond {} ({}) to mainnet and get tx hash: {}", 
+                    println!("Submit tx diamond mint {} ({}) to mainnet and get tx hash: {}", 
                         mint.head.diamond.readable(), mint.head.number.uint(), tx_hash
                     );
                 }
             }
         }
 
-        loop_retry!(4); // waiting
+        loop_retry!(3); // waiting
     }
 
 
