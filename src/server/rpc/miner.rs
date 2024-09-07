@@ -35,7 +35,7 @@ fn update_miner_pending_block(block: BlockV1, cbtx: TransactionCoinbase) {
 }
 
 
-fn get_miner_pending_block_stuff(is_detail: bool, is_transaction: bool, is_base64: bool) -> (HeaderMap, String) {
+fn get_miner_pending_block_stuff(is_detail: bool, is_transaction: bool, is_stuff: bool, is_base64: bool) -> (HeaderMap, String) {
     let mut stuff = MINER_PENDING_BLOCK.lock().unwrap();
     if stuff.len() == 0 {
         panic!("get miner pending block stuff error: block not init!");
@@ -60,11 +60,13 @@ fn get_miner_pending_block_stuff(is_detail: bool, is_transaction: bool, is_base6
     };
 
     // return data
+    let mut tg_hash = stuff.target_hash.to_vec();
+    right_00_to_ff(&mut tg_hash);
     let mut data = jsondata!{
         "height", stuff.height.uint(),
         "coinbase_nonce", hex_or_hase64!(stuff.coinbase_nonce),
         "block_intro", intro_data,
-        "target_hash", hex_or_hase64!(stuff.target_hash),
+        "target_hash", hex_or_hase64!(tg_hash),
     };
 
     if is_detail {
@@ -88,6 +90,18 @@ fn get_miner_pending_block_stuff(is_detail: bool, is_transaction: bool, is_base6
             tx_raws.push(raw);
         };
         data.insert("transaction_body_list", json!{tx_raws});
+    }
+
+    if is_stuff {
+        let cbbody = hex_or_hase64!(stuff.coinbase_tx.serialize());
+        data.insert("coinbase_body", json!{cbbody});
+        let mkrluphxs = calculate_mrkl_coinbase_modify(&stuff.block.transaction_hash_list(true));
+        let mut mhxs = Vec::with_capacity(mkrluphxs.len());
+        for hx in mkrluphxs {
+            let h = hex_or_hase64!(hx.serialize());
+            mhxs.push(h);
+        };
+        data.insert("mkrl_modify_list", json!(mhxs));
     }
 
     // ok
@@ -282,6 +296,7 @@ async fn miner_notice(State(ctx): State<ApiCtx>, q: Query<Q4391>) -> impl IntoRe
 defineQueryObject!{ Q2954,
     detail, Option<bool>, None,
     transaction, Option<bool>, None,
+    stuff, Option<bool>, None,
 }
 
 
@@ -289,6 +304,7 @@ async fn miner_pending(State(ctx): State<ApiCtx>, q: Query<Q2954>) -> impl IntoR
     // ctx_mintstate!(ctx, mintstate);
     q_must!(q, detail, false);
     q_must!(q, transaction, false);
+    q_must!(q, stuff, false); // coinbase and mkrl
     q_must!(q, base64, false);
 
     if ! ctx.engine.config().miner_enable {
@@ -320,7 +336,7 @@ async fn miner_pending(State(ctx): State<ApiCtx>, q: Query<Q2954>) -> impl IntoR
     }
 
     // return data
-    get_miner_pending_block_stuff(detail, transaction, base64)
+    get_miner_pending_block_stuff(detail, transaction, stuff, base64)
 }
 
 

@@ -1,7 +1,4 @@
 
-use std::sync::atomic::{AtomicU32, Ordering::{self, Relaxed} };
-
-use crate::mint::action::*;
 
 
 
@@ -34,13 +31,6 @@ pub fn diaworker() {
 }
 
 
-macro_rules! loop_retry {
-    ($sec: expr) => {
-        sleep(Duration::from_secs($sec));
-        continue // try to reconnect
-    }
-}
-
 /*
 * start
 */
@@ -58,9 +48,7 @@ fn start_diamond_worker(mut cnfobj: DiaWorkConf) {
 fn start_all_miner_thread(cnf: &DiaWorkConf) {
 
     let thrnum = cnf.supervene;
-
-    println!("\n[Start] Create #{} miner worker thread.", thrnum);
-
+    flush!("\n[Start] Create #{} miner worker thread.", thrnum);
     for i in 0 .. thrnum {
         let thrid = i as usize;
         let cnf1 = cnf.clone();
@@ -93,7 +81,7 @@ fn start_one_worker_thread(thrid: usize, cnf: DiaWorkConf) {
 
             let cmdn = MINING_DIAMOND_NUM.load(Relaxed);
             if cmdn == 0 {
-                loop_retry!(3); // not yet
+                delay_continue!(3); // not yet
             }
             if cmdn > current_mining_number {
                 // next mining
@@ -208,19 +196,19 @@ fn load_init(cnf: &mut DiaWorkConf) {
         let res = HttpClient::new().get(&urlapi_pending).send();
         let Ok(repv) = res else {
             println!("Error: cannot init diamond miner from {}", &urlapi_pending);
-            loop_retry!(15);
+            delay_continue!(15);
         };
         let res: JV = serde_json::from_str(&repv.text().unwrap()).unwrap();
         let jstr = |k| { res[k].as_str().unwrap_or("") };
         let adr1 = jstr("bid_address");
         let Ok(bid_addr) = Address::from_readable( &adr1 ) else {
             println!("Error: bid_address {} format error", &adr1);
-            loop_retry!(10);
+            delay_continue!(10);
         };
         let adr2 = jstr("reward_address");
         let Ok(rwd_addr) = Address::from_readable( &adr2 ) else {
             println!("Error: reward_address {} format error", &adr2);
-            loop_retry!(10);
+            delay_continue!(10);
         };
         println!("[Config] query diamond miner bid address: {}, reward address: {}", &adr1, &adr2);
         // ok
@@ -244,7 +232,7 @@ fn pull_and_push_loop(cnf: DiaWorkConf) {
         let res = HttpClient::new().get(&urlapi_latest).send();
         let Ok(repv) = res else {
             println!("Error: cannot get latest from {}", &urlapi_latest);
-            loop_retry!(15);
+            delay_continue!(15);
         };
         let res: JV = serde_json::from_str(&repv.text().unwrap()).unwrap();
         // println!("get latest: {:?}", &res);
@@ -262,7 +250,7 @@ fn pull_and_push_loop(cnf: DiaWorkConf) {
                 let res = HttpClient::new().get(&urlapi_diamond).send();
                 let Ok(repv) = res else {
                     println!("Error: cannot get diamond from {}", &urlapi_diamond);
-                    loop_retry!(10);
+                    delay_continue!(10);
                 };
                 let res: JV = serde_json::from_str(&repv.text().unwrap()).unwrap();
                 // println!("query diamond: {:?}", &res);
@@ -301,7 +289,7 @@ fn pull_and_push_loop(cnf: DiaWorkConf) {
             }
         }
 
-        loop_retry!(3); // waiting
+        delay_continue!(3); // waiting
     }
 
 

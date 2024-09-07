@@ -40,6 +40,8 @@ use super::unstable;
 use super::extend;
 
 
+include!("util.rs");
+
 include!("routes.rs");
 include!("console.rs");
 

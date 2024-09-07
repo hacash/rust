@@ -21,7 +21,7 @@ include!("bidding.rs");
 
 
 pub fn start_diamond_auto_bidding(hnode: Arc<dyn HNode>) -> RetErr {
-
+    
     // check config
     let eng = hnode.engine();
     let cnf = eng.config();
@@ -29,6 +29,10 @@ pub fn start_diamond_auto_bidding(hnode: Arc<dyn HNode>) -> RetErr {
     let bidmax = cnf.dmer_bid_max.clone();
     let mut bidstep = cnf.dmer_bid_step.clone();
     let minstep = Amount::new_small(1, 244);
+
+    if ! cnf.dmer_enable {
+        return Ok(()) // not enable
+    }
 
     macro_rules! printerr {
         ( $f: expr, $( $v: expr ),+ ) => {
@@ -53,8 +57,8 @@ pub fn start_diamond_auto_bidding(hnode: Arc<dyn HNode>) -> RetErr {
         panic!("");
     }
 
-    println!("\n\n[Diamond Auto Bidding] Start listen with min fee {} and max fee {}.\n\n",
-        &bidmin.to_fin_string(), &bidmax.to_fin_string()
+    println!("[Diamond Auto Bidding] Start with account {} min fee {} and max fee {}.",
+        &cnf.dmer_bid_account.readable(), &bidmin.to_fin_string(), &bidmax.to_fin_string()
     );
     
     // thread loop 

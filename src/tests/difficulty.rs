@@ -19,7 +19,7 @@ pub fn test_difficulty() {
         let bigit = hash_to_biguint(&hash);
         let hash2 = biguint_to_hash(&bigit);
         // println!("{} {} {} {}", hex::encode(hash), hex::encode(hash1), hex::encode(hash2));
-        println!("{} {} {}", hex::encode(hash1), difnum, hash_to_rateshow(&hash1, 300));
+        println!("{} {} {}", hex::encode(hash1), difnum, hash_to_rateshow(&hash1, 300.0));
 
 
     }

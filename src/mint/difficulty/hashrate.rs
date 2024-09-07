@@ -32,23 +32,23 @@ pub fn rates_to_show(rates: f64) -> String {
     format!("{:.2}{}c/s", num, unit)
 }
 
-pub fn hash_to_rateshow(hx: &[u8; HASH_WIDTH], secs: u64) -> String {
+pub fn hash_to_rateshow(hx: &[u8; HASH_WIDTH], secs: f64) -> String {
     let rates = hash_to_rates(hx, secs);
     rates_to_show(rates)
 }
 
-pub fn u32_to_rateshow(num: u32, secs: u64) -> String {
+pub fn u32_to_rateshow(num: u32, secs: f64) -> String {
     let rates = u32_to_rates(num, secs);
     rates_to_show(rates)
 }
 
-pub fn u32_to_rates(num: u32, secs: u64) -> f64 {
+pub fn u32_to_rates(num: u32, secs: f64) -> f64 {
     let hx = u32_to_hash(num);
     hash_to_rates(&hx, secs)
 }
 
-pub fn hash_to_rates(hx: &[u8; HASH_WIDTH], secs: u64) -> f64 {
-    hash_to_power(&hx) / (secs as f64)
+pub fn hash_to_rates(hx: &[u8; HASH_WIDTH], secs: f64) -> f64 {
+    hash_to_power(&hx) / secs
 }
 
 pub fn hash_to_power_u128(hx: &[u8; HASH_WIDTH]) -> u128 {

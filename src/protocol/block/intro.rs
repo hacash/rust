@@ -82,10 +82,18 @@ impl BlockRead for BlockHeadMeta {
 	fn difficulty(&self) -> &Uint4 {
         &self.meta.difficulty
 	}
-    
+
 
 }
 
+
+impl BlockHeadMeta {
+
+    pub fn set_mrklroot(&mut self, hx: Hash) {
+        self.head.mrklroot = hx;
+    }
+
+}
 
 pub type BlockIntro = BlockHeadMeta;
 

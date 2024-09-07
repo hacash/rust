@@ -9,7 +9,7 @@ fn query_hashrate(ctx: &ApiCtx) -> JsonObject {
 
     let mtckr = ctx.engine.mint_checker();
     let mtcnf = mtckr.config();
-    let btt = mtcnf.each_block_target_time; // 300
+    let btt = mtcnf.each_block_target_time as f64; // 300
     let bac = mtcnf.difficulty_adjust_blocks; // 288
     //
     let lastblk = ctx.engine.latest_block();
@@ -29,7 +29,7 @@ fn query_hashrate(ctx: &ApiCtx) -> JsonObject {
         if let Ok(pblk) = pblk {
             let p100t = pblk.objc().timestamp().uint();
             let cttt = (lastblk.timestamp().uint() - p100t) / ltc;
-            rt_rate = rt_rate * btt as f64 / cttt  as f64;
+            rt_rate = rt_rate * btt / cttt  as f64;
             rt_show = rates_to_show(rt_rate);
         }
     }
@@ -154,7 +154,8 @@ fn get_blk_rate(ctx: &ApiCtx, store: &CoreStoreDisk, hei: u64) -> u128 {
     let key = hei.to_string();
     let difn = ctx.load_block(store, &key).unwrap().objc().difficulty().uint();
     let mtckr = ctx.engine.mint_checker();
-    u32_to_rates(difn, mtckr.config().each_block_target_time) as u128 // 300s
+    let tms = mtckr.config().each_block_target_time as f64 * 1000.0;
+    u32_to_rates(difn, tms) as u128 // 300s
 }
 
 
@@ -171,18 +172,4 @@ fn drop_right_ff(hx: &[u8]) -> Vec<u8> {
     res
 }
 */
-
-
-fn right_00_to_ff(hx: &mut [u8]) {
-    let m = hx.len();
-    for i in 0..hx.len() {
-        let n = m - i - 1;
-        if hx[n] == 0 { // 00
-            hx[n] = 255; // ff
-        }else{
-            break // finish
-        }
-    }
-}
-
 

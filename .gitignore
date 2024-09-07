@@ -1,5 +1,6 @@
 hacash_*
 *.ini
+*.loc.rs
 
 
 test/
