@@ -223,10 +223,12 @@ fn get_all_results(cnf: PoWorkConf,
             }
         }
         // print
-        let mnper = mnres.mnper as f32 / 100.0;
-        let hashrate = hash_to_rateshow(&power_hash[0..32].try_into().unwrap(), STPSEC); // 3s
-        prtx.send(format!("do mining {} {}... {} ({}%) {}", mnres.stuff.height, 
-            hex::encode(&power_hash[0..10]), power_space, mnper, hashrate,
+        let mnper = mnres.mnper as f32 * cnf.supervene as f32 / 100.0;
+        let sp_space = power_space as f64 * cnf.supervene as f64;
+        let sp_power = sp_space / STPSEC as f64;
+        let hashrate = rates_to_show(sp_power); // 3s
+        prtx.send(format!("do mining {} {}... {}-{}%, hashrates: {}", mnres.stuff.height, 
+            hex::encode(&power_hash[0..10]), sp_space as u64, mnper, hashrate,
         )).unwrap();
     }
 }

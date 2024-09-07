@@ -40,8 +40,8 @@ pub fn start_diamond_auto_bidding(hnode: Arc<dyn HNode>) -> RetErr {
     }
 
     if bidstep.less_than(&minstep) {
-        printerr!("bid step amount cannot less than {} HAC"
-            &minstep.to_fin_string(),
+        printerr!("bid step amount cannot less than {} HAC",
+            &minstep.to_fin_string()
         );
         bidstep = minstep;
     }

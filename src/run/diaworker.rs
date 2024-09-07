@@ -102,7 +102,7 @@ fn start_one_worker_thread(thrid: usize, cnf: DiaWorkConf) {
                 if thrid == 0 {
                     println!("start mining ... ");
                 }
-                break // reaet nonce start
+                break // reset nonce start
             }
 
             if thrid == 0 {
@@ -269,7 +269,7 @@ fn pull_and_push_loop(cnf: DiaWorkConf) {
                 let prev_hash = res["born"]["hash"].as_str().unwrap_or("");
                 if let Ok(hx) = hex::decode(&prev_hash) {
                     if hx.len() == x16rs::HASH_SIZE {
-                        flush!("\n\n[{}] Turn to next diamond number {}, ", 
+                        println!("\n[{}] Turn to next diamond number {}, ", 
                             &ctshow()[5..], next_num
                         );
                         *MINING_STUFF.lock().unwrap() = Hash::cons(hx.try_into().unwrap());
