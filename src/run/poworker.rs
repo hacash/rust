@@ -59,7 +59,7 @@ pub fn poworker() {
 
     // start worker thread
     let thrnum = cnf.supervene;
-    flush!("\n[Start] Create #{} miner worker thread.", thrnum);
+    println!("\n[Start] Create #{} miner worker thread.", thrnum);
     for thrid in 0 .. cnf.supervene {
         let cnf2 = cnf.clone();
         spawn(move || {
@@ -217,7 +217,7 @@ fn may_print_turn_to_nex_block_mining(curr_hei: u64, most_hash: Option<&mut Vec<
     let stuff = MINING_BLOCK_STUFF.lock().unwrap();
     let tarhx = hash_left_zero_pad3(&stuff.target_hash.as_bytes()).hex();
 
-    println!("\n\n[{}] req height {} target {} to mining ... ", 
+    println!("\n[{}] req height {} target {} to mining ... ", 
         &ctshow()[5..], mining_hei, tarhx
     );
 }

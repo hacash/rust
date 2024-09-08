@@ -53,7 +53,7 @@ pub fn diaworker() {
 
     // start worker
     let thrnum = cnf.supervene;
-    flush!("\n[Start] Create #{} miner worker thread.", thrnum);
+    println!("\n[Start] Create #{} miner worker thread.", thrnum);
     for thrid in 0 .. thrnum as usize {
         let cnf2 = cnf.clone();
         spawn(move || {
@@ -125,7 +125,7 @@ fn may_print_turn_to_nex_diamond_mining(curr_number: u32, most_dia_str: Option<&
         *most_dia_str = [b'W'; 16]; // reset 
     }
 
-    println!("\n\n[{}] req next number {} to mining ... ", 
+    println!("\n[{}] req next number {} to mining ... ", 
         &ctshow()[5..], mining_number
     );
 }
@@ -265,14 +265,19 @@ fn load_init(cnf: &mut DiaWorkConf) {
         };
         let res: JV = serde_json::from_str(&repv.text().unwrap()).unwrap();
         let jstr = |k| { res[k].as_str().unwrap_or("") };
+        let err = jstr("err");
+        if err.len() > 0 {
+            println!("{} Error: {}", &urlapi_pending, err);
+            delay_continue!(30);
+        }
         let adr1 = jstr("bid_address");
         let Ok(bid_addr) = Address::from_readable( &adr1 ) else {
-            println!("Error: bid_address {} format error", &adr1);
+            println!("Error: bid_address '{}' format error", &adr1);
             delay_continue!(30);
         };
         let adr2 = jstr("reward_address");
         let Ok(rwd_addr) = Address::from_readable( &adr2 ) else {
-            println!("Error: reward_address {} format error", &adr2);
+            println!("Error: reward_address '{}' format error", &adr2);
             delay_continue!(30);
         };
         println!("[Config] query diamond miner bid address: {}, reward address: {}", &adr1, &adr2);
@@ -352,7 +357,13 @@ fn push_diamond_mining_success(cnf: &DiaWorkConf, success: DiamondMint) {
             return // err
         };
         let res: JV = serde_json::from_str(&repv.text().unwrap()).unwrap();
-        let tx_hash =  res["tx_hash"].as_str().unwrap_or("");
+        let jstr = |k: &str| { res[k].as_str().unwrap_or("") };
+        let tx_err =  jstr("err");
+        if tx_err.len() > 0 {
+            println!("☒✗✘ㄨ✕✖ Failed submit tx diamond mint to mainnet, error: {}\n", tx_err);
+            return 
+        }
+        let tx_hash =  jstr("tx_hash");
         if tx_hash.len() != 64 {
             return // err
         }
