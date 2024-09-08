@@ -15,6 +15,7 @@ lazy_static!{
 #[derive(Debug, Clone, Default)]
 struct DiamondMiningResult {
     number: u32,
+    nonce_start: u64,
     nonce_space: u64,
     u64_nonce: u64,
     msg_nonce: Vec<u8>,
@@ -106,9 +107,9 @@ fn deal_diamond_mining_results(cnf: &DiaWorkConf, most_dia_str: &mut [u8; 16]) {
     let diastr = String::from_utf8(most.dia_str.to_vec()).unwrap();
     let most_diastr = String::from_utf8(most_dia_str.to_vec()).unwrap();
     let hsrts = rates_to_show(total_nonce_space as f64 / MINING_INTERVAL);
-
-    flush!("{} {} {}, hashrates: {}.        \r", 
-        total_nonce_space, diastr, most_diastr, hsrts
+    flush!("{} {}, {} {}, {}.        \r", 
+        most.nonce_start, total_nonce_space, 
+        diastr, most_diastr, hsrts
     );
 
     // print next
@@ -196,6 +197,7 @@ fn do_diamond_group_mining(number: u32, prevblockhash: &Hash,
     };
     let mut most = DiamondMiningResult {
         number,
+        nonce_start,
         nonce_space,
         u64_nonce: 0,
         msg_nonce: custom_nonce.to_vec(),

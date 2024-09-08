@@ -25,6 +25,7 @@ struct BlockMiningStuff {
 #[derive(Clone, Default)]
 struct BlockMiningResult {
     height: u64,
+    nonce_start: u32,
     nonce_space: u32,
     head_nonce: u32,
     coinbase_nonce: Vec<u8>,
@@ -106,6 +107,7 @@ fn run_block_mining_item(cnf: &PoWorkConf, thrid: u32) {
         // record result
         let mlres = BlockMiningResult {
             height,
+            nonce_start,
             nonce_space,
             head_nonce,
             coinbase_nonce: coinbase_nonce.to_vec(),
@@ -191,11 +193,11 @@ fn deal_block_mining_results(cnf: &PoWorkConf, most_hash: &mut Vec<u8>) {
         mnper = 1.0;
     }
     let hac1day = mnper * ONEDAY_BLOCK_NUM * block_reward_number(deal_hei) as f64;
-    flush!("{}-{:.6}%, {} {}, ≈{:.4}HAC/day, hashrates: {}.        \r", 
-        total_nonce_space, mnper * 100.0,
+    flush!("{} {}, {} {}, ≈{:.4}HAC/day {:.6}%, {}.        \r", 
+        most.nonce_start, total_nonce_space,
         hex::encode(hash_left_zero_pad(&most.result_hash, 2)), 
         hex::encode(hash_left_zero_pad3(&most_hash)), 
-        hac1day, rates_to_show(nonce_rates)
+        hac1day, mnper * 100.0, rates_to_show(nonce_rates)
     );
     // check success
     if hash_more_power(&most.result_hash, &most.target_hash) {
