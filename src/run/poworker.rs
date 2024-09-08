@@ -89,7 +89,7 @@ fn run_block_mining_item(cnf: &PoWorkConf, thrid: u32) {
     let mut coinbase_nonce = Hash::default();
     getrandom::getrandom(coinbase_nonce.as_mut()).unwrap();
     let mut nonce_start: u32 = 0;
-    let mut nonce_space: u32 = 15000;
+    let mut nonce_space: u32 = 100000;
     // stuff data
     let stuff = { MINING_BLOCK_STUFF.lock().unwrap().clone() };
     let height = stuff.height;
@@ -178,25 +178,29 @@ fn deal_block_mining_results(cnf: &PoWorkConf, most_hash: &mut Vec<u8>) {
     }
     results.clear();
     drop(results);
+    // total most
     if hash_more_power(&most.result_hash, most_hash) {
         *most_hash = most.result_hash.clone();
     }
-    // check success
-    if hash_more_power(&most.result_hash, &most.target_hash) {
-        push_block_mining_success(cnf, &most);
-    }
     // print hashrates
-    let tarhx: [u8; HASH_WIDTH] = most.target_hash.try_into().unwrap();
+    let tarhx: [u8; HASH_WIDTH] = most.target_hash.clone().try_into().unwrap();
     let target_rates = hash_to_rates(&tarhx, TARGET_BLOCK_TIME);
     let nonce_rates = total_nonce_space as f64 / MINING_INTERVAL;
-    let mnper = nonce_rates / target_rates * 100.0;
+    let mut mnper = nonce_rates / target_rates;
+    if mnper > 1.0 {
+        mnper = 1.0;
+    }
     let hac1day = mnper * ONEDAY_BLOCK_NUM * block_reward_number(deal_hei) as f64;
     flush!("{}-{:.6}%, {} {}, ≈{:.4}HAC/day, hashrates: {}.        \r", 
-        total_nonce_space, mnper,
+        total_nonce_space, mnper * 100.0,
         hex::encode(hash_left_zero_pad(&most.result_hash, 2)), 
         hex::encode(hash_left_zero_pad3(&most_hash)), 
         hac1day, rates_to_show(nonce_rates)
     );
+    // check success
+    if hash_more_power(&most.result_hash, &most.target_hash) {
+        push_block_mining_success(cnf, &most);
+    }
     // print next height
     may_print_turn_to_nex_block_mining(deal_hei, Some(most_hash));
 }
@@ -256,13 +260,14 @@ fn set_pending_block_stuff(height: u64, res: serde_json::Value) {
 
 
 fn pull_pending_block_stuff(cnf: &PoWorkConf) {
+
     let curr_hei = MINING_BLOCK_HEIGHT.load(Relaxed);
 
     // query pending
     let urlapi_pending = format!("http://{}/query/miner/pending?stuff=true", &cnf.rpcaddr);
     let res = HttpClient::new().get(&urlapi_pending).send();
     let Ok(repv) = res else {
-        println!("\n\nError: cannot get block data at {}\n", &urlapi_pending);
+        println!("Error: cannot get block data at {}\n", &urlapi_pending);
         delay_return!(30);
     };
     let res: JV = serde_json::from_str(&repv.text().unwrap()).unwrap();
@@ -315,9 +320,6 @@ fn pull_pending_block_stuff(cnf: &PoWorkConf) {
 
     }
 
-
-
-
 }
 
 
@@ -329,8 +331,9 @@ fn push_block_mining_success(cnf: &PoWorkConf, success: &BlockMiningResult) {
     HttpClient::new().get(&urlapi_success).send();
     // println!("{} {}", &urlapi_success, HttpClient::new().get(&urlapi_success).send().unwrap().text().unwrap());
     // print
-    flush!("\n████████ [MINING SUCCESS] Find a block height {} hash {} to submit.\n",
+    println!("\n\n████████████████ [MINING SUCCESS] Find a block height {},\n██ hash {} to submit.",
         success.height, success.result_hash.hex()
     );
+    println!("▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔")
 }
 

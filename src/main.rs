@@ -32,8 +32,8 @@ use crate::run::*;
 fn main() {
 
     // poworker(); // HAC PoW Miner Worker
-    // diaworker(); // Diamond Miner Worker
-    fullnode(None); // Hacash Full Node
+    diaworker(); // Diamond Miner Worker
+    // fullnode(None); // Hacash Full Node
 
 }
 
