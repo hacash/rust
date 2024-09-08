@@ -59,7 +59,7 @@ pub fn poworker() {
 
     // start worker thread
     let thrnum = cnf.supervene;
-    println!("\n[Start] Create #{} miner worker thread.", thrnum);
+    println!("\n[Start] Create #{} block miner worker thread.", thrnum);
     for thrid in 0 .. cnf.supervene {
         let cnf2 = cnf.clone();
         spawn(move || {

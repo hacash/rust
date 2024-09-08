@@ -53,7 +53,7 @@ pub fn diaworker() {
 
     // start worker
     let thrnum = cnf.supervene;
-    println!("\n[Start] Create #{} miner worker thread.", thrnum);
+    println!("\n[Start] Create #{} diamond miner worker thread.", thrnum);
     for thrid in 0 .. thrnum as usize {
         let cnf2 = cnf.clone();
         spawn(move || {
@@ -360,7 +360,7 @@ fn push_diamond_mining_success(cnf: &DiaWorkConf, success: DiamondMint) {
         let jstr = |k: &str| { res[k].as_str().unwrap_or("") };
         let tx_err =  jstr("err");
         if tx_err.len() > 0 {
-            println!("☒✗✘ㄨ✕✖ Failed submit tx diamond mint to mainnet, error: {}\n", tx_err);
+            println!("ㄨㄨㄨㄨ Failed submit tx diamond mint to mainnet\n     ERROR: {}\n", tx_err);
             return 
         }
         let tx_hash =  jstr("tx_hash");
