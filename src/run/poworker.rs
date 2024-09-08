@@ -6,8 +6,7 @@ const ONEDAY_BLOCK_NUM: f64 = 288.0; // one day block
 // current mining diamond number
 static MINING_BLOCK_HEIGHT: AtomicU64 = AtomicU64::new(0);
 lazy_static!{
-    static ref MINING_BLOCK_STUFF:  Mutex<Arc<BlockMiningStuff>> = Mutex::default();
-    static ref MINING_BLOCK_RESULT: Mutex<Vec<BlockMiningResult>> = Mutex::default();
+    static ref MINING_BLOCK_STUFF:  RwLock<Arc<BlockMiningStuff>> = RwLock::default();
 }
 
 
@@ -33,6 +32,16 @@ struct BlockMiningResult {
     target_hash: Vec<u8>,
 }
 
+impl BlockMiningResult {
+    fn new() -> BlockMiningResult {
+        let mut res = BlockMiningResult::default();
+        res.result_hash = vec![255u8; 32];
+        res
+    }
+}
+
+
+
 
 
 pub fn poworker() {
@@ -48,24 +57,28 @@ pub fn poworker() {
     // cnfobj.noticewait = 5;
     // test end
 
+    let (res_tx, res_rx) = mpsc::channel();
+
     // deal results
     let cnf1 = cnf.clone();
     spawn(move || {
         let mut most_hash = vec![255u8; 32];
+        let mut rstx = res_rx;
         loop {
-            deal_block_mining_results(&cnf1, &mut most_hash);
+            deal_block_mining_results(&cnf1, &mut most_hash, &mut rstx);
             delay_continue_ms!(123);
         }
     });
 
     // start worker thread
-    let thrnum = cnf.supervene;
+    let thrnum = cnf.supervene as usize;
     println!("\n[Start] Create #{} block miner worker thread.", thrnum);
-    for thrid in 0 .. cnf.supervene {
+    for thrid in 0 .. thrnum {
         let cnf2 = cnf.clone();
+        let rstx = res_tx.clone();
         spawn(move || {
             loop {
-                run_block_mining_item(&cnf2, thrid);
+                run_block_mining_item(&cnf2, thrid, rstx.clone());
                 delay_continue_ms!(9);
             }
         });
@@ -80,7 +93,9 @@ pub fn poworker() {
 
 
 
-fn run_block_mining_item(cnf: &PoWorkConf, thrid: u32) {
+fn run_block_mining_item(cnf: &PoWorkConf, thrid: usize,
+    result_ch_tx: mpsc::Sender<Arc<BlockMiningResult>>,
+) {
 
     let mining_hei = MINING_BLOCK_HEIGHT.load(Relaxed);
     if mining_hei == 0 {
@@ -92,7 +107,7 @@ fn run_block_mining_item(cnf: &PoWorkConf, thrid: u32) {
     let mut nonce_start: u32 = 0;
     let mut nonce_space: u32 = 100000;
     // stuff data
-    let stuff = { MINING_BLOCK_STUFF.lock().unwrap().clone() };
+    let stuff = { MINING_BLOCK_STUFF.read().unwrap().clone() };
     let height = stuff.height;
     let mut cbtx = stuff.coinbase_tx.clone();
     cbtx.set_nonce(coinbase_nonce);
@@ -114,10 +129,7 @@ fn run_block_mining_item(cnf: &PoWorkConf, thrid: u32) {
             result_hash: result_hash.to_vec(),
             target_hash: stuff.target_hash.to_vec(),
         };
-        {
-            let mut results = MINING_BLOCK_RESULT.lock().unwrap();
-            results.push(mlres);
-        }
+        result_ch_tx.send(mlres.into()).unwrap();
         if nonce_finish {
             return // end u32 nonce
         }
@@ -158,28 +170,22 @@ fn do_group_block_mining(height: u64, mut block_intro: Vec<u8>,
 }
 
 
-fn deal_block_mining_results(cnf: &PoWorkConf, most_hash: &mut Vec<u8>) {
+fn deal_block_mining_results(cnf: &PoWorkConf, most_hash: &mut Vec<u8>,
+    result_ch_rx: &mut mpsc::Receiver<Arc<BlockMiningResult>>,
+) {
     let vene = cnf.supervene;
-    let mut results = MINING_BLOCK_RESULT.lock().unwrap();
-    let resnum = results.len() as u32;
-    if resnum != vene {
-        return // not yet
-    }
     // deal
     let mut deal_hei = 0u64;
-    let mut most = BlockMiningResult::default();
-    most.result_hash = vec![255u8].repeat(32);
+    let mut most = Arc::new(BlockMiningResult::new());
     let mut total_nonce_space = 0u64;
-    for i in 0 .. resnum as usize {
-        let res = &results[i];
+    for i in 0 .. vene as usize {
+        let res = result_ch_rx.recv().unwrap();
         deal_hei = res.height;
         total_nonce_space += res.nonce_space as u64;
         if hash_more_power(&res.result_hash, &most.result_hash) {
             most = res.clone();
         }
     }
-    results.clear();
-    drop(results);
     // total most
     if hash_more_power(&most.result_hash, most_hash) {
         *most_hash = most.result_hash.clone();
@@ -216,7 +222,7 @@ fn may_print_turn_to_nex_block_mining(curr_hei: u64, most_hash: Option<&mut Vec<
     if let Some(most_hash) = most_hash {
         *most_hash = vec![255u8; 32]; // reset 
     }
-    let stuff = MINING_BLOCK_STUFF.lock().unwrap();
+    let stuff = MINING_BLOCK_STUFF.read().unwrap();
     let tarhx = hash_left_zero_pad3(&stuff.target_hash.as_bytes()).hex();
 
     println!("\n[{}] req height {} target {} to mining ... ", 
@@ -247,10 +253,7 @@ fn set_pending_block_stuff(height: u64, res: serde_json::Value) {
         coinbase_tx,
         mkrl_list,
     };
-    {
-        let mut stuff = MINING_BLOCK_STUFF.lock().unwrap();
-        *stuff = new_stuff.into();
-    }
+    *MINING_BLOCK_STUFF.write().unwrap() = new_stuff.into();
     MINING_BLOCK_HEIGHT.store(height, Relaxed);
 }
 

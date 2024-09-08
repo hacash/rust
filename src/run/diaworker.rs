@@ -5,9 +5,7 @@
 // current mining diamond number
 static MINING_DIAMOND_NUM: AtomicU32 = AtomicU32::new(0);
 lazy_static!{
-    static ref MINING_DIAMOND_STUFF: Mutex<Hash> = Mutex::default();
-    static ref MINING_SUCCESS: Mutex<Vec<DiamondMint>> = Mutex::default();
-    static ref MINING_DIAMOND_RESULT: Mutex<Vec<DiamondMiningResult>> = Mutex::default();
+    static ref MINING_DIAMOND_STUFF: RwLock<Hash> = RwLock::default();
 }
 
 
@@ -39,6 +37,8 @@ pub fn diaworker() {
     // cnf.supervene = 1;
     // test end
 
+    let (res_tx, res_rx) = mpsc::channel();
+
     // init
     load_init(&mut cnf);
 
@@ -46,20 +46,22 @@ pub fn diaworker() {
     let cnf1 = cnf.clone();
     spawn(move || {
         let mut most_dia_str = [b'W'; 16];
+        let mut rstx = res_rx;
         loop {
-            deal_diamond_mining_results(&cnf1, &mut most_dia_str);
+            deal_diamond_mining_results(&cnf1, &mut most_dia_str, &mut rstx);
             delay_continue_ms!(77);
         }
     });
 
     // start worker
-    let thrnum = cnf.supervene;
+    let thrnum = cnf.supervene as usize;
     println!("\n[Start] Create #{} diamond miner worker thread.", thrnum);
-    for thrid in 0 .. thrnum as usize {
+    for thrid in 0 .. thrnum {
         let cnf2 = cnf.clone();
+        let rstx = res_tx.clone();
         spawn(move || {
             loop {
-                run_diamond_worker_thread(thrid, &cnf2);
+                run_diamond_worker_thread(&cnf2, thrid, rstx.clone());
                 delay_continue_ms!(9);
             }
         });
@@ -73,20 +75,18 @@ pub fn diaworker() {
 }
 
 
-fn deal_diamond_mining_results(cnf: &DiaWorkConf, most_dia_str: &mut [u8; 16]) {
-    let vene = cnf.supervene;
-    let mut results = MINING_DIAMOND_RESULT.lock().unwrap();
-    let resnum = results.len() as u32;
-    if resnum != vene {
-        return // thread not yet
-    }
 
+
+fn deal_diamond_mining_results(cnf: &DiaWorkConf, most_dia_str: &mut [u8; 16], 
+    result_ch_rx: &mut mpsc::Receiver<DiamondMiningResult>,
+) {
+    let vene = cnf.supervene;
     let mut deal_number = 0u32;
     let mut most = DiamondMiningResult::default();
     most.dia_str = [b'w'; 16];
     let mut total_nonce_space = 0u64;
-    for i in 0 .. resnum as usize {
-        let res = &results[i];
+    for i in 0 .. vene as usize {
+        let res = result_ch_rx.recv().unwrap();
         deal_number = res.number;
         total_nonce_space += res.nonce_space as u64;
         if diamond_more_power(&res.dia_str, &most.dia_str) {
@@ -97,8 +97,6 @@ fn deal_diamond_mining_results(cnf: &DiaWorkConf, most_dia_str: &mut [u8; 16]) {
             push_diamond_mining_success(cnf, success.clone());
         }
     }
-    results.clear();
-    drop(results);
     // total most
     if diamond_more_power(&most.dia_str, most_dia_str) {
         *most_dia_str = most.dia_str.clone();
@@ -134,7 +132,9 @@ fn may_print_turn_to_nex_diamond_mining(curr_number: u32, most_dia_str: Option<&
 
 
 // 
-fn run_diamond_worker_thread(thrid: usize, cnf: &DiaWorkConf) {
+fn run_diamond_worker_thread(cnf: &DiaWorkConf, thrid: usize,
+    result_ch_tx: mpsc::Sender<DiamondMiningResult>,
+) {
     let cmdn = MINING_DIAMOND_NUM.load(Relaxed);
     if cmdn == 0 {
         delay_return_ms!(99); // not yet
@@ -145,7 +145,7 @@ fn run_diamond_worker_thread(thrid: usize, cnf: &DiaWorkConf) {
     let mut nonce_space: u64 = 15000;
     let mut current_mining_number: u32 = cmdn;
     let mut current_mining_block_hash: Hash = {
-        MINING_DIAMOND_STUFF.lock().unwrap().clone()
+        MINING_DIAMOND_STUFF.read().unwrap().clone()
     };
 
     // start mining
@@ -163,10 +163,7 @@ fn run_diamond_worker_thread(thrid: usize, cnf: &DiaWorkConf) {
         );
         // println!("do_diamond_group_mining: {:?}", &result);
         let mut use_secs = Instant::now().duration_since(ctn).as_millis() as f64 / 1000.0;
-        {
-            let mut results = MINING_DIAMOND_RESULT.lock().unwrap();
-            results.push(result);
-        }
+        result_ch_tx.send(result).unwrap(); // channel send
         let ns = nonce_start.checked_add(nonce_space);
         if let None = ns {
             break // u64 nonce end
@@ -313,7 +310,7 @@ fn pull_and_push_diamond(cnf: &DiaWorkConf) {
     // println!("mining next num: {} {}", &mining_num, &next_num);
     if next_num == 1 { 
         // println!("get latest: next_num == 1");
-        *MINING_DIAMOND_STUFF.lock().unwrap() = genesis_block_ptr().objc().hash();
+        *MINING_DIAMOND_STUFF.write().unwrap() = genesis_block_ptr().objc().hash();
         MINING_DIAMOND_NUM.store(next_num, Relaxed);
         return // first mining
     }
@@ -339,7 +336,7 @@ fn pull_and_push_diamond(cnf: &DiaWorkConf) {
         delay_return!(30); // hash error
     }
     // change stuff
-    *MINING_DIAMOND_STUFF.lock().unwrap() = Hash::cons(hx.try_into().unwrap());
+    *MINING_DIAMOND_STUFF.write().unwrap() = Hash::cons(hx.try_into().unwrap());
     MINING_DIAMOND_NUM.store(next_num, Relaxed);
     // print first req msg
     if mining_num == 0 {
