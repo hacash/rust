@@ -90,9 +90,9 @@ impl EngineConf {
         if cnf.dmer_enable {
             cnf.dmer_reward_address = ini_must_address(sec_dmer, "reward");
             cnf.dmer_bid_account = ini_must_account(sec_dmer, "bid_password");
-            cnf.dmer_bid_min = ini_must_amount(sec_dmer, "bid_min");
-            cnf.dmer_bid_max = ini_must_amount(sec_dmer, "bid_max");
-            cnf.dmer_bid_step = ini_must_amount(sec_dmer, "bid_step");
+            cnf.dmer_bid_min = ini_must_amount(sec_dmer, "bid_min").compress(4, true).unwrap();
+            cnf.dmer_bid_max = ini_must_amount(sec_dmer, "bid_max").compress(4, true).unwrap();
+            cnf.dmer_bid_step = ini_must_amount(sec_dmer, "bid_step").compress(4, true).unwrap();
         }
 
 

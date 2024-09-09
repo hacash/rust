@@ -27,7 +27,7 @@ async fn handle_new_tx(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: Vec
     // broadcast
     let p2p = this.p2pmng.lock().unwrap();
     let p2p = p2p.as_ref().unwrap();
-    p2p.broadcast_message(1/*delay*/, knowkey, MSG_TX_SUBMIT, txdatas);
+    p2p.broadcast_message(0/*not delay*/, knowkey, MSG_TX_SUBMIT, txdatas);
 }
 
 

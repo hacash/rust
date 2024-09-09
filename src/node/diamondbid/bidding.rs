@@ -1,7 +1,7 @@
 
 
 
-fn check_bidding_step(hnode: Arc<dyn HNode>, engcnf: &EngineConf, pending_height: u64) {
+fn check_bidding_step(hnode: Arc<dyn HNode>, engcnf: &EngineConf, pending_height: u64, bidding_number: &mut u32) {
     if pending_height % 5 == 0  {
         return // not need bid in mining block tail 5 and 10
     }
@@ -30,18 +30,23 @@ fn check_bidding_step(hnode: Arc<dyn HNode>, engcnf: &EngineConf, pending_height
     let Some(first_bid_txp) = pick_first_bid_tx(txplptr) else {
         retry!(3); // tx pool empty
     };
-    let first_bid_addr = first_bid_txp.objc().address().unwrap();
 
+    let first_bid_addr = first_bid_txp.objc().address().unwrap();
     if my_addr == first_bid_addr {
         retry!(1); // im the first
+    }
+
+    let first_bid_fee = first_bid_txp.objc().fee();
+    if first_bid_fee.more_than(&engcnf.dmer_bid_max) {
+        retry!(10); // my max too low
     }
 
     let Some(my_bid_txp) = pick_my_bid_tx(txplptr, &my_addr) else {
         retry!(3); // have no my tx
     };
-    let my_bid_addr = my_bid_txp.objc().address().unwrap();
 
-    if first_bid_addr == my_bid_addr {
+    let my_bid_addr = my_bid_txp.objc().address().unwrap();
+    if my_bid_addr == first_bid_addr {
         retry!(1); // im the first
     }
 
@@ -50,40 +55,47 @@ fn check_bidding_step(hnode: Arc<dyn HNode>, engcnf: &EngineConf, pending_height
         retry!(5); // my fee up max
     }
 
-    let Ok(mut new_bid_fee) = my_bid_fee.add(&engcnf.dmer_bid_step) else {
+    let Ok(mut new_bid_fee) = first_bid_fee.add(&engcnf.dmer_bid_step) else {
         printerr!("cannot add fee {} with {}, ", 
-            &my_bid_fee.to_fin_string(), &engcnf.dmer_bid_step.to_fin_string()
+            &first_bid_fee.to_fin_string(), &engcnf.dmer_bid_step.to_fin_string()
         );
-        retry!(5); // move step fail
+        retry!(10); // move step fail
     };
-    if new_bid_fee.more_than(&engcnf.dmer_bid_max) {
-        new_bid_fee = engcnf.dmer_bid_max.clone()
-    }
-
     let Ok(new_bid_fee) = new_bid_fee.compress(4, true) else {
         printerr!("cannot compress fee {} to 4 legnth", 
             &new_bid_fee.to_fin_string()
         );
-        retry!(5); // move step fail
+        retry!(10); // move step fail
     };
+    if new_bid_fee.more_than(&engcnf.dmer_bid_max) {
+        new_bid_fee = engcnf.dmer_bid_max.clone()
+    }
+    if new_bid_fee.less_or_equal(first_bid_fee) {
+        retry!(10); // my max too low
+    }
 
     // ok
     if let Some(mint) = checkout_diamond_mint_action(my_bid_txp.objc().as_read()) {
-        flush!(", ✵ Diamond {}({}) autobid => {} ", 
-            mint.head.diamond.readable(), mint.head.number.uint(), &new_bid_fee.to_fin_string()
-        );
+        let dia = mint.head.diamond.readable();
+        let dnum = mint.head.number.uint();
+        let dfee = new_bid_fee.to_fin_string();
+        if *bidding_number != dnum {
+            *bidding_number = dnum;
+            flush!("\n✵✵✵ Diamond Auto Bid {}({}) by {} raise fee to ⇨ {}", dia, dnum, my_addr.readable(), dfee);
+        }else{
+            flush!(" ⇨ {}", dfee);
+        }
     }
-
+    
     // raise fee
     let mut my_tx = my_bid_txp.objc().clone();
-    let diamond_mint = 
     my_tx.set_fee(new_bid_fee.clone());
     my_tx.fill_sign(&engcnf.dmer_bid_account);
     let txp: Box<dyn TxPkg> = Box::new(TxPackage::new(my_tx));
 
     // submit tx
     if let Err(e) = hnode.submit_transaction(&txp, false) {
-        printerr!("submit transaction error: {}", e);
+        printerr!("ㄨㄨㄨ submit tx error: {}", e);
         retry!(3); // submit error
     }
 
