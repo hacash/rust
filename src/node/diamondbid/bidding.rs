@@ -61,7 +61,7 @@ fn check_bidding_step(hnode: Arc<dyn HNode>, engcnf: &EngineConf, pending_height
         );
         retry!(10); // move step fail
     };
-    let Ok(new_bid_fee) = new_bid_fee.compress(4, true) else {
+    let Ok(mut new_bid_fee) = new_bid_fee.compress(4, true) else {
         printerr!("cannot compress fee {} to 4 legnth", 
             &new_bid_fee.to_fin_string()
         );

@@ -32,7 +32,7 @@ pub fn check_diamond_hash_result(stuff: impl AsRef<[u8]>) -> Option<[u8; 6]> {
     Some(hxval[10..16].try_into().unwrap())
 }
 
-pub fn check_diamond_difficulty(number: u32, sha3hx: &[u8; HASH_SIZE], diareshx: &[u8; HASH_SIZE]) -> bool {
+pub fn check_diamond_difficulty(number: u32, sha3hx: &[u8; HASH_SIZE], x16rshx: &[u8; HASH_SIZE]) -> bool {
     const MODIFFBITS: [u8; 32] = [// difficulty requirements
         128, 132, 136, 140, 144, 148, 152, 156, // step +4
         160, 164, 168, 172, 176, 180, 184, 188,
@@ -57,7 +57,7 @@ pub fn check_diamond_difficulty(number: u32, sha3hx: &[u8; HASH_SIZE], diareshx:
 	// every 3277 diamonds is about 56 days. Adjust the difficulty 3277 = 16 ^ 6 / 256 / 20
 	// when the difficulty is the highest, the first 20 bits of the hash are 0, not all 32 bits are 0.
     let mut diffnum = number as usize / 3277;
-    for a in diareshx {
+    for a in x16rshx {
         if diffnum < 255 {
 			if (*a as usize) + diffnum > 255 {
 				return false // difficulty check failed
