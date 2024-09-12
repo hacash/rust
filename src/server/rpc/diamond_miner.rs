@@ -48,6 +48,7 @@ async fn diamondminer_success(State(ctx): State<ApiCtx>, q: Query<Q6396>, body: 
     };
 
     let mint_number = mint.head.number.uint();
+    let mint_name = mint.head.diamond.readable();
 
     // check number and hash
     let lastdia = mintstate.latest_diamond();
@@ -74,8 +75,11 @@ async fn diamondminer_success(State(ctx): State<ApiCtx>, q: Query<Q6396>, body: 
         return api_error(&e)
     }
 
+    let hxstr = txhx.hex();
+    println!("▒▒▒▒ DIAMOND MINING SUBMIT SUCCESS: {}({}), tx hash: {}.", mint_name, mint_number, &hxstr);
+
     let data = jsondata!{
-        "tx_hash", txhx.hex(),
+        "tx_hash", hxstr,
     };
 
     api_data(data)
