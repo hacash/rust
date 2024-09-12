@@ -33,7 +33,7 @@ fn main() {
 
     // poworker(); // HAC PoW Miner Worker
     // diaworker(); // Diamond Miner Worker
-    fullnode(None); // Hacash Full Node
+    fullnode(); // Hacash Full Node
 
 }
 
@@ -43,9 +43,13 @@ fn main() {
 
 /*
 
-sudo apt install g++
-sudo apt install cmake     
+## Deal error: linker `cc` not found
+sudo apt install build-essential          # with g++ & cmake
+sudo apt install pkg-config
+sudo apt install openssl
+sudo apt install libssl-dev  
 
+## check and build
 
 RUSTFLAGS="$RUSTFLAGS -Awarnings" RUST_BACKTRACE=1 cargo check / build / run
 mkdir -p ./target/debug/ && cp hacash.config.ini ./target/debug/ && RUSTFLAGS="$RUSTFLAGS -Awarnings" RUST_BACKTRACE=1 cargo run

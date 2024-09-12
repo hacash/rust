@@ -10,7 +10,12 @@ impl BlockScaner for EmptyBlockScaner {}
 
 
 
-pub fn fullnode(blkscaner: Option<Box<dyn BlockScaner>>) {
+pub fn fullnode() {
+    fullnode_with(None)
+}
+
+
+pub fn fullnode_with(blkscaner: Option<Box<dyn BlockScaner>>) {
 
     // config
     let cnfp = "./hacash.config.ini".to_string();

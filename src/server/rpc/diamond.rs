@@ -66,14 +66,17 @@ async fn diamond(State(ctx): State<ApiCtx>, q: Query<Q3946>) -> impl IntoRespons
 defineQueryObject!{ Q8346,
     limit, Option<usize>, None,
     number, Option<usize>, None,
+    since, Option<bool>, None,
 }
 
 async fn diamond_bidding(State(ctx): State<ApiCtx>, q: Query<Q8346>) -> impl IntoResponse {
+    ctx_store!(ctx, store);
     ctx_mintstate!(ctx, mintstate);
     let lastdia = mintstate.latest_diamond();
     q_unit!(q, unit);
     q_must!(q, limit, 20);
     q_must!(q, number, 0);
+    q_must!(q, since, false);
     let number = number as u32;
 
     let mut datalist = vec![];
@@ -93,7 +96,7 @@ async fn diamond_bidding(State(ctx): State<ApiCtx>, q: Query<Q8346>) -> impl Int
         };
         let act = diamtact.head;
         if number > 0 && number != act.number.uint() {
-            return true // number not match
+            return true // number not match, continue
         }
         // append
         let mut one = jsondata!{
@@ -113,11 +116,21 @@ async fn diamond_bidding(State(ctx): State<ApiCtx>, q: Query<Q8346>) -> impl Int
     };
     txpool.iter_at(&mut pick_dmint, TXPOOL_GROUP_DIAMOND_MINT);
 
-    // return data
-    api_data(jsondata!{
-        "number", *lastdia.number + 1, // next diamond
+    let mut data = jsondata!{
+        "number", *lastdia.number + 1, // current bidding diamond
         "list", datalist,
-    })
+    };
+
+    if since {
+        let mut acution_start = curtimes(); 
+        if let Ok(blk) = ctx.load_block( &store, &lastdia.born_height.to_string() ) {
+            acution_start = blk.objc().timestamp().uint();
+            data.insert("since", json!(acution_start));
+        }
+    }
+
+    // return data
+    api_data(data)
 }
 
 
