@@ -49,7 +49,9 @@ async fn do_find_nodes(this: &P2PManage) {
     let peers = this.backbones();
     for p in peers {
         willdropeds.push(p.key.clone());
-        request_public_nodes(p.addr, &mut allfindnodes).await;
+        if let Err(e) = request_public_nodes(p.addr, &mut allfindnodes).await {
+            println!("\n\ndo_find_nodes request_public_nodes Error: {}\n", e.to_string());
+        }
     }
     if willdropeds.len() <= 1 {
         println!("not connected any nodes.");
@@ -84,6 +86,7 @@ async fn do_find_nodes(this: &P2PManage) {
 async fn request_public_nodes(addr: SocketAddr, datas: &mut HashMap<PeerKey, SocketAddr>) -> RetErr {
     let adrbts = tcp_dial_handshake_send_msg_and_read_all(
         addr, MSG_REQUEST_NEAREST_PUBLIC_NODES, 5).await?;
+        // println!("msg MSG_REQUEST_NEAREST_PUBLIC_NODES get {}", adrbts.hex());
     let sn = 6+16; // ip port + key
     let mut num = adrbts[0] as usize;
     if num < 1 {
