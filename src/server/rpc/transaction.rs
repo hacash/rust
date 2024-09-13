@@ -339,7 +339,7 @@ fn render_tx_info(tx: &dyn TransactionRead,
         // tx
         "hash", tx.hash().hex(),
         "hash_with_fee", tx.hash_with_fee().hex(),
-        "type", tx.timestamp().uint(),
+        "type", tx.ty(),
         "timestamp", tx.timestamp().uint(),
         "fee", fee_str,
         "fee_got", tx.fee_got().to_unit_string(unit),
