@@ -219,6 +219,7 @@ async fn diamond_views(State(ctx): State<ApiCtx>, q: Query<Q5395>) -> impl IntoR
 
 defineQueryObject!{ Q5733,
     height, u64, 0,
+    txposi, Option<isize>, None, // -1,
     tx_hash, Option<bool>, None, // if return txhash
 }
 
@@ -227,6 +228,7 @@ async fn diamond_engrave(State(ctx): State<ApiCtx>, q: Query<Q5733>) -> impl Int
     ctx_mintstate!(ctx, mintstate);
     q_unit!(q, unit);
     q_must!(q, tx_hash, false);
+    q_must!(q, txposi, -1);
 
     let mut datalist = vec![];
 
@@ -241,7 +243,13 @@ async fn diamond_engrave(State(ctx): State<ApiCtx>, q: Query<Q5733>) -> impl Int
     if trs.len() == 0 {
         return api_error("transaction len error")
     }
+    if txposi >= 0 {
+        if txposi >= trs.len() as isize - 1 {
+            return api_error("txposi overflow")
+        }
+    }
 
+    // parse
     let pick_engrave = |tx: &dyn TransactionRead| -> Option<Vec<_>> {
         let mut res = vec![];
         let txhx = tx.hash();
@@ -270,8 +278,13 @@ async fn diamond_engrave(State(ctx): State<ApiCtx>, q: Query<Q5733>) -> impl Int
         Some(res)
     };
 
+    let tx_ary = match txposi >= 0 {
+        true => { let i=txposi as usize; &trs[1..][i..i+1] },
+        false => &trs[1..],
+    };
+
     // ignore coinbase tx
-    for tx in &trs[1..] {
+    for tx in tx_ary {
         if let Some(mut egrs) = pick_engrave(tx.as_read()) {
             datalist.append(&mut egrs);
         }

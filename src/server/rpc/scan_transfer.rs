@@ -1,7 +1,7 @@
 
 defineQueryObject!{ Q4538,
     height, u64, 1,
-    txposi, usize, 0,
+    txposi, isize, -1,
     filter_from, Option<String>, None,
     filter_to, Option<String>, None,
 }
@@ -20,11 +20,15 @@ async fn scan_coin_transfer(State(ctx): State<ApiCtx>, q: Query<Q4538>) -> impl 
     if trs.len() == 0 {
         return api_error("transaction len error")
     }
+    if q.txposi < 0 {
+        return api_error("txposi error")
+    }
+    let txposi = q.txposi as usize;
     let trs = &trs[1..];
-    if q.txposi >= trs.len() {
+    if txposi >= trs.len() {
         return api_error("txposi overflow")
     }
-    let tartrs = trs[q.txposi].as_read();
+    let tartrs = trs[txposi].as_read();
     let mainaddr_readable = tartrs.address().unwrap().readable();
     let mut dtlist = Vec::new();
     // scan actions
