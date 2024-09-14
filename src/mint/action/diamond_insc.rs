@@ -88,7 +88,7 @@ fn diamond_inscription(this: &DiamondInscription, ctx: &dyn ExecContext, sta: &m
  * Diamond Inscription Clean
  */
  ActionDefine!{
-    DiamondInscriptionClean : 33, (
+    DiamondInscriptionClear : 33, (
         diamonds          : DiamondNameListMax200
         protocol_cost     : Amount   // HAC amount for burning
     ),
@@ -105,7 +105,7 @@ fn diamond_inscription(this: &DiamondInscription, ctx: &dyn ExecContext, sta: &m
 
 
 
-fn diamond_inscription_clean(this: &DiamondInscriptionClean, ctx: &dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
+fn diamond_inscription_clean(this: &DiamondInscriptionClear, ctx: &dyn ExecContext, sta: &mut dyn State, sto: &dyn Store) -> Ret<Vec<u8>> {
 
     let main_addr = ctx.main_address();
     let pcost = &this.protocol_cost;

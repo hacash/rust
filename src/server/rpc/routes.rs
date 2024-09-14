@@ -25,6 +25,7 @@ pub fn routes(mut ctx: ApiCtx) -> Router {
     .route(&query("diamond"), get(diamond))
     .route(&query("diamond/bidding"), get(diamond_bidding))
     .route(&query("diamond/views"), get(diamond_views))
+    .route(&query("diamond/engrave"), get(diamond_engrave))
 
     .route(&query("fee/average"), get(fee_average))
 

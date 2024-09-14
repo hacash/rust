@@ -273,7 +273,7 @@ pub fn calculate_diamond_visual_gene(name: &[u8;6], life_gene: &[u8;32]) -> (Dia
     }
 
     // step 2
-    let mut idx = 9;
+    let mut idx = 8;
     for i in 20..31 {
         let k = (life_gene[i] as usize) % 16;
         genehexstr[idx] = HEX_CHARS[k];

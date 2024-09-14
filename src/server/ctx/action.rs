@@ -210,7 +210,7 @@ pub fn action_from_json(main_addr: &Address, jsonv: &serde_json::Value) -> Ret<B
         engraved_content, j_bytes1
     }
 
-    if_ret_act_ns!{ DiamondInscriptionClean,
+    if_ret_act_ns!{ DiamondInscriptionClear,
         diamonds,         j_dias
         protocol_cost,    j_hac
     }
@@ -490,9 +490,9 @@ pub fn action_to_json_desc(tx: &dyn TransactionRead, act: &dyn Action,
             )));
         }
 
-    }else if kind == DiamondInscriptionClean::kid() {
+    }else if kind == DiamondInscriptionClear::kid() {
 
-        let action = DiamondInscriptionClean::must(&act.serialize());
+        let action = DiamondInscriptionClear::must(&act.serialize());
         let dia_num = action.diamonds.count().uint();
         let dia_names = action.diamonds.readable();
         let cost_str = action.protocol_cost.to_unit_string(unit);

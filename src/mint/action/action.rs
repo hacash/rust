@@ -20,7 +20,7 @@ pub const ACTION_KIND_ID_DIAMOND_MINT: u16 = 4;
     SatoshiFromToTransfer    // 11
 
     DiamondInscription       // 32
-    DiamondInscriptionClean  // 33
+    DiamondInscriptionClear  // 33
 
 }
 
