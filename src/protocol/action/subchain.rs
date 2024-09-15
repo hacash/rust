@@ -3,7 +3,7 @@
 
 
 /**
- * check sub chain id
+ * check submit height
  */
  ActionDefine!{
     SubmitHeightLimit : 29, (
@@ -19,10 +19,16 @@
         let lhei = self.start.uint();
         let rhei = self.end.uint();
         let pdhei = ctx.pending_height();
-        if lhei > 0 && pdhei < lhei {
-            return errf!("transction must submit in height between {} and {}", lhei, rhei)
+        if lhei == 0 && rhei == 0 {
+            return errf!("left and rigth height cannot be all zero at same time")
         }
-        if rhei > 0 && pdhei > lhei {
+        if (rhei > 0 && lhei > rhei) {
+            return errf!("left height {} cannot height than rigth height {}", lhei, rhei)
+
+        }
+        if (lhei > 0 && pdhei < lhei) || 
+           (rhei > 0 && pdhei > rhei) 
+        {
             return errf!("transction must submit in height between {} and {}", lhei, rhei)
         }
         // ok

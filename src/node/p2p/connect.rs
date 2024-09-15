@@ -85,7 +85,7 @@ impl P2PManage {
         namebt.truncate(PEER_KEY_SIZE); // node name max 16
         nodeinfo.splice(20..20+PEER_KEY_SIZE, namebt.into_bytes());
         // ok
-        nodeinfo.to_vec()
+        nodeinfo
     }
 
 

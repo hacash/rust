@@ -1,4 +1,18 @@
 
+/**
+* return: exist peer
+*/
+fn check_exist_in_dht_list(lklist: PeerList, peer: &Peer) -> Option<Arc<Peer>> {
+    let mut list = lklist.lock().unwrap();
+    for p in list.iter() {
+        if p.key == peer.key || p.addr == peer.addr{
+            return Some(p.clone()) // repeat peer
+        }
+    }
+    // not find
+    return None
+}
+
 
 /**
  * remove one from 

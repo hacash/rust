@@ -33,6 +33,10 @@ impl P2PManage {
         let mut lmax = self.cnf.offshoot_peers;
         let mut list = self.offshoots.clone();
         if peer.is_public {
+            // check exist repeat
+            if let Some(..) = check_exist_in_dht_list(self.backbones.clone(), &peer) {
+                return None // exist
+            }
             // add in backbones
             lmax = self.cnf.backbone_peers;
             list = self.backbones.clone();
