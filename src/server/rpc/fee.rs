@@ -47,7 +47,7 @@ async fn raise_fee(State(ctx): State<ApiCtx>, q: Query<Q5396>, body: Bytes) -> i
         // find from tx pool
         true => {
             let txhx = q_data_hash!(txhxstr);
-            let txf = ctx.hcshnd.tx_pool().find(&txhx);
+            let txf = ctx.hcshnd.txpool().find(&txhx);
             let Some(tx) = txf else {
                 return api_error(&format!("cannot find tx by hash {} in tx pool", &txhxstr))
             };

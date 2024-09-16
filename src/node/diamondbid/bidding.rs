@@ -6,7 +6,7 @@ fn check_bidding_step(hnode: Arc<dyn HNode>, engcnf: &EngineConf, pending_height
         return // not need bid in mining block tail 5 and 10
     }
 
-    let txpool = hnode.tx_pool();
+    let txpool = hnode.txpool();
     let txplptr = txpool.as_ref();
     let my_acc = &engcnf.dmer_bid_account;
     let my_addr = Address::cons(*my_acc.address());

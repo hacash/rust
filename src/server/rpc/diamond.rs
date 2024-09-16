@@ -81,7 +81,7 @@ async fn diamond_bidding(State(ctx): State<ApiCtx>, q: Query<Q8346>) -> impl Int
 
     let mut datalist = vec![];
     // load from txpool
-    let txpool = ctx.hcshnd.tx_pool();
+    let txpool = ctx.hcshnd.txpool();
 
     // loop diamond mit tx
     let mut pick_dmint = |a: &Box<dyn TxPkg>| {

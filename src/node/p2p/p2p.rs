@@ -25,6 +25,15 @@ impl P2PManage {
         }
     }
 
+    pub fn all_peer_prints(&self) -> Vec<String> { 
+        let peers = vec![ self.backbones(), self.offshoots() ].concat();
+        let mut prints = Vec::with_capacity(peers.len());
+        for p in peers {
+            prints.push(p.nick());
+        }
+        prints
+    }
+
     /**
     * return: maybe drop one
     */

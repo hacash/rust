@@ -173,7 +173,7 @@ fn miner_reset_next_new_block(sto: &dyn Store, engine: ChainEngine, hnode: Chain
     
     append_valid_tx_pick_from_txpool( nexthei, 
         &mut trslen, &mut trshxs, &mut transactions, 
-        engine.clone(), hnode.tx_pool(),
+        engine.clone(), hnode.txpool(),
     );
 
     // set mrkl & trs count

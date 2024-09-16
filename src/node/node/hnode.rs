@@ -40,8 +40,11 @@ impl HNode for HacashNode {
         self.engine.clone()
     }
 
-    fn tx_pool(&self) -> Arc<dyn TxPool> {
+    fn txpool(&self) -> Arc<dyn TxPool> {
         self.txpool.clone()
     }
 
+    fn all_peer_prints(&self) -> Vec<String> { 
+        self.p2p.all_peer_prints()
+    }
 }

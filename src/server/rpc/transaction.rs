@@ -279,7 +279,7 @@ async fn transaction_exist(State(ctx): State<ApiCtx>, q: Query<Q3457>) -> impl I
     let txhx = Hash::must(&hx);
 
     // find from txpool
-    let txpool = ctx.hcshnd.tx_pool();
+    let txpool = ctx.hcshnd.txpool();
     if let Some(txp) = txpool.find(&txhx) {
         let mut info = tx_info!(txp.objc(), None);
         info.insert("pending", json!(true));
