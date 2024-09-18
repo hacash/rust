@@ -24,7 +24,6 @@
         }
         if (rhei > 0 && lhei > rhei) {
             return errf!("left height {} cannot height than rigth height {}", lhei, rhei)
-
         }
         if (lhei > 0 && pdhei < lhei) || 
            (rhei > 0 && pdhei > rhei) 
