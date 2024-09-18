@@ -16,18 +16,19 @@
     false, // burn 90
     [], // req sign
     {
-        let lhei = self.start.uint();
-        let rhei = self.end.uint();
         let pdhei = ctx.pending_height();
+        let lhei = self.start.uint();
+        let mut rhei = self.end.uint();
+        if rhei == 0 {
+            rhei = u64::MAX;
+        }
         if lhei == 0 && rhei == 0 {
             return errf!("left and rigth height cannot be all zero at same time")
         }
-        if (rhei > 0 && lhei > rhei) {
-            return errf!("left height {} cannot height than rigth height {}", lhei, rhei)
+        if (lhei > rhei) {
+            return errf!("left height {} cannot big than rigth height {}", lhei, rhei)
         }
-        if (lhei > 0 && pdhei < lhei) || 
-           (rhei > 0 && pdhei > rhei) 
-        {
+        if pdhei < lhei || pdhei > rhei {
             return errf!("transction must submit in height between {} and {}", lhei, rhei)
         }
         // ok
