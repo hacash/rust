@@ -184,7 +184,7 @@ pub fn action_from_json(main_addr: &Address, jsonv: &serde_json::Value) -> Ret<B
 
     if_ret_act!{ DiamondSingleTransfer,
         to,       j_addr!("to")
-        diamond,  j_dias!("diamond")[0]
+        diamond,  j_dias!("diamonds")[0]
     }
 
     if_ret_act_ns!{ DiamondToTransfer,
