@@ -77,7 +77,7 @@ pub fn do_check_insert(
                 return errf!("tx timestamp {} cannot more than now {}", tx.timestamp(), cur_time)
             }
             // verify signs
-            transaction::verify_tx_signature(tx.as_ref().as_read())?; 
+            tx.as_ref().as_read().verify_signature()?; 
         }
         if txttnum != txcount {
             return errf!("block tx count need {} but got {}", txcount, txttnum)        

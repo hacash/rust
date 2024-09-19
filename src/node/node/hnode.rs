@@ -3,8 +3,11 @@
 impl HNode for HacashNode {
 
     fn submit_transaction(&self, txpkg: &Box<dyn TxPkg>, in_async: bool) -> RetErr {
+        // check signature
+        let txread = txpkg.objc().as_ref().as_read();
+        txread.verify_signature()?;
         // try execute tx
-        self.engine.try_execute_tx(txpkg.objc().as_ref().as_read())?;
+        self.engine.try_execute_tx(txread)?;
         // add to pool
         let msghdl = self.msghdl.clone();
         let txbody = txpkg.body().clone().into_vec();

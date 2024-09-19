@@ -195,13 +195,25 @@ fn append_valid_tx_pick_from_txpool(nexthei: u64, trslen: &mut usize, trshxs: &m
     let mut txallsz: usize = 80; // coinbase tx size
     let txallsz = &mut txallsz;
 
+    macro_rules! check_pick_one_tx {
+        ($a: expr) => {
+            let txr = $a.objc().as_ref().as_read();
+            if let Err(..) = txr.verify_signature() {
+                return true // sign fail, ignore, next
+            }
+            if let Err(..) = engine.try_execute_tx(txr) {
+                return true // execute fail, ignore, next
+            }
+        }
+
+    }
+
     // pick one diamond mint tx
     if nexthei % 5 == 0 {
         let mut pick_dmint = |a: &Box<dyn TxPkg>| {
-            let txr = a.objc().as_ref().as_read();
-            if let Err(..) = engine.try_execute_tx(txr) {
-                return true // next
-            }
+            // check tx
+            check_pick_one_tx!(a);
+            // ok push
             trs.push(a.objc().clone());
             trshxs.push(a.hash().clone());
             *trslen += 1; 
@@ -213,14 +225,13 @@ fn append_valid_tx_pick_from_txpool(nexthei: u64, trslen: &mut usize, trshxs: &m
     // pick normal tx
     let mut pick_normal_tx = |a: &Box<dyn TxPkg>| {
         let txsz = a.body().length();
+        // check tx
+        check_pick_one_tx!(a);
+        // check size
         if txsz + *txallsz > txmaxsz || *trslen >= txmaxn {
             return false // num or size enough
         }
-        // try append tx
-        let txr = a.objc().as_ref().as_read();
-        if let Err(..) = engine.try_execute_tx(txr) {
-            return true // next
-        }
+        // ok push
         trs.push(a.objc().clone());
         trshxs.push(a.hash().clone());
         *trslen += 1; 

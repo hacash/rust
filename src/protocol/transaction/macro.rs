@@ -177,10 +177,11 @@ impl TransactionRead for $class {
     } 
 
     fn req_sign(&self) -> Ret<HashSet<Address>> {
+        let adary = self.addrlist();
         let mut addrs = HashSet::from([self.address()?]);
         for act in self.actions() {
             for adr in act.req_sign() {
-                let a = adr.real(self.addrlist())?;
+                let a = adr.real(adary)?;
                 if a.version() == ADDRVER_PRIVAKEY {
                     addrs.insert(a); // just PRIVAKEY
                 }
