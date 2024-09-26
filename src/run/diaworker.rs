@@ -208,6 +208,7 @@ fn do_diamond_group_mining(number: u32, prevblockhash: &Hash,
 
     // start mining
     for nonce in nonce_start .. nonce_start + nonce_space {
+        // std::thread::sleep(std::time::Duration::from_micros(333)); // test
         let nonce_bytes = nonce.to_be_bytes();
         let (firhx, resxh, diastr) = x16rs::mine_diamond(number, prevhash, &nonce_bytes, address, custom_nonce);
         if diamond_more_power(&diastr, &most.dia_str) {

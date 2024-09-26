@@ -297,6 +297,51 @@ async fn diamond_engrave(State(ctx): State<ApiCtx>, q: Query<Q5733>) -> impl Int
 }
 
 
+/******************* diamond inscription protocol cost *******************/
+
+
+defineQueryObject!{ Q5543,
+    name, String, s!(""), // diamond names
+}
+
+async fn diamond_inscription_protocol_cost(State(ctx): State<ApiCtx>, q: Query<Q5543>) -> impl IntoResponse {
+    ctx_mintstore!(ctx, mintstore);
+    ctx_mintstate!(ctx, mintstate);
+    q_unit!(q, unit);
+
+    let Ok(names) = DiamondNameListMax200::from_readable(&q.name) else {
+        return api_error("diamond name format or count error")
+    };
+
+    let mut cost = Amount::new();
+    for dia in names.list() {
+        let Some(diaobj) = mintstate.diamond(dia) else {
+            return api_error(&format!("cannot find diamond {}", dia))
+        };
+        if diaobj.inscripts.count().uint() < 10 {
+            continue // no need cost
+        }
+        let Some(diasmelt) = mintstore.diamond_smelt(dia) else {
+            return api_error(&format!("cannot find diamond {}", dia))
+        };
+        let Ok(camt) = Amount::from_i64(diasmelt.average_bid_burn.uint() as i64, 247) else {
+            return api_error(&format!("cannot add cost {}", dia))
+        };
+        let Ok(newcost) = cost.add( &camt ) else {
+            return api_error(&format!("cannot add cost {} and {}", camt.to_fin_string(), cost.to_fin_string()))
+        };
+        cost = newcost
+    }
+
+    // return data
+    api_data(jsondata!{
+        "cost", cost.to_unit_string(&unit),
+    })
+
+}
+
+
+
 
 /*****************************************/
 

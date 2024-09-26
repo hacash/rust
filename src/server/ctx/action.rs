@@ -94,8 +94,9 @@ pub fn action_from_json(main_addr: &Address, jsonv: &serde_json::Value) -> Ret<B
             let Some(btstr) = jsonv[$k].as_str() else {
                 return errf!("{} format error", stringify!($k))
             };
-            let Ok(bts) = hex::decode(btstr) else {
-                return errf!("{} hex data error", stringify!($k))
+            let bts = match hex::decode(btstr) {
+                Ok(b) => b,
+                _ => btstr.as_bytes().to_vec(),
             };
             if bts.len() > <$t1>::MAX.into() {
                 return errf!("{} length overflow", stringify!($k))
@@ -484,10 +485,12 @@ pub fn action_to_json_desc(tx: &dyn TransactionRead, act: &dyn Action,
             "engraved_content", ins_str,
         };
         if ret_desc {
-            resjsonobj.insert("description", json!(format!(
-                "Inscript {} HACD ({}) with \"{}\" cost {} HAC fee",
-                dia_num, action.diamonds.splitstr(), ins_str, cost_str
-            )));
+            let mut desc = format!("Inscript {} HACD ({}) with \"{}\"",
+                dia_num, action.diamonds.splitstr(), ins_str);
+            if action.protocol_cost.is_positive() {
+                desc += &format!("  cost {} HAC fee", cost_str);
+            }
+            resjsonobj.insert("description", json!(desc));
         }
 
     }else if kind == DiamondInscriptionClear::kid() {
