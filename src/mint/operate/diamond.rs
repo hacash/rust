@@ -16,13 +16,13 @@ pub fn hacd_move_one_diamond(state: &mut MintState, addr_from: &Address, addr_to
 pub fn check_diamond_status(state: &mut MintState, addr_from: &Address, hacd_name: &DiamondName) -> Ret<DiamondSto> {
     // query
     let diaitem = must_have!(
-        format!("diamond {}", hacd_name.to_string()),
+        format!("diamond {}", hacd_name.readable()),
         state.diamond(hacd_name));
     if diaitem.status != DIAMOND_STATUS_NORMAL {
-        return errf!("diamond {} has been mortgaged and cannot be transferred", hacd_name.to_string())
+        return errf!("diamond {} has been mortgaged and cannot be transferred", hacd_name.readable())
     }
     if *addr_from != diaitem.address {
-        return errf!("diamond {} not belong to address {}", hacd_name.to_string(), addr_from.readable())
+        return errf!("diamond {} not belong to address {}", hacd_name.readable(), addr_from.readable())
     }
     // ok
     Ok(diaitem)

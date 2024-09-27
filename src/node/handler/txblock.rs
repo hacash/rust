@@ -15,6 +15,7 @@ async fn handle_new_tx(this: Arc<MsgHandler>, peer: Option<Arc<Peer>>, body: Vec
     if already {
         return  // alreay know it
     }
+    // println!("p2p recv new tx: {}, {}", txpkg.objc().hash().half(), hxfe.nonce());
     let txdatas = txpkg.body().clone().into_vec();
     if engcnf.is_open_miner() {
         // try execute tx
