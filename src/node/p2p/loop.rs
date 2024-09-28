@@ -42,7 +42,9 @@ impl P2PManage {
                     }
                 },
                 client = server_listener.accept() => {
-                    let (client, _) = errunbox!( client )?;
+                    let Ok((client, _)) = errunbox!( client ) else {
+                        continue
+                    };
                     let tobj = this.clone();
                     tokio::spawn(async move {
                         tobj.handle_conn(client, false).await // not report me
