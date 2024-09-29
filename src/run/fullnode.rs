@@ -1,7 +1,7 @@
 
 
 const HACASH_NODE_VERSION: &str = "0.1.2";
-const HACASH_NODE_BUILD_TIME: &str = "2024.9.19-1";
+const HACASH_NODE_BUILD_TIME: &str = "2024.9.29-1";
 const HACASH_STATE_DB_UPDT: u32 = 1;
 
 
