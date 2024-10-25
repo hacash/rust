@@ -20,6 +20,7 @@ use crate::core::db::*;
 use crate::core::state::*;
 
 use crate::protocol::{self, *};
+use crate::protocol::transaction::*;
 use crate::mint::checker::*;
 
 use super::roller;

@@ -67,10 +67,19 @@ pub fn do_check_insert(
         let mut txttsize = 0usize;
         let mut txttnum = 0usize;
         for tx in alltxs {
+            let txty = tx.ty();
+            // check only one coinbase at first
+            if txttnum == 0 && txty != TX_TYPE_0_COINBASE{ // coinbase check
+                return errf!("tx({}) type must be coinbase", txttnum)
+            }
+            if txttnum >= 1 && txty == TX_TYPE_0_COINBASE { // must not be coinbase
+                return errf!("tx({}) type cannot be coinbase", txttnum)  
+            }
+            // size count
             txttnum += 1;
             txttsize += tx.size();
-            if txttnum <= 1 { // coinbase not check
-                continue
+            if txty == TX_TYPE_0_COINBASE {
+                continue // igonre coinbase other check
             }
             // check time
             if tx.timestamp().to_u64() > cur_time {
@@ -79,6 +88,7 @@ pub fn do_check_insert(
             // verify signs
             tx.as_ref().as_read().verify_signature()?; 
         }
+        // check size
         if txttnum != txcount {
             return errf!("block tx count need {} but got {}", txcount, txttnum)        
         }

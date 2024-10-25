@@ -48,7 +48,12 @@ impl TransactionRead for TransactionCoinbase {
     fn message(&self) -> &StringTrim16 {
         &self.message
     }
+
+    // call ret error
     
+    fn verify_signature(&self) -> RetErr {
+        errf!("cannot call verify_signature() in coinbase tx")
+    }
     
 }
 

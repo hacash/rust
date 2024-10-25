@@ -236,9 +236,13 @@ impl Transaction for $class {
 impl TxExec for $class {
 
     fn execute(&self, blkhei: u64, sta: &mut dyn State) -> RetErr {
+        let mty = self.ty();
         // check BlockHeight more than 20w trs.Fee.Size() must less than 6 bytes.
         if blkhei > 20_0000 && self.fee.size() > 2+4 {
             return errf!("tx fee size cannot be more than 6 bytes when block height abover 200,000")
+        }
+        if blkhei > 33033 && mty <= TX_TYPE_1_DEPRECATED { // last is 33019
+            return errf!("Type 1 transactions have been deprecated after height 33,033")
         }
         let mut state = CoreState::wrap(sta);
         // check tx exist
@@ -266,12 +270,12 @@ impl TxExec for $class {
         if feeadr.version() != ADDRVER_PRIVAKEY {
             return errf!("tx fee address version must be PRIVAKEY type.")
         }
-        if self.ty() <= TX_TYPE_3 {
+        if mty <= TX_TYPE_3 {
             if self.ano_mark[0] != 0 {
                 return errf!("tx extend data error")
             }
         }
-        if self.ty() <= TX_TYPE_2 {
+        if mty <= TX_TYPE_2 {
             if self.gas_max.value() != 0 {
                 return errf!("tx extend data error")
             }
